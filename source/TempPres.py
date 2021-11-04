@@ -57,7 +57,7 @@ iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
 Stime = config['Data_Sample']['Minion_sample_time']
 
 try :
-    float(test_string)
+    #float(test_string)
     Stime = float(Stime)
 except :
     Stime = float(.2)
@@ -149,7 +149,8 @@ while NumSamples <= TotalSamples:
 
         if Psensor.read():
             Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-            Ptemperature = round(Psensor.temperature(),3)
+            #Ptemperature = round(Psensor.temperature(),3)
+            Ptemperature = round(Psensor.temperature(),2)
             Pres_data = "{},{},".format(Ppressure, Ptemperature)
             print("Pressure sensor data: {}".format(Pres_data))
             sensor_string = "{}{}".format(sensor_string,Pres_data)
@@ -170,7 +171,8 @@ while NumSamples <= TotalSamples:
             print("Error reading sensor")
             iniTmp = False
 
-        Temp_acc = round(sensor_temp.temperature(),4)
+        #Temp_acc = round(sensor_temp.temperature(),4)
+        Temp_acc = round(sensor_temp.temperature(),2)
 
         print("Temperature_accurate: {} C".format(Temp_acc))
 
