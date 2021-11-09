@@ -182,7 +182,8 @@ if __name__ == '__main__':
 
             if Psensor.read():
                 Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-                Ptemperature = round(Psensor.temperature(),3)
+                #Ptemperature = round(Psensor.temperature(),3)
+                Ptemperature = round(Psensor.temperature(),2)
                 Pres_data = "{},{},".format(Ppressure, Ptemperature)
                 print("Pressure sensor data: {}".format(Pres_data))
                 sensor_string = "{}{}".format(sensor_string,Pres_data)
@@ -203,7 +204,8 @@ if __name__ == '__main__':
                 print("Error reading sensor")
                 iniTmp = False
 
-            Temp_acc = round(sensor_temp.temperature(),4)
+            #Temp_acc = round(sensor_temp.temperature(),4)
+            Temp_acc = round(sensor_temp.temperature(),2)
 
             print("Temperature_accurate: {} C".format(Temp_acc))
 
