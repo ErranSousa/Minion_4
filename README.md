@@ -33,7 +33,7 @@
 &emsp;Once the Pi reboots, open a terminal and type this command to download the repo:
 
 
-  `~$ sudo git clone https://github.com/jacksonsugar/Minion_3.git`
+  `~$ sudo git clone https://github.com/ErranSousa/Minion_3.git`
   
 &emsp;Now navigate into the folder and begin the install process:
   
