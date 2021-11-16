@@ -159,6 +159,7 @@ if iniP100 == False and iniP30 == False:
 if __name__ == '__main__':
 
     if Pres_ini == "Broken":
+        print("Pressure Sensor Not Working...")
         abortMission(configLoc)
         os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
 
@@ -182,6 +183,8 @@ if __name__ == '__main__':
         while(NumSamples <= TotalSamples):
 
             tic = time.perf_counter()
+
+            print("Final Sampling Mode")  #Indicate to the user in which mode the Minion is operating
 
             file = open(file_name,"a")
 
