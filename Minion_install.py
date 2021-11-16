@@ -64,7 +64,7 @@ def USB_Conf():
 
 IP_addr = input('What local IP extension would you like to use? 192.168.0.')
 
-if len(str(IP_addr)) > 3 or len(str(IP_addr)) < 1 or int(IP_addr) <= 1 or (IP_addr) >= 255:
+if len(str(IP_addr)) > 3 or len(str(IP_addr)) < 1 or int(IP_addr) <= 1 or int(IP_addr) >= 255:
     IP_fail = 1
     while IP_fail == 1: 
         IP_addr = input('Illigal IP address: 192.168.0.%s! Please try again: ' % IP_addr)
