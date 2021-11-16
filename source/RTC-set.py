@@ -22,7 +22,8 @@ def flash():
 print "Connect to internet"
 time.sleep(10)
 
-ifswitch='sudo python /home/pi/Documents/Class_Minion_tools/dhcp-switch.py'
+#ifswitch='sudo python /home/pi/Documents/Class_Minion_tools/dhcp-switch.py'
+ifswitch='sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py' #Change dhcp-switch.py path to one that exists
 
 print 'switching to global internet'
 
