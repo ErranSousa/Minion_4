@@ -81,7 +81,7 @@ file_name = "{}/minion_data/{}_TEMPPRES.txt".format(configDir, samp_time)
 
 file = open(file_name,"a+")
 
-file.write("{}_TEMPPRES.txt".format(samp_time))
+file.write("{}_TEMPPRES.txt ".format(samp_time))
 
 if iniP30 == True:
 
@@ -100,7 +100,8 @@ if iniP30 == True:
     else:
         Pres_ini = "Broken"
 
-    file.write("Pressure(dbar),Temp(C)")
+    #file.write("Pressure(dbar),Temp(C)")
+    file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
 if iniP100 == True:
 
@@ -130,7 +131,8 @@ if iniTmp == True:
         print("Error initializing Temperature sensor")
         exit(1)
 
-    file.write(", TempTSYS01(C)")
+    #file.write(", TempTSYS01(C)")
+    file.write(", TempTSYS01(C*100)")
 
 file.write("\r\n")
 file.close()
@@ -141,6 +143,8 @@ while NumSamples <= TotalSamples:
 
     tic = time.perf_counter()
 
+    print("Time Lapse Sampling Mode")  #Indicate to the user in which mode the Minion is operating
+
     file = open(file_name,"a")
 
     sensor_string = ''
@@ -148,9 +152,12 @@ while NumSamples <= TotalSamples:
     if iniP100 or iniP30 == True:
 
         if Psensor.read():
-            Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+            #Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+            Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000 #shifting the decimal point out
+            Ppressure = "%06d" % Ppressure  #fixed field / prepending zeros
             #Ptemperature = round(Psensor.temperature(),3)
-            Ptemperature = round(Psensor.temperature(),2)
+            Ptemperature = round(Psensor.temperature(),2)*100 #shifting the decimal point out
+            Ptemperature = "%04d" % Ptemperature #fix field length by prepending zeros if necessary
             Pres_data = "{},{},".format(Ppressure, Ptemperature)
             print("Pressure sensor data: {}".format(Pres_data))
             sensor_string = "{}{}".format(sensor_string,Pres_data)
@@ -160,7 +167,8 @@ while NumSamples <= TotalSamples:
             file.write('Pressure Sensor fail')
             abortMission(configLoc)
 
-        if Ppressure >= MAX_Depth:
+        #if Ppressure >= MAX_Depth:
+        if int(Ppressure)/1000 >= MAX_Depth:
             file.write("Minion Exceeded Depth Maximum!")
             abortMission(configLoc)
 
@@ -172,9 +180,11 @@ while NumSamples <= TotalSamples:
             iniTmp = False
 
         #Temp_acc = round(sensor_temp.temperature(),4)
-        Temp_acc = round(sensor_temp.temperature(),2)
+        Temp_acc = round(sensor_temp.temperature(),2)*100
+        Temp_acc = "%04d" % Temp_acc #fix field length by prepending zeros if necessary
 
-        print("Temperature_accurate: {} C".format(Temp_acc))
+        #print("Temperature_accurate: {} C".format(Temp_acc))
+        print("Temperature_accurate: {} C*100".format(Temp_acc)) #degrees Celsius * 100
 
         sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
