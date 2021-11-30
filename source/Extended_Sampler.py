@@ -85,7 +85,10 @@ for dataNum in os.listdir('{}/minion_data/INI/'.format(configDir)):
     if dataNum.endswith('_TEMPPRES-INI.txt'):
         samp_count = samp_count + 1
 
-samp_time = "{}-{}".format(samp_count, samp_time)
+samp_count_leading_zeros = "%03d" % samp_count
+
+#samp_time = "{}-{}".format(samp_count, samp_time)
+samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zeros to sample count
 
 Stime = float(config['Initial_Samples']['hours'])
 Srate = float(config['Initial_Samples']['TempPres_sample_rate'])
