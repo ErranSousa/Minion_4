@@ -28,7 +28,7 @@
 <input type='submit' name='shutdown' value='Set Minion XXX to Sleep' />
 </form>
 <br>
-<h3>Step 3: After 30 seconds, attach the magent to keep the Minion off.</h3>
+<h3>Step 3: After 30 seconds, attach the magnet to keep the Minion off.</h3>
 <br>
 <form action="/index.php" method="post">
 <input type="submit" value="Return">
