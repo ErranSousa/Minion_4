@@ -75,7 +75,10 @@ for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
     if dataNum.endswith('_TEMPPRES.txt'):
         samp_count = samp_count + 1
 
-samp_time = "{}-{}".format(samp_count, samp_time)
+samp_count_leading_zeros = "%03d" % samp_count
+
+#samp_time = "{}-{}".format(samp_count, samp_time)
+samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zeros to sample count
 
 file_name = "{}/minion_data/{}_TEMPPRES.txt".format(configDir, samp_time)
 
