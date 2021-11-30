@@ -111,10 +111,15 @@ Dhours = int(config['Deployment_Time']['hours'])
 
 Stime = config['Data_Sample']['Minion_sample_time']
 
+
+#Determine if the value entered into 'Minion_sample_time' is
+#    'Camera' or an actual number.
+#Note: Any text will work, not just 'Camera'
 try:
-    float(test_string)
     Stime = float(Stime)
 except:
+    #Since Stime cannot be cast as a float, there must be some text
+    #in the field such as 'Camera'
     Stime = float(.2)
 
 Srate = float(config['Sleep_cycle']['Minion_sleep_cycle'])
