@@ -15,10 +15,10 @@
 <body>
 
 <br>
-<h1>Minion XXX launch prep</h1>
+<h1>Minion XXX Launch Prep</h1>
 <br>
 <br>
-<h3>Step 1: Reset sample counter and archive previous data.</h3>
+<h3>Step 1: Reset sample counter, Final Samples Status Flag and archive previous data.</h3>
 <form method='post' action=''>
 <input type='submit' name='new_mission' value='Archive data and begin mission' />
 </form>
