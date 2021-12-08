@@ -144,7 +144,8 @@ if iniP100 == True:
     else:
         Pres_ini = "Broken"
 
-    file.write("Pressure(dbar),Temp(C)")
+    #file.write("Pressure(dbar),Temp(C)")
+    file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
 if iniTmp == True:
 
