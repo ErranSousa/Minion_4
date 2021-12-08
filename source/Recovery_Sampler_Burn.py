@@ -11,7 +11,7 @@ import configparser
 import sys
 
 BURN = 33
-data_rec = 16
+DATA_REC_PIN = 16
 
 samp_count = 1
 
@@ -25,6 +25,11 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(BURN, GPIO.OUT)
 GPIO.output(BURN, 1)
+GPIO.setup(DATA_REC_PIN, GPIO.OUT)
+GPIO.output(DATA_REC_PIN, 1)
+
+#pickle to hold True or False denoting if the Final Samples have been performed
+fname_final_status_pickle = "/home/pi/Documents/Minion_scripts/final_samp_status.pkl"
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
@@ -48,7 +53,80 @@ def read_sampcount():
     countp.close()
     return sampcount
 
-scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Extended_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+#---------------------------------------------------------------------------------------#
+def prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp):
+    file = open(file_name,"a+")
+
+    file.write("{}_TEMPPRES.txt".format(samp_time))
+
+    if iniP30 == True:
+        #file.write("Pressure(dbar),Temp(C)")
+        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+
+    if iniP100 == True:
+        #file.write("Pressure(dbar),Temp(C)")
+        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+
+    if iniTmp == True:
+        #file.write(", TempTSYS01(C)")
+        file.write(", TempTSYS01(C*100)")
+
+    file.close()
+#---------------------------------------------------------------------------------------#
+
+def write_pickle_file(fname_pickle,data):
+    #print("File Name: " + fname_pickle)
+    #disp_data_xmt_status_dict(dict_to_write)
+    pickle_file_fid = open(fname_pickle,'wb')
+    pickle.dump(data,pickle_file_fid)
+    pickle_file_fid.close()
+
+def read_final_samp_status_pickle(fname_final_status_pickle):
+    """Reads the Final Sampling Status Flag.
+    The state stored in the piclke file will be True if the
+    Final Sampling completed and False if not.
+
+    Parameters
+    ----------
+    fname_final_status_pickle : 'string' Name of pickle file
+
+    Returns:
+    --------
+    final_samp_status_flag : 'True' or 'False' State of the Final Sampling Status
+    """
+    #pickle_file_name = "/home/pi/Documents/Minion_scripts/final_samp_status.pkl"
+    pickle_file_name = fname_final_status_pickle
+    #try to open the Data Transmit Status pickle file
+    try:
+        #Try to open the pickle file.  If it exists, read the data out.
+        pickle_file = open(pickle_file_name,'rb')
+        print("\n\rFound pickle file: " + pickle_file_name)
+        print("Loading " + pickle_file_name)
+        final_samp_status_flag = pickle.load(pickle_file)
+        print("Final Sample Status Flag: " + str(final_samp_status_flag))
+        return final_samp_status_flag
+    except:
+        #Could not open the pickle file so it must be the first time through
+        print("\n\rCould not find the pickle file.  Creating " + pickle_file_name)
+        write_pickle_file(pickle_file_name,False)
+        #pickle_file = open(pickle_file_name,'wb')
+        #pickle.dump(False, pickle_file) #write the empty dictionary as a placeholder
+        return False
+    finally:
+        #Now, close the pickle file.
+        try:
+            pickle_file.close()
+            print("File Closed: " + pickle_file_name)
+        except:
+            pass
+
+#Read out final samples status.
+#    True = Final Samples Performed, False = Final Samples Not Performed
+final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
+
+scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py", \
+               "ACC_100Hz.py","Extended_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py", \
+               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
 
 if(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
 
@@ -80,10 +158,16 @@ TotalCycles = int((((Ddays*24)+Dhours))/Srate)
 
 samp_count = int(read_sampcount())
 
+print("A--> Srate: " + str(Srate) + ", TotalCycles: " + str(TotalCycles) + \
+      ", samp_count: " + str(samp_count))
+
 firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
 samp_time = pickle.load(firstp)
 
-samp_time = "{}-{}".format(samp_count, samp_time)
+samp_count_leading_zeros = "%03d" % samp_count
+
+#samp_time = "{}-{}".format(samp_count, samp_time)
+samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zeros to sample count
 
 Stime = float(config['Final_Samples']['hours'])
 Srate = float(config['Final_Samples']['TempPres_sample_rate'])
@@ -94,13 +178,22 @@ Sf = 1/Srate
 
 TotalSamples = Stime*60*60*Srate
 
+#print for testing only!
+print("B--> Srate: " + str(Srate) + ", Stime: " + str(Stime) + ", TotalSamples: " + \
+      str(TotalSamples))
+
 ######################
 
 time.sleep(1)
 
-file = open(file_name,"a+")
+#Pres_ini,Psensor,sensor_temp,depth_factor,surface_offset = prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp)
 
-file.write("{}_TEMPPRES.txt".format(samp_time))
+#Only need to open and write a new file if the final sampling has not yet been performed
+
+
+#file = open(file_name,"a+")
+
+#file.write("{}_TEMPPRES.txt".format(samp_time))
 
 if iniP30 == True:
 
@@ -119,7 +212,7 @@ if iniP30 == True:
     else:
         Pres_ini = "Broken"
 
-    file.write("Pressure(dbar),Temp(C)")
+#    file.write("Pressure(dbar),Temp(C)")
 
 if iniP100 == True:
 
@@ -138,7 +231,7 @@ if iniP100 == True:
     else:
         Pres_ini = "Broken"
 
-    file.write("Pressure(dbar),Temp(C)")
+#    file.write("Pressure(dbar),Temp(C)")
 
 if iniTmp == True:
 
@@ -149,15 +242,15 @@ if iniTmp == True:
         print("Error initializing Temperature sensor")
         exit(1)
 
-    file.write(", TempTSYS01(C)")
+#    file.write(", TempTSYS01(C)")
 
-file.close()
+#file.close()
 
 if iniP100 == False and iniP30 == False:
     Pres_ini = 2000
 
 if __name__ == '__main__':
-
+    print("C--> samp_count: " + str(samp_count) + ", TotalCycles + 1: " + str(TotalCycles+1))
     if Pres_ini == "Broken":
         print("Pressure Sensor Not Working...")
         abortMission(configLoc)
@@ -167,9 +260,14 @@ if __name__ == '__main__':
 #        GPIO.output(BURN,1)
 #        os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
 
-    if samp_count == TotalCycles + 1:
+#   if samp_count == TotalCycles + 1:
+    if final_samp_status_flag == False:
         GPIO.output(BURN,1)
+        #Create the final samples data file only if the final samples have not been performed
+        prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp)
 
+        scriptNames2 = ["Minion_image_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py"]
+        
         if iniImg == True:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
@@ -183,8 +281,11 @@ if __name__ == '__main__':
         while(NumSamples <= TotalSamples):
 
             tic = time.perf_counter()
-
-            print("Final Sampling Mode")  #Indicate to the user in which mode the Minion is operating
+            
+            #Indicate to the user in which mode the Minion is operating
+            print("")
+            print("Final Sampling Mode")
+            print("Samples Remaining: " + str(TotalSamples - NumSamples))
 
             file = open(file_name,"a")
 
@@ -193,8 +294,11 @@ if __name__ == '__main__':
             if iniP100 or iniP30 == True:
 
                 if Psensor.read():
-                    Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-                    Ptemperature = round(Psensor.temperature(),3)
+                    #shifting the decimal point out
+                    Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000
+                    Ppressure = "%06d" % Ppressure  #prepending zeros 
+                    Ptemperature = round(Psensor.temperature(),2)*100
+                    Ptemperature = "%04d" % Ptemperature
                     Pres_data = "{},{},".format(Ppressure, Ptemperature)
                     print("Pressure sensor data: {}".format(Pres_data))
                     sensor_string = "{}{}".format(sensor_string,Pres_data)
@@ -204,7 +308,7 @@ if __name__ == '__main__':
                     file.write('Pressure Sensor fail')
                     abortMission(configLoc)
 
-                if Ppressure >= MAX_Depth:
+                if int(Ppressure)/1000 >= MAX_Depth:
                     file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
@@ -214,9 +318,12 @@ if __name__ == '__main__':
                     print("Error reading sensor")
                     iniTmp = False
 
-                Temp_acc = round(sensor_temp.temperature(),4)
+                #Temp_acc = round(sensor_temp.temperature(),4)
+                Temp_acc = round(sensor_temp.temperature(),2)*100
+                Temp_acc = "%04d" % Temp_acc
 
-                print("Temperature_accurate: {} C".format(Temp_acc))
+                #print("Temperature_accurate: {} C".format(Temp_acc))
+                print("Temperature_accurate: {} C*100".format(Temp_acc)) #degrees Celsius * 100
 
                 sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
@@ -235,9 +342,13 @@ if __name__ == '__main__':
 
             time.sleep(Sf - timeS)
 
-
-        os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py &')
-        GPIO.output(data_rec, 0)
+        #At this point, all final Pressure & Temperature samples have completed
+        #Need to end sampling of other sensors as well
+        if(any(x in os.popen(ps_test).read() for x in scriptNames2)) == True:
+            kill_sampling(scriptNames)
+        write_pickle_file(fname_final_status_pickle,True) 
+        #os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py &')
+        GPIO.output(DATA_REC_PIN, 0)  #Turn off the DATA Receive LED Inidicator
 
 
     else:
