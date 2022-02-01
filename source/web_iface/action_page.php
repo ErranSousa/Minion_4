@@ -23,7 +23,7 @@ Ignore_WIFI-hours: <?php echo $_POST["IG_WIFI-hours"]; ?><br>
 <legend>Initial Samples:</legend>
 Initial Sample Time (hours): <?php echo $_POST["IHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["ICamFS"]; ?><br>
-Temperatrue and Pressure Sample Rate (Hz): <?php echo $_POST["ITPFS"]; ?><br>
+Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["ITPFS"]; ?><br>
 Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["IOXYFS"]; ?><br>
 </fieldset>
 
@@ -31,7 +31,7 @@ Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["IOXYFS"]; ?><br>
 <legend>Final Samples:</legend>
 Final Sample Time (hours): <?php echo $_POST["FHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["FCamFS"]; ?><br>
-Temperatrue and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
+Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
 Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["FOXYFS"]; ?><br>
 </fieldset>
 
