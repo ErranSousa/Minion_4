@@ -225,8 +225,9 @@ os.system('sudo mkdir /home/pi/Documents/drivers')
 # os.system('git clone https://github.com/ErranSousa/KellerLD-python.git')
 # os.system('git clone https://github.com/ErranSousa/adxl345-python.git')
 # os.system('git clone https://github.com/ErranSousa/Adafruit_Python_ADS1x15.git')
-# os.chdir('/home/pi/Documents/drivers/')
+ 
 #Clone repositories 
+os.chdir('/home/pi/Documents/drivers/')
 os.system('git clone https://github.com/melissaomand/tsys01-python.git')
 os.system('git clone https://github.com/melissaomand/ms5837-python.git')
 os.system('git clone https://github.com/melissaomand/KellerLD-python.git')
