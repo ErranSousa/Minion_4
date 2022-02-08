@@ -126,7 +126,7 @@ final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle
 
 scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py", \
                "ACC_100Hz.py","Extended_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py", \
-               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py","xmt_minion_data.py"]
 
 if(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
 
