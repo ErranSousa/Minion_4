@@ -175,7 +175,11 @@ ping_google = "ping google.com -c 1"
 
 ps_test = "pgrep -a python"
 
-scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Extended_Sampler.py","Recovery_Sampler_Burn.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py", \
+               "OXYBASE_RS232.py","ACC_100Hz.py","Extended_Sampler.py", \
+               "Recovery_Sampler_Burn.py","TempPres_IF.py","OXYBASE_RS232_IF.py", \
+               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py", \
+               "xmt_minion_data.py"]
 
 if __name__ == '__main__':
 
