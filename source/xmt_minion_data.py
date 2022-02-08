@@ -332,7 +332,7 @@ else:
                 print("Should not end up here!!!")
             #----------------------------------------------------------------------------------------#
         
-print("Exiting xmt_minion_data.py..."    
+print("Exiting xmt_minion_data.py...")
 sys.exit()
 
 
