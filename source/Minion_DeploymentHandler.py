@@ -206,20 +206,18 @@ if __name__ == '__main__':
     time.sleep(5)
 
     update_sampcount()
-
+    
+    #Check for WiFi while any of the scripts in scriptNames are executing
     while(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
-
-    ## Check for wifi
-
             if check_wifi(IgnoreWIFI) == "Connected":
                 kill_sampling(scriptNames)
                 flash()
                 exit(0)
-
             else:
                 print("Sampling")
                 time.sleep(5)
 
+    #Once we get here, there are none of the scripts in scriptNames are running.  
     print('Goodbye')
     GPIO.output(wifi, 0)
     time.sleep(5)
