@@ -13,25 +13,24 @@ print("-"*len(msg1))
 
 try:
     #Read out the current value
-    countp = open(pickle_file_name,"rb")
-    sampcount = pickle.load(countp)
+    with open(pickle_file_name,"rb") as sampcount:
+        sampcount = pickle.load(countp)
     print("sampcount current value: " + str(sampcount))
-    countp.close()
+
 except:
     sys.exit(os.path.basename(__file__) + ": sampcount.pk1 file not found or open failed")
 
 
 #Reset the value to zero
-countp = open(pickle_file_name,"wb")
-print("Resetting the Sample Counter to 0...")
-sampcount = 0
-pickle.dump(sampcount, countp)
-countp.close()
+with open(pickle_file_name,"wb") as countp:
+    print("Resetting the Sample Counter to 0...")
+    sampcount = 0
+    pickle.dump(sampcount, countp)
+
 
 #Verify
-countp = open(pickle_file_name,"rb")
-sampcount_verify = pickle.load(countp)
-countp.close()
+with open(pickle_file_name,"rb") as countp:
+    sampcount_verify = pickle.load(countp)
 print("Verify sampcount: " + str(sampcount_verify))
 if sampcount_verify == 0:
     print("Verify OK")
