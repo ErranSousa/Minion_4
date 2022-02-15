@@ -145,8 +145,8 @@ if iniImg == True and answer == True:
 
     try:
         # Collect time value from pickle on desktop
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-        samp_time = pickle.load(firstp)
+        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+            samp_time = pickle.load(firstp)
         samp_count = str(len(os.listdir("{}/minion_pics/".format(configDir)))+1)
         samp_time = "{}-{}".format(samp_count, samp_time)
         GPIO.output(light, 1)
@@ -193,8 +193,8 @@ if iniTpp == True and answer == True:
 
     TotalSamples = Stime*60*Srate
 
-    firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-    samp_time = pickle.load(firstp)
+    with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+        samp_time = pickle.load(firstp)
 
     for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
         if dataNum.endswith('_TEMPPRES.txt'):
@@ -233,66 +233,68 @@ if iniTpp == True and answer == True:
 
     time.sleep(1)
 
-    file = open(file_name,"a+")
-
-    if iniTmp == True:
-
-        sensor_temp = tsys01.TSYS01()
-
-        # We must initialize the sensor before reading it
-        if not sensor_temp.init():
-            print("Error initializing sensor")
-            exit(1)
-
-        file.write("T+P MS5837_30BA and TempTSYS01 @ %s\r\n" % samp_time)
-        file.write("Pressure(mbar), Temp(C), TempTSYS01(C) \r\n")
-
-    else:
-
-        file.write("T+P MS5837_30BA @ %s\r\n" % samp_time)
-        file.write("Pressure(mbar),Temp(C) \r\n")
-
-    file.close()
-
-    while NumSamples <= 10:
-
-        if sensor.read():
-            print("P: %0.1f mbar  %0.3f atm\tT: %0.2f C") % (
-            sensor.pressure(), # Default is mbar (no arguments)
-            sensor.pressure(ms5837.UNITS_atm), # Request psi
-            sensor.temperature()) # Default is degrees C (no arguments)
-
-        else:
-            print('Sensor ded')
-            file.write('Sensor fail')
-            exit(1)
-
-        if sensor.pressure() >= MAX_Depth:
-            file.write("Minion Exceeded Depth Maximum!")
-            abortMission(configLoc)
-
-        file = open(file_name,"a")
+    #file = open(file_name,"a+")
+    with open(file_name,"a+") as file:
 
         if iniTmp == True:
 
-            if not sensor_temp.read():
-                print("Error reading sensor")
-                file.write("Error reading TSYS01, disabling.")
-                iniTmp = False
+            sensor_temp = tsys01.TSYS01()
 
-            print("Temperature_accurate: %0.2f C" % sensor_temp.temperature())
+            # We must initialize the sensor before reading it
+            if not sensor_temp.init():
+                print("Error initializing sensor")
+                exit(1)
 
-            file.write("{},{},{}\n".format(sensor.pressure(), sensor.temperature(),sensor_temp.temperature()))
+            file.write("T+P MS5837_30BA and TempTSYS01 @ %s\r\n" % samp_time)
+            file.write("Pressure(mbar), Temp(C), TempTSYS01(C) \r\n")
 
         else:
 
-            file.write("{},{}\n".format(sensor.pressure(), sensor.temperature()))
+            file.write("T+P MS5837_30BA @ %s\r\n" % samp_time)
+            file.write("Pressure(mbar),Temp(C) \r\n")
 
-        NumSamples = NumSamples + 1
+    #file.close()
 
-        time.sleep(Sf)
+    with open(file_name,"a+") as file:
+        while NumSamples <= 10:
 
-    file.close()
+            if sensor.read():
+                print("P: %0.1f mbar  %0.3f atm\tT: %0.2f C") % (
+                sensor.pressure(), # Default is mbar (no arguments)
+                sensor.pressure(ms5837.UNITS_atm), # Request psi
+                sensor.temperature()) # Default is degrees C (no arguments)
+
+            else:
+                print('Sensor ded')
+                file.write('Sensor fail')
+                exit(1)
+
+            if sensor.pressure() >= MAX_Depth:
+                file.write("Minion Exceeded Depth Maximum!")
+                abortMission(configLoc)
+
+            file = open(file_name,"a")
+
+            if iniTmp == True:
+
+                if not sensor_temp.read():
+                    print("Error reading sensor")
+                    file.write("Error reading TSYS01, disabling.")
+                    iniTmp = False
+
+                print("Temperature_accurate: %0.2f C" % sensor_temp.temperature())
+
+                file.write("{},{},{}\n".format(sensor.pressure(), sensor.temperature(),sensor_temp.temperature()))
+
+            else:
+
+                file.write("{},{}\n".format(sensor.pressure(), sensor.temperature()))
+
+            NumSamples = NumSamples + 1
+
+            time.sleep(Sf)
+
+    #file.close()
 
 
 if iniO2 == True and answer == True:
@@ -316,8 +318,8 @@ if iniO2 == True and answer == True:
 
     ser.write(b'mode0001\r')
 
-    firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-    samp_time = pickle.load(firstp)
+    with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+        samp_time = pickle.load(firstp)
 
     for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
         if dataNum.endswith('_OXYBASE.txt'):
@@ -327,26 +329,25 @@ if iniO2 == True and answer == True:
 
     file_name = "{}/{}_OXYBASE-TEST.txt".format(configDir, samp_time)
 
-    file = open(file_name,"a+")
+    #file = open(file_name,"a+")
+    with open(file_name,"a+") as file:
+        file.write("{}\r\n".format(file_name))
+        file.write("Oxygen @ %s\r\n" % samp_time)
+        file.write("Sample Rate: %sHz \n" % Srate)
 
-    file.write("{}\r\n".format(file_name))
+        while(i < 10):
 
-    file.write("Oxygen @ %s\r\n" % samp_time)
-    file.write("Sample Rate: %sHz \n" % Srate)
+            ser.write(b'data\r')
 
-    while(i < 10):
+            reply = ser.read_until('\r')
 
-        ser.write(b'data\r')
+            file.write(reply)
 
-        reply = ser.read_until('\r')
+            print(reply)
 
-        file.write(reply)
+            i = i + 1
 
-        print(reply)
-
-        i = i + 1
-
-        time.sleep(Sf)
+            time.sleep(Sf)
 
     ser.write(b'mode0000\r')
 
@@ -360,8 +361,8 @@ if iniAcc == True and answer == True:
     accel = Adafruit_ADXL345.ADXL345()
     accel.set_data_rate(Adafruit_ADXL345.ADXL345_DATARATE_100_HZ)
 
-    firstp = open("timesamp.pkl","rb")
-    samp_time = pickle.load(firstp)
+    with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+        samp_time = pickle.load(firstp)
 
     for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
         if dataNum.endswith('_ACC.txt'):
@@ -371,16 +372,15 @@ if iniAcc == True and answer == True:
 
     file_name = "{}/{}_ACC-TEST.txt".format(configDir, samp_time)
 
-    file = open(file_name,"a+")
+    with open(file_name,"a+") as file:
+        file.write("%s\r\n" % samp_time)
+        file.write("X,Y,Z = +/- 2g\r\n")
 
-    file.write("%s\r\n" % samp_time)
-    file.write("X,Y,Z = +/- 2g\r\n")
-
-    while NumSamples < 10:
-        # Read the X, Y, Z axis acceleration values and print them.
-        x, y, z = accel.read()
-        file.write('{0},{1},{2}\n'.format(x, y, z))
-        NumSamples = NumSamples + 1
+        while NumSamples < 10:
+            # Read the X, Y, Z axis acceleration values and print them.
+            x, y, z = accel.read()
+            file.write('{0},{1},{2}\n'.format(x, y, z))
+            NumSamples = NumSamples + 1
 
 
 answer = yes_no("Do you wish to continue to GPS testing?")
