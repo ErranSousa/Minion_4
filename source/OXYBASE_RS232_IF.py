@@ -28,8 +28,8 @@ ser= serial.Serial(
     timeout=1
 )
 
-firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-samp_time = pickle.load(firstp)
+with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+    samp_time = pickle.load(firstp)
 
 if len(os.listdir('{}/minion_pics'.format(configDir))) == 0 and len(os.listdir('{}/minion_data/INI'.format(configDir))) == 0:
 
@@ -67,36 +67,34 @@ ser.flushOutput()
 
 ser.write(b'mode0001\r')
 
-file = open(file_name,"a+")
+with open(file_name,"a+") as file:
+    file.write("{}\r\n".format(file_name))
+    file.write("OXYBASE RS232 Dissolved Oxygen @ %s\r\n" % samp_time)
+    file.write("Sample Rate: %sHz \n" % Sf)
 
-file.write("{}\r\n".format(file_name))
+    while(Sample_number > i):
 
-file.write("OXYBASE RS232 Dissolved Oxygen @ %s\r\n" % samp_time)
-file.write("Sample Rate: %sHz \n" % Sf)
+        tic = time.perf_counter()
 
-while(Sample_number > i):
+        ser.write(b'data\r')
 
-    tic = time.perf_counter()
+        reply = ser.read_until('\r')
 
-    ser.write(b'data\r')
+        file.write(reply)
 
-    reply = ser.read_until('\r')
+        print(reply)
 
-    file.write(reply)
+        i = i + 1
 
-    print(reply)
+        toc = time.perf_counter()
 
-    i = i + 1
+        timeS = toc - tic
 
-    toc = time.perf_counter()
+        if timeS >= Sf:
 
-    timeS = toc - tic
+            timeS = Sf
 
-    if timeS >= Sf:
-
-        timeS = Sf
-
-    time.sleep(Sf - timeS)
+        time.sleep(Sf - timeS)
 
 
 ser.write(b'mode0000\r')
