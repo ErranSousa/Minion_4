@@ -80,7 +80,7 @@ if Abort == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
 #firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as samp_time:
+with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
     samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/INI/'.format(configDir)):
