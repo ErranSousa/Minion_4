@@ -33,8 +33,8 @@ def flash():
 def picture():
     try:
         # Collect time value from pickle on desktop
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-        samp_time = pickle.load(firstp)
+        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+            samp_time = pickle.load(firstp)
         samp_count = str(len(os.listdir("{}/minion_pics/".format(configDir)))+1)
         samp_time = "{}-{}".format(samp_count, samp_time)
         GPIO.output(light, 1)
