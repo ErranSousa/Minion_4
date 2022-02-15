@@ -48,8 +48,8 @@ ser.flushOutput()
 
 ser.write(b'mode0001\r')
 
-firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-samp_time = pickle.load(firstp)
+with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+    samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
     if dataNum.endswith('_OXYBASE.txt'):
@@ -59,35 +59,35 @@ samp_time = "{}-{}".format(samp_count, samp_time)
 
 file_name = "{}/minion_data/{}_OXYBASE.txt".format(configDir, samp_time)
 
-file = open(file_name,"a+")
+with open(file_name,"a+") as file:
 
-file.write("{}\r\n".format(file_name))
+    file.write("{}\r\n".format(file_name))
 
-file.write("Oxygen @ %s\r\n" % samp_time)
-file.write("Sample Rate: %sHz \n" % Srate)
+    file.write("Oxygen @ %s\r\n" % samp_time)
+    file.write("Sample Rate: %sHz \n" % Srate)
 
-while(Sample_number > i):
+    while(Sample_number > i):
 
-    tic = time.perf_counter()
+        tic = time.perf_counter()
 
-    ser.write(b'data\r')
+        ser.write(b'data\r')
 
-    reply = ser.read_until('\r')
+        reply = ser.read_until('\r')
 
-    file.write(reply)
+        file.write(reply)
 
-    print(reply)
+        print(reply)
 
-    i = i + 1
+        i = i + 1
 
-    toc = time.perf_counter()
+        toc = time.perf_counter()
 
-    timeS = toc - tic
+        timeS = toc - tic
 
-    if timeS >= Sf:
+        if timeS >= Sf:
 
-        timeS = Sf
+            timeS = Sf
 
-    time.sleep(Sf - timeS)
+        time.sleep(Sf - timeS)
 
 ser.write(b'mode0000\r')
