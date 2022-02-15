@@ -107,11 +107,12 @@ data_xmt_status_dict = dict.fromkeys(keys)
 #try to open the Data Transmit Status pickle file
 try:
     #Try to open the pickle file.  If it exists, read the data out.
-    data_xmt_status_pickle_file = open(data_xmt_status_pickle_name,'rb')
-    print("\n\rFound pickle file: " + data_xmt_status_pickle_name)
-    print("Loading " + data_xmt_status_pickle_name)
-    data_xmt_status_dict = pickle.load(data_xmt_status_pickle_file)
-    disp_data_xmt_status_dict(data_xmt_status_dict)
+    #data_xmt_status_pickle_file = open(data_xmt_status_pickle_name,'rb')
+    with open(data_xmt_status_pickle_name,'rb') as data_xmt_status_pickle_file:
+        print("\n\rFound pickle file: " + data_xmt_status_pickle_name)
+        print("Loading " + data_xmt_status_pickle_name)
+        data_xmt_status_dict = pickle.load(data_xmt_status_pickle_file)
+        disp_data_xmt_status_dict(data_xmt_status_dict)
 except:
     #Could not open the pickle file so it must be the first time through
     print("\n\rCould not find the pickle file.  Creating " + data_xmt_status_pickle_name)
