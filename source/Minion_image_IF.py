@@ -59,7 +59,7 @@ TotalSamples = Stime*(60/Srate)
 
 def update_time():
     try:
-        samp_time = os.popen("sudo hwclock -u -r").read()
+        samp_time = os.popen("sudo hwclock -l -r").read()
         samp_time = samp_time.split('.',1)[0]
         samp_time = samp_time.replace("  ","_")
         samp_time = samp_time.replace(" ","_")
