@@ -48,38 +48,39 @@ def kill_sampling(scriptNames):
         os.system("sudo pkill -9 -f {}".format(script))
 
 def read_sampcount():
-    countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb")
-    sampcount = pickle.load(countp)
-    countp.close()
+    #countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb")
+    with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb") as countp:
+        sampcount = pickle.load(countp)
+    #countp.close()
     return sampcount
 
 #---------------------------------------------------------------------------------------#
 def prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp):
-    file = open(file_name,"a+")
 
-    file.write("{}_TEMPPRES.txt".format(samp_time))
+    with open(file_name,"a+") as file:
 
-    if iniP30 == True:
-        #file.write("Pressure(dbar),Temp(C)")
-        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+        file.write("{}_TEMPPRES.txt".format(samp_time))
 
-    if iniP100 == True:
-        #file.write("Pressure(dbar),Temp(C)")
-        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+        if iniP30 == True:
+            #file.write("Pressure(dbar),Temp(C)")
+            file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
-    if iniTmp == True:
-        #file.write(", TempTSYS01(C)")
-        file.write(", TempTSYS01(C*100)")
+        if iniP100 == True:
+            #file.write("Pressure(dbar),Temp(C)")
+            file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
-    file.close()
+        if iniTmp == True:
+            #file.write(", TempTSYS01(C)")
+            file.write(", TempTSYS01(C*100)")
+
 #---------------------------------------------------------------------------------------#
 
 def write_pickle_file(fname_pickle,data):
     #print("File Name: " + fname_pickle)
     #disp_data_xmt_status_dict(dict_to_write)
-    pickle_file_fid = open(fname_pickle,'wb')
-    pickle.dump(data,pickle_file_fid)
-    pickle_file_fid.close()
+    #pickle_file_fid = open(fname_pickle,'wb')
+    with open(fname_pickle,'wb') as pickle_file_fid:
+        pickle.dump(data,pickle_file_fid)
 
 def read_final_samp_status_pickle(fname_final_status_pickle):
     """Reads the Final Sampling Status Flag.
@@ -99,18 +100,16 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
     #try to open the Data Transmit Status pickle file
     try:
         #Try to open the pickle file.  If it exists, read the data out.
-        pickle_file = open(pickle_file_name,'rb')
-        print("\n\rFound pickle file: " + pickle_file_name)
-        print("Loading " + pickle_file_name)
-        final_samp_status_flag = pickle.load(pickle_file)
-        print("Final Sample Status Flag: " + str(final_samp_status_flag))
+        with open(pickle_file_name,'rb') as pickle_file:
+            print("\n\rFound pickle file: " + pickle_file_name)
+            print("Loading " + pickle_file_name)
+            final_samp_status_flag = pickle.load(pickle_file)
+            print("Final Sample Status Flag: " + str(final_samp_status_flag))
         return final_samp_status_flag
     except:
         #Could not open the pickle file so it must be the first time through
         print("\n\rCould not find the pickle file.  Creating " + pickle_file_name)
         write_pickle_file(pickle_file_name,False)
-        #pickle_file = open(pickle_file_name,'wb')
-        #pickle.dump(False, pickle_file) #write the empty dictionary as a placeholder
         return False
     finally:
         #Now, close the pickle file.
@@ -126,7 +125,7 @@ final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle
 
 scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py", \
                "ACC_100Hz.py","Extended_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py", \
-               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py","xmt_minion_data.py"]
 
 if(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
 
@@ -161,8 +160,8 @@ samp_count = int(read_sampcount())
 print("A--> Srate: " + str(Srate) + ", TotalCycles: " + str(TotalCycles) + \
       ", samp_count: " + str(samp_count))
 
-firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-samp_time = pickle.load(firstp)
+with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+    samp_time = pickle.load(firstp)
 
 samp_count_leading_zeros = "%03d" % samp_count
 
@@ -287,7 +286,7 @@ if __name__ == '__main__':
             print("Final Sampling Mode")
             print("Samples Remaining: " + str(TotalSamples - NumSamples))
 
-            file = open(file_name,"a")
+            #file = open(file_name,"a")
 
             sensor_string = ''
 
@@ -305,11 +304,13 @@ if __name__ == '__main__':
 
                 else:
                     print('Pressure Sensor ded')
-                    file.write('Pressure Sensor fail')
+                    with open(file_name,"a") as file:
+                        file.write('Pressure Sensor fail')
                     abortMission(configLoc)
 
                 if int(Ppressure)/1000 >= MAX_Depth:
-                    file.write("Minion Exceeded Depth Maximum!")
+                    with open(file_name,"a") as file:
+                        file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
             if iniTmp == True:
@@ -327,8 +328,8 @@ if __name__ == '__main__':
 
                 sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
-
-            file.write("{}\n".format(sensor_string))
+            with open(file_name,"a") as file:
+                file.write("{}\n".format(sensor_string))
 
             NumSamples = NumSamples + 1
 

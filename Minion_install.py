@@ -219,12 +219,20 @@ os.system('sudo mkdir /home/pi/Documents/drivers')
 ##os.system('git clone https://github.com/pimoroni/adxl345-python.git')
 ##os.system('git clone https://github.com/adafruit/Adafruit_Python_ADS1x15.git')
 # Clone repos
+# os.chdir('/home/pi/Documents/drivers/')
+# os.system('git clone https://github.com/ErranSousa/tsys01-python.git')
+# os.system('git clone https://github.com/ErranSousa/ms5837-python.git')
+# os.system('git clone https://github.com/ErranSousa/KellerLD-python.git')
+# os.system('git clone https://github.com/ErranSousa/adxl345-python.git')
+# os.system('git clone https://github.com/ErranSousa/Adafruit_Python_ADS1x15.git')
+ 
+#Clone repositories 
 os.chdir('/home/pi/Documents/drivers/')
-os.system('git clone https://github.com/ErranSousa/tsys01-python.git')
-os.system('git clone https://github.com/ErranSousa/ms5837-python.git')
-os.system('git clone https://github.com/ErranSousa/KellerLD-python.git')
-os.system('git clone https://github.com/ErranSousa/adxl345-python.git')
-os.system('git clone https://github.com/ErranSousa/Adafruit_Python_ADS1x15.git')
+os.system('git clone https://github.com/melissaomand/tsys01-python.git')
+os.system('git clone https://github.com/melissaomand/ms5837-python.git')
+os.system('git clone https://github.com/melissaomand/KellerLD-python.git')
+os.system('git clone https://github.com/melissaomand/adxl345-python.git')
+os.system('git clone https://github.com/melissaomand/Adafruit_Python_ADS1x15.git')
 
 # Install adc driver
 os.chdir('Adafruit_Python_ADS1x15/')

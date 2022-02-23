@@ -14,9 +14,8 @@ def get_all_files(directory):
     return paths
 
 def clear_log():
-    output = open('/var/www/html/livefeed.txt','w')
-    output.write('')
-    output.close()
+    with open('/var/www/html/livefeed.txt','w') as output:
+        output.write('')
 
 
 data_dir = "/home/pi/Desktop/minion_data/"
@@ -38,15 +37,13 @@ with ZipFile('MinionXXX.zip','w') as zip:
     for file in paths:
         filename = file.replace('/home/pi/Desktop','')
         zip.write(file,filename)
-        output = open('/var/www/html/livefeed.txt','a+')
-        output.write(file)
-        output.write('<br><br>')
-        output.close()
+        with open('/var/www/html/livefeed.txt','a+') as output:
+            output.write(file)
+            output.write('<br><br>')
 
-output = open('/var/www/html/livefeed.txt','w')
-output.write(endmessage)
-output.write("<br><br>")
-output.close()
+with open('/var/www/html/livefeed.txt','w') as output:
+    output.write(endmessage)
+    output.write("<br><br>")
 
 time.sleep(10)
 

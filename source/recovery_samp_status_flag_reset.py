@@ -16,26 +16,26 @@ print("-"*len(msg1))
 
 try:
     #Read out the current value
-    pickle_file_fid = open(pickle_file_name,"rb")
-    final_sample_status_flag = pickle.load(pickle_file_fid)
+    with open(pickle_file_name,"rb") as pickle_file_fid:
+        final_sample_status_flag = pickle.load(pickle_file_fid)
     print("final_sample_status_flag current value: " + str(final_sample_status_flag))
-    pickle_file_fid.close()
+
 except:
     sys.exit(os.path.basename(__file__) + ": sampcount.pk1 file not found or open failed")
 
 
 #Reset the value to False
-pickle_file_fid = open(pickle_file_name,"wb")
-print("Resetting Final Sampling Status Flag to False...")
-final_sample_status_flag = False
-pickle.dump(final_sample_status_flag, pickle_file_fid)
-pickle_file_fid.close()
+with open(pickle_file_name,"wb") as pickle_file_fid:
+    print("Resetting Final Sampling Status Flag to False...")
+    final_sample_status_flag = False
+    pickle.dump(final_sample_status_flag, pickle_file_fid)
 
 #Verify
-pickle_file_fid = open(pickle_file_name,"rb")
-final_sample_status_flag_verify = pickle.load(pickle_file_fid)
-pickle_file_fid.close()
+with open(pickle_file_name,"rb") as pickle_file_fid:
+    final_sample_status_flag_verify = pickle.load(pickle_file_fid)
+    
 print("Verify final_sample_status_flag: " + str(final_sample_status_flag))
+
 if final_sample_status_flag == False:
     print("Verify OK")
 else:

@@ -5,20 +5,18 @@ sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
 #print("\n\rClearing the Sample Counter...")
-countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","wb")
-sampcount = 0
-pickle.dump(sampcount, countp)
-countp.close()
+with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","wb") as countp:
+    sampcount = 0
+    pickle.dump(sampcount, countp)
 
 #Sets the Final Sample Status Flag to False
 #    False : Final Samples Not Performed
 #    True  : Final Samples Were Performed
 try:
     print("\n\rSetting Final Sample Status Flag to False...")
-    final_samp_status_fid = open("/home/pi/Documents/Minion_scripts/final_samp_status.pkl","wb")
-    final_sample_status_flag = False
-    pickle.dump(final_sample_status_flag, final_samp_status_fid)
-    final_samp_status_fid.close()
+    with open("/home/pi/Documents/Minion_scripts/final_samp_status.pkl","wb") as final_samp_status_fid:
+        final_sample_status_flag = False
+        pickle.dump(final_sample_status_flag, final_samp_status_fid)
     print("Done")
 except:
     print("Could Not Set the Final Sample Status Flag to False")

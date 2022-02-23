@@ -59,22 +59,22 @@ TotalSamples = Stime*(60/Srate)
 
 def update_time():
     try:
-        samp_time = os.popen("sudo hwclock -u -r").read()
+        samp_time = os.popen("sudo hwclock -l -r").read()
         samp_time = samp_time.split('.',1)[0]
         samp_time = samp_time.replace("  ","_")
         samp_time = samp_time.replace(" ","_")
         samp_time = samp_time.replace(":","-")
 
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb")
-        pickle.dump(samp_time, firstp)
-        firstp.close()
+        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb") as firstp:
+            pickle.dump(samp_time, firstp)
+
     except:
         print("update time failed")
 
 def picture(configDir, NumSamples, RECOVER):
     try:
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-        samp_time = pickle.load(firstp)
+        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+            samp_time = pickle.load(firstp)
 
         GPIO.output(light, 1)
         camera.resolution = (2592, 1944)

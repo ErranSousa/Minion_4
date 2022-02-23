@@ -37,7 +37,9 @@ def abortMission(configLoc):
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
     exit(0)
 
-scriptNames = ["Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Recovery_Sampler_Burn.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+scriptNames = ["Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py",\
+               "Recovery_Sampler_Burn.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py",\
+               "Iridium_gps.py","Iridium_data.py"]
 
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
@@ -68,8 +70,8 @@ Sf = 1/Srate
 
 TotalSamples = Stime*60*Srate
 
-firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-samp_time = pickle.load(firstp)
+with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+    samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
     if dataNum.endswith('_TEMPPRES.txt'):
@@ -82,63 +84,61 @@ samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zer
 
 file_name = "{}/minion_data/{}_TEMPPRES.txt".format(configDir, samp_time)
 
-file = open(file_name,"a+")
+with open(file_name,"a+") as file:
+    file.write("{}_TEMPPRES.txt ".format(samp_time))
 
-file.write("{}_TEMPPRES.txt ".format(samp_time))
+    if iniP30 == True:
 
-if iniP30 == True:
+        Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
 
-    Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
+        if not Psensor.init():
+            print("Failed to initialize P30 sensor!")
+            exit(1)
 
-    if not Psensor.init():
-        print("Failed to initialize P30 sensor!")
-        exit(1)
+        depth_factor = .01
+        surface_offset = 10
 
-    depth_factor = .01
-    surface_offset = 10
+        # We have to read values from sensor to update pressure and temperature
+        if Psensor.read():
+            Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+        else:
+            Pres_ini = "Broken"
 
-    # We have to read values from sensor to update pressure and temperature
-    if Psensor.read():
-        Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-    else:
-        Pres_ini = "Broken"
+        #file.write("Pressure(dbar),Temp(C)")
+        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
-    #file.write("Pressure(dbar),Temp(C)")
-    file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+    if iniP100 == True:
 
-if iniP100 == True:
+        Psensor = KellerLD()
 
-    Psensor = KellerLD()
+        if not Psensor.init():
+            print("Failed to initialize P100 sensor!")
+            exit(1)
 
-    if not Psensor.init():
-        print("Failed to initialize P100 sensor!")
-        exit(1)
+        depth_factor = 10
+        surface_offset = 0
 
-    depth_factor = 10
-    surface_offset = 0
+        # We have to read values from sensor to update pressure and temperature
+        if Psensor.read():
+            Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+        else:
+            Pres_ini = "Broken"
 
-    # We have to read values from sensor to update pressure and temperature
-    if Psensor.read():
-        Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-    else:
-        Pres_ini = "Broken"
+        file.write("Pressure(dbar),Temp(C)")
 
-    file.write("Pressure(dbar),Temp(C)")
+    if iniTmp == True:
 
-if iniTmp == True:
+        sensor_temp = tsys01.TSYS01()
 
-    sensor_temp = tsys01.TSYS01()
+        # We must initialize the sensor before reading it
+        if not sensor_temp.init():
+            print("Error initializing Temperature sensor")
+            exit(1)
 
-    # We must initialize the sensor before reading it
-    if not sensor_temp.init():
-        print("Error initializing Temperature sensor")
-        exit(1)
+        #file.write(", TempTSYS01(C)")
+        file.write(", TempTSYS01(C*100)")
 
-    #file.write(", TempTSYS01(C)")
-    file.write(", TempTSYS01(C*100)")
-
-file.write("\r\n")
-file.close()
+    file.write("\r\n")
 
 
 # Spew readings
@@ -147,8 +147,6 @@ while NumSamples <= TotalSamples:
     tic = time.perf_counter()
 
     print("Time Lapse Sampling Mode")  #Indicate to the user in which mode the Minion is operating
-
-    file = open(file_name,"a")
 
     sensor_string = ''
 
@@ -167,12 +165,14 @@ while NumSamples <= TotalSamples:
 
         else:
             print('Pressure Sensor ded')
-            file.write('Pressure Sensor fail')
+            with open(file_name,"a") as file:
+                file.write('Pressure Sensor fail')
             abortMission(configLoc)
 
         #if Ppressure >= MAX_Depth:
         if int(Ppressure)/1000 >= MAX_Depth:
-            file.write("Minion Exceeded Depth Maximum!")
+            with open(file_name,"a") as file:
+                file.write("Minion Exceeded Depth Maximum!")
             abortMission(configLoc)
 
 
@@ -191,8 +191,8 @@ while NumSamples <= TotalSamples:
 
         sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
-
-    file.write("{}\n".format(sensor_string))
+    with open(file_name,"a") as file:
+        file.write("{}\n".format(sensor_string))
 
     NumSamples = NumSamples + 1
 
@@ -206,6 +206,6 @@ while NumSamples <= TotalSamples:
 
     time.sleep(Sf - timeS)
 
-file.close()
+
 
 

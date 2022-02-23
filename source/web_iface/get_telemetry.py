@@ -17,17 +17,16 @@ def update_time():
         samp_time = samp_time.replace(" ","_")
         samp_time = samp_time.replace(":","-")
 
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb")
-        pickle.dump(samp_time, firstp)
-        firstp.close()
+        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb") as firstp:
+            pickle.dump(samp_time, firstp)
+
     except:
         print("update time failed")
     return samp_time
 
 def read_sampcount():
-    countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb")
-    sampcount = pickle.load(countp)
-    countp.close()
+    with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb") as countp:
+        sampcount = pickle.load(countp)
     return sampcount
 
 
