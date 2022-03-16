@@ -2,6 +2,11 @@
 
 import configparser
 import os
+import RPi.GPIO as GPIO
+import time
+
+#Pin Definitions
+light = 12
 
 
 data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
@@ -135,3 +140,56 @@ class MinionToolbox():
         else:
             print("[OK] Data Transmit Status Pickle File Already Removed or Does Not Exist.")
 
+
+    def flash(self,num_flashes, ton, toff):
+        """Flash the sampling LED Ring
+
+        Parameters
+        ----------
+        num_flashes : number of flashes
+        ton : Flash on time in milliseconds
+        toff : Flash off time milliseconds
+
+        Returns:
+        --------
+        none
+
+        Example: Generate 2 flashes, 250ms on time, 250ms off time
+        
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.strobe(2,250,250)
+
+        Example: Simply illuminates the LED Ring for 2 seconds
+
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.strobe(1,2000,0)
+
+        Example: Dimmable Setting
+
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.strobe(100,5,5)#Dim by 50%
+        
+        """
+        #Setup the pin - eventually move this to its own method
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BOARD)
+        GPIO.setup(light, GPIO.OUT)
+        
+        for val in range(num_flashes):
+            GPIO.output(light, 1)
+            time.sleep(ton/1000)
+            #If we have done the requisite number of flashes,
+            #no need for the final off time.
+            if val == num_flashes - 1:
+                break
+            GPIO.output(light, 0)
+            time.sleep(toff/1000)
+            
+        #Finally, turn off the LED Ring    
+        GPIO.output(light, 0)
+        
+        
+        
