@@ -136,6 +136,8 @@ minion_tools = MinionToolbox() #create an instance of MinionToolbox() called min
 minion_mission_config = minion_tools.read_mission_config()
 for key in minion_mission_config:
         print("    " + str(key) + ": " + str(minion_mission_config[key]))
+#Load the Data Configuration
+minion_data_config_dict = minion_tools.read_data_config()
 
 
 #Choose if to send a GPS Position or move onto transmitting data
@@ -181,11 +183,11 @@ else:
     #fnames_with_paths = glob.glob('/home/pi/Desktop/minion_data/*_TEMPPRES.txt')
     fnames_with_paths = [] #create an empty list
     if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
+        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
     if XMT_TLP == True:  #If configured to transmit the Time-Lapse Mode Data Files
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/*_TEMPPRES.txt')
+        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/*_TEMPPRES.txt')
     if XMT_FIN == True:  #If configured to transmit the Final Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
+        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
     
     if fnames_with_paths:
         print("Found valid file names that match the search critera.")
@@ -228,13 +230,13 @@ else:
     for idx,value in enumerate(sorted_list):
         if value.find('INI') > -1:
             #print('Found Initial Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/INI/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/INI/' + sorted_list[idx]
         elif value.find('FIN') > -1:
             #print('Found Final Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/FIN/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/' + sorted_list[idx]
         else:
             #print('Found Time-Lapse Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/' + sorted_list[idx]
 
     #Print out the sorted list with file names
     for f in sorted_list:
