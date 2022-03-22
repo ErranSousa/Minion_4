@@ -68,7 +68,7 @@ def disp_data_xmt_status_dict(data_xmt_status_dict):
 #clears all values for all keys in dictionary except for curr_file_name
 def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
     for val in keys:
-        if val != 'curr_file_name' and val !='all_files_transmitted' and val != num_gps_sent:
+        if val != 'curr_file_name' and val !='all_files_transmitted' and val != 'num_gps_sent':
             #print("\t",val)
             data_xmt_status_dict[val] = None
         else:
