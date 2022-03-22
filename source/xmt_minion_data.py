@@ -78,6 +78,8 @@ def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
 #Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
 def default_data_xmt_status_dict(data_xmt_status_dict):
     data_xmt_status_dict['num_gps_sent'] = 0
+    data_xmt_status_dict['all_files_transmitted'] = False
+    data_xmt_status_dict['curr_file_name'] = ''
     data_xmt_status_dict['file_open_success'] = False
     data_xmt_status_dict['file_size'] = 0
     data_xmt_status_dict['xmt_file_complete'] = False
@@ -86,7 +88,6 @@ def default_data_xmt_status_dict(data_xmt_status_dict):
     data_xmt_status_dict['xmt_num_sbd_required'] = 0
     data_xmt_status_dict['curr_file_location'] = 0
     data_xmt_status_dict['start_file_location'] = 0
-
     #Do not need to return anything since the dictionary is accessed from here
     
 #Writes the Data Transmit Status Dictionary to the pickle file
