@@ -28,6 +28,9 @@ gps_baud = 9600
 modem_port = "/dev/ttySC1"
 modem_baud = 19200
 
+#Initializations
+detect_data_files_flag = False   #Flag indicating if valid data files were found
+
 
 #Displays the returned struct from sbd_send_file
 def display_sbd_resp_struct(resp_struct):
@@ -140,10 +143,28 @@ for key in minion_mission_config:
 #Load the Data Configuration
 minion_data_config_dict = minion_tools.read_data_config()
 
+#****** Locate Data Files ******
+#Get the file names (with paths).
+fnames_with_paths = [] #create an empty list
+if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
+if XMT_TLP == True:  #If configured to transmit the Time-Lapse Mode Data Files
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/*_TEMPPRES.txt')
+if XMT_FIN == True:  #If configured to transmit the Final Mode Data File
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
+
+if fnames_with_paths:
+    print("Found valid file names that match the search critera.")
+    detect_data_files_flag = True
+else:
+    print("Could not find and valid file names that match the search critera.")
+    detect_data_files_flag = False
+
 
 #Choose if to send a GPS Position or move onto transmitting data
 if (data_xmt_status_dict['num_gps_sent'] < 2) or \
-   (data_xmt_status_dict['num_gps_sent'] >= 2 and data_xmt_status_dict['all_files_transmitted'] == True):
+   (data_xmt_status_dict['num_gps_sent'] >= 2 and data_xmt_status_dict['all_files_transmitted'] == True) or \
+   (detect_data_files_flag == False):
     
     print('Acquire and Transmit a GPS Position')
 
@@ -175,30 +196,10 @@ if (data_xmt_status_dict['num_gps_sent'] < 2) or \
     m1.gps_pwr(m1.dev_off)
     m1.modem_pwr(m1.dev_off)
     del m1
-   
+
+#Transmit Data via the Iridium Constellation  
 else:
     print('Data Transmission to Iridium Constellation')
-
-    #Get the file names (with paths).  If there are no file names found, exit the script.
-    #fnames_with_paths = glob.glob('C:\MIN\FileSendDevCode\minion_data\*_TEMPPRES.txt')
-    #fnames_with_paths = glob.glob('/home/pi/Desktop/minion_data/*_TEMPPRES.txt')
-    fnames_with_paths = [] #create an empty list
-    if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
-    if XMT_TLP == True:  #If configured to transmit the Time-Lapse Mode Data Files
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/*_TEMPPRES.txt')
-    if XMT_FIN == True:  #If configured to transmit the Final Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
-    
-    if fnames_with_paths:
-        print("Found valid file names that match the search critera.")
-    else:
-        #if no valid file names were found just end the script right now
-        #TODO: Maybe return a value here
-        sys.exit(os.path.basename(__file__) + ": No valid file names found.")
-    #-----------------------------------------------------------------------------------------------------#
-    #!!! Only moving past this point if there is at least one file found that meets the search criteria !!!
-    #-----------------------------------------------------------------------------------------------------#
 
     #print(fnames_with_paths)
 
