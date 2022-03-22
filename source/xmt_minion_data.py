@@ -320,7 +320,7 @@ else:
             # the list.
             elif data_xmt_status_dict['xmt_file_complete'] == True and idx + 1 <= len(fnames) - 1:
                 data_xmt_status_dict['curr_file_name'] = fnames[idx+1]
-                default_data_xmt_status_dict(data_xmt_status_dict)
+                clear_data_xmt_status_dict(data_xmt_status_dict,keys)             
                 write_pickle_file(data_xmt_status_pickle_name,data_xmt_status_dict)
                 
             #If the current file is complete and the next index is beyond the number of files the
