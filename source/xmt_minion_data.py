@@ -70,12 +70,14 @@ def disp_data_xmt_status_dict(data_xmt_status_dict):
 
 #clears all values for all keys in dictionary except for curr_file_name
 def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
-    for val in keys:
-        if val != 'curr_file_name' and val !='all_files_transmitted' and val != 'num_gps_sent':
-            #print("\t",val)
-            data_xmt_status_dict[val] = None
-        else:
-            pass
+    data_xmt_status_dict['file_open_success'] = False
+    data_xmt_status_dict['file_size'] = 0
+    data_xmt_status_dict['xmt_file_complete'] = False
+    data_xmt_status_dict['xmt_num_bytes'] = 0
+    data_xmt_status_dict['xmt_num_sbd_success'] = 0
+    data_xmt_status_dict['xmt_num_sbd_required'] = 0
+    data_xmt_status_dict['curr_file_location'] = 0
+    data_xmt_status_dict['start_file_location'] = 0
     #Do not need to return anything since the dictionary is accessed from here
 
 #Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
@@ -322,6 +324,7 @@ else:
             # the list.
             elif data_xmt_status_dict['xmt_file_complete'] == True and idx + 1 <= len(fnames) - 1:
                 data_xmt_status_dict['curr_file_name'] = fnames[idx+1]
+                print("Clearing the data_xmt_status dictionary & pickle")
                 clear_data_xmt_status_dict(data_xmt_status_dict,keys)             
                 write_pickle_file(data_xmt_status_pickle_name,data_xmt_status_dict)
                 
