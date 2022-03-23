@@ -20,7 +20,7 @@ XMT_TLP = True
 XMT_FIN = True
 
 #Transmit Data Status Pickle File Name
-data_xmt_status_pickle_name = 'data_xmt_status.pickle'
+data_xmt_status_pickle_name = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 
 #Minsat Board Settings
 gps_port = "/dev/ttySC0"
@@ -341,6 +341,7 @@ else:
             #----------------------------------------------------------------------------------------#
         
 print("Exiting xmt_minion_data.py...")
+time.sleep(5)
 sys.exit()
 
 
