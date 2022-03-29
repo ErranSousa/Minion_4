@@ -21,12 +21,18 @@ class MinionToolbox():
 
     def read_data_config(self):
         """Read the Minion Data Configuration Directory File"""
+
+        keys = ['Data_Dir']
+
+        data_config = dict.fromkeys(keys)
         
-        data_config = configparser.ConfigParser()
-        data_config.read(data_config_file)
-        config_dir = data_config['Data_Dir']['Directory']     
-        print('Data Config: ' + config_dir)
-        return config_dir
+        config = configparser.ConfigParser()
+        config.read(data_config_file)
+
+        data_config['Data_Dir'] = config['Data_Dir']['Directory']  
+
+        print('Data Config: ' + data_config['Data_Dir'])
+        return data_config
         pass
 
     def read_mission_config(self):
@@ -80,8 +86,8 @@ class MinionToolbox():
 
         mission_config = dict.fromkeys(keys)
 
-        config_dir = self.read_data_config()
-        config_file = '{}/Minion_config.ini'.format(config_dir)
+        data_config = self.read_data_config()
+        config_file = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
         print('Mission Config: ' + config_file)
 
         config = configparser.ConfigParser()

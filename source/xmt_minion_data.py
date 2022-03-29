@@ -20,13 +20,16 @@ XMT_TLP = True
 XMT_FIN = True
 
 #Transmit Data Status Pickle File Name
-data_xmt_status_pickle_name = 'data_xmt_status.pickle'
+data_xmt_status_pickle_name = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 
 #Minsat Board Settings
 gps_port = "/dev/ttySC0"
 gps_baud = 9600
 modem_port = "/dev/ttySC1"
 modem_baud = 19200
+
+#Initializations
+detect_data_files_flag = False   #Flag indicating if valid data files were found
 
 
 #Displays the returned struct from sbd_send_file
@@ -67,17 +70,6 @@ def disp_data_xmt_status_dict(data_xmt_status_dict):
 
 #clears all values for all keys in dictionary except for curr_file_name
 def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
-    for val in keys:
-        if val != 'curr_file_name' and val !='all_files_transmitted' and val != num_gps_sent:
-            #print("\t",val)
-            data_xmt_status_dict[val] = None
-        else:
-            pass
-    #Do not need to return anything since the dictionary is accessed from here
-
-#Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
-def default_data_xmt_status_dict(data_xmt_status_dict):
-    data_xmt_status_dict['num_gps_sent'] = 0
     data_xmt_status_dict['file_open_success'] = False
     data_xmt_status_dict['file_size'] = 0
     data_xmt_status_dict['xmt_file_complete'] = False
@@ -86,7 +78,21 @@ def default_data_xmt_status_dict(data_xmt_status_dict):
     data_xmt_status_dict['xmt_num_sbd_required'] = 0
     data_xmt_status_dict['curr_file_location'] = 0
     data_xmt_status_dict['start_file_location'] = 0
+    #Do not need to return anything since the dictionary is accessed from here
 
+#Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
+def default_data_xmt_status_dict(data_xmt_status_dict):
+    data_xmt_status_dict['num_gps_sent'] = 0
+    data_xmt_status_dict['all_files_transmitted'] = False
+    data_xmt_status_dict['curr_file_name'] = ''
+    data_xmt_status_dict['file_open_success'] = False
+    data_xmt_status_dict['file_size'] = 0
+    data_xmt_status_dict['xmt_file_complete'] = False
+    data_xmt_status_dict['xmt_num_bytes'] = 0
+    data_xmt_status_dict['xmt_num_sbd_success'] = 0
+    data_xmt_status_dict['xmt_num_sbd_required'] = 0
+    data_xmt_status_dict['curr_file_location'] = 0
+    data_xmt_status_dict['start_file_location'] = 0
     #Do not need to return anything since the dictionary is accessed from here
     
 #Writes the Data Transmit Status Dictionary to the pickle file
@@ -136,11 +142,31 @@ minion_tools = MinionToolbox() #create an instance of MinionToolbox() called min
 minion_mission_config = minion_tools.read_mission_config()
 for key in minion_mission_config:
         print("    " + str(key) + ": " + str(minion_mission_config[key]))
+#Load the Data Configuration
+minion_data_config_dict = minion_tools.read_data_config()
+
+#****** Locate Data Files ******
+#Get the file names (with paths).
+fnames_with_paths = [] #create an empty list
+if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
+if XMT_TLP == True:  #If configured to transmit the Time-Lapse Mode Data Files
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/*_TEMPPRES.txt')
+if XMT_FIN == True:  #If configured to transmit the Final Mode Data File
+    fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
+
+if fnames_with_paths:
+    print("Found valid file names that match the search critera.")
+    detect_data_files_flag = True
+else:
+    print("Could not find and valid file names that match the search critera.")
+    detect_data_files_flag = False
 
 
 #Choose if to send a GPS Position or move onto transmitting data
 if (data_xmt_status_dict['num_gps_sent'] < 2) or \
-   (data_xmt_status_dict['num_gps_sent'] >= 2 and data_xmt_status_dict['all_files_transmitted'] == True):
+   (data_xmt_status_dict['num_gps_sent'] >= 2 and data_xmt_status_dict['all_files_transmitted'] == True) or \
+   (detect_data_files_flag == False):
     
     print('Acquire and Transmit a GPS Position')
 
@@ -172,30 +198,10 @@ if (data_xmt_status_dict['num_gps_sent'] < 2) or \
     m1.gps_pwr(m1.dev_off)
     m1.modem_pwr(m1.dev_off)
     del m1
-   
+
+#Transmit Data via the Iridium Constellation  
 else:
     print('Data Transmission to Iridium Constellation')
-
-    #Get the file names (with paths).  If there are no file names found, exit the script.
-    #fnames_with_paths = glob.glob('C:\MIN\FileSendDevCode\minion_data\*_TEMPPRES.txt')
-    #fnames_with_paths = glob.glob('/home/pi/Desktop/minion_data/*_TEMPPRES.txt')
-    fnames_with_paths = [] #create an empty list
-    if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
-    if XMT_TLP == True:  #If configured to transmit the Time-Lapse Mode Data Files
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/*_TEMPPRES.txt')
-    if XMT_FIN == True:  #If configured to transmit the Final Mode Data File
-        fnames_with_paths = fnames_with_paths + glob.glob(minion_mission_config['Data_dir']  + '/minion_data/FIN/*_TEMPPRES-FIN.txt')
-    
-    if fnames_with_paths:
-        print("Found valid file names that match the search critera.")
-    else:
-        #if no valid file names were found just end the script right now
-        #TODO: Maybe return a value here
-        sys.exit(os.path.basename(__file__) + ": No valid file names found.")
-    #-----------------------------------------------------------------------------------------------------#
-    #!!! Only moving past this point if there is at least one file found that meets the search criteria !!!
-    #-----------------------------------------------------------------------------------------------------#
 
     #print(fnames_with_paths)
 
@@ -228,13 +234,13 @@ else:
     for idx,value in enumerate(sorted_list):
         if value.find('INI') > -1:
             #print('Found Initial Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/INI/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/INI/' + sorted_list[idx]
         elif value.find('FIN') > -1:
             #print('Found Final Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/FIN/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/FIN/' + sorted_list[idx]
         else:
             #print('Found Time-Lapse Type File.')
-            sorted_list[idx] = minion_mission_config['Data_dir']  + '/minion_data/' + sorted_list[idx]
+            sorted_list[idx] = minion_data_config_dict['Data_Dir']  + '/minion_data/' + sorted_list[idx]
 
     #Print out the sorted list with file names
     for f in sorted_list:
@@ -318,7 +324,8 @@ else:
             # the list.
             elif data_xmt_status_dict['xmt_file_complete'] == True and idx + 1 <= len(fnames) - 1:
                 data_xmt_status_dict['curr_file_name'] = fnames[idx+1]
-                default_data_xmt_status_dict(data_xmt_status_dict)
+                print("Clearing the data_xmt_status dictionary & pickle")
+                clear_data_xmt_status_dict(data_xmt_status_dict,keys)             
                 write_pickle_file(data_xmt_status_pickle_name,data_xmt_status_dict)
                 
             #If the current file is complete and the next index is beyond the number of files the
@@ -334,6 +341,7 @@ else:
             #----------------------------------------------------------------------------------------#
         
 print("Exiting xmt_minion_data.py...")
+time.sleep(5)
 sys.exit()
 
 
