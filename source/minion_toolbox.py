@@ -196,6 +196,42 @@ class MinionToolbox():
             
         #Finally, turn off the LED Ring    
         GPIO.output(light, 0)
+
+    def write_data_file_header(self,data_type,file_path_name,file_name,samp_rate,iniP30,iniP100,iniTmp):
+        """Write Header Record to Pressure & Temperature Data File
+
+        Parameters
+        ----------
+        data_type : Data Type - INI:$02, TML:$03, FIN:$04
+        file_path_name : Full path and name of the data file
+        file_name : Name of data file
+        samp_rate : Sample Rate
+        iniP30 : Sensor Enabled - 30Bar Pressure Sensor
+        iniP100 : Sensor Enabled - 100Bar Pressure Sensor
+        iniTmp : Sensor Enabled - Temperature Sensor
+
+        Returns:
+        --------
+        none
+        """
+
+        with open(file_path_name,"a+") as file:
+
+            file.write(data_type) #Write Data Type Identifier
+            file.write("," + file_name)  #Write the file name
+            file.write("," + str(samp_rate))  #Write the sample rate
+
+            if iniP30 == True:
+                #file.write("Pressure(dbar),Temp(C)")
+                file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+
+            if iniP100 == True:
+                #file.write("Pressure(dbar),Temp(C)")
+                file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+
+            if iniTmp == True:
+                #file.write(", TempTSYS01(C)")
+                file.write(",TempTSYS01(C*100)")
         
         
         
