@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 import RPi.GPIO as GPIO
 import tsys01
 import ms5837
@@ -9,6 +10,10 @@ import os
 import math
 import configparser
 import sys
+sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
+
+DATA_TYPE = '$03' #Final Sampling Type Data
 
 BURN = 33
 DATA_REC_PIN = 16
@@ -54,26 +59,28 @@ def read_sampcount():
     #countp.close()
     return sampcount
 
-#---------------------------------------------------------------------------------------#
-def prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp):
-
-    with open(file_name,"a+") as file:
-
-        file.write("{}_TEMPPRES.txt".format(samp_time))
-
-        if iniP30 == True:
-            #file.write("Pressure(dbar),Temp(C)")
-            file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
-
-        if iniP100 == True:
-            #file.write("Pressure(dbar),Temp(C)")
-            file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
-
-        if iniTmp == True:
-            #file.write(", TempTSYS01(C)")
-            file.write(", TempTSYS01(C*100)")
-
-#---------------------------------------------------------------------------------------#
+###---------------------------------------------------------------------------------------#
+##def write_data_file_header(data_type,file_path_name,file_name,samp_rate,iniP30,iniP100,iniTmp):
+##
+##    with open(file_path_name,"a+") as file:
+##
+##        file.write(DATA_TYPE) #Write Data Type Identifier
+##        file.write("," + file_name)  #Write the file name
+##        file.write("," + str(samp_rate)  #Write the sample rate
+##
+##        if iniP30 == True:
+##            #file.write("Pressure(dbar),Temp(C)")
+##            file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+##
+##        if iniP100 == True:
+##            #file.write("Pressure(dbar),Temp(C)")
+##            file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+##
+##        if iniTmp == True:
+##            #file.write(", TempTSYS01(C)")
+##            file.write(",TempTSYS01(C*100)")
+##
+###---------------------------------------------------------------------------------------#
 
 def write_pickle_file(fname_pickle,data):
     #print("File Name: " + fname_pickle)
@@ -118,6 +125,8 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
             print("File Closed: " + pickle_file_name)
         except:
             pass
+
+minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
 
 #Read out final samples status.
 #    True = Final Samples Performed, False = Final Samples Not Performed
@@ -171,7 +180,9 @@ samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zer
 Stime = float(config['Final_Samples']['hours'])
 Srate = float(config['Final_Samples']['TempPres_sample_rate'])
 
-file_name = "{}/minion_data/FIN/{}_TEMPPRES-FIN.txt".format(configDir, samp_time)
+file_name = "{}_TEMPPRES-FIN.txt".format(samp_time)
+#file_path_name = "{}/minion_data/FIN/{}_TEMPPRES-FIN.txt".format(configDir, samp_time)
+file_path_name = "{}/minion_data/FIN/".format(configDir) + file_name
 
 Sf = 1/Srate
 
@@ -185,12 +196,12 @@ print("B--> Srate: " + str(Srate) + ", Stime: " + str(Stime) + ", TotalSamples: 
 
 time.sleep(1)
 
-#Pres_ini,Psensor,sensor_temp,depth_factor,surface_offset = prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp)
+#Pres_ini,Psensor,sensor_temp,depth_factor,surface_offset = write_data_file_header(file_name,samp_time,iniP30,iniP100,iniTmp)
 
 #Only need to open and write a new file if the final sampling has not yet been performed
 
 
-#file = open(file_name,"a+")
+#file = open(file_path_name,"a+")
 
 #file.write("{}_TEMPPRES.txt".format(samp_time))
 
@@ -263,7 +274,7 @@ if __name__ == '__main__':
     if final_samp_status_flag == False:
         GPIO.output(BURN,1)
         #Create the final samples data file only if the final samples have not been performed
-        prep_data_file(file_name,samp_time,iniP30,iniP100,iniTmp)
+        minion_tools.write_data_file_header(DATA_TYPE,file_path_name,file_name,Srate,iniP30,iniP100,iniTmp)
 
         scriptNames2 = ["Minion_image_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py"]
         
@@ -286,7 +297,7 @@ if __name__ == '__main__':
             print("Final Sampling Mode")
             print("Samples Remaining: " + str(TotalSamples - NumSamples))
 
-            #file = open(file_name,"a")
+            #file = open(file_path_name,"a")
 
             sensor_string = ''
 
@@ -295,7 +306,7 @@ if __name__ == '__main__':
                 if Psensor.read():
                     #shifting the decimal point out
                     Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000
-                    Ppressure = "%06d" % Ppressure  #prepending zeros 
+                    Ppressure = "%07d" % Ppressure  #prepending zeros 
                     Ptemperature = round(Psensor.temperature(),2)*100
                     Ptemperature = "%04d" % Ptemperature
                     Pres_data = "{},{},".format(Ppressure, Ptemperature)
@@ -304,12 +315,12 @@ if __name__ == '__main__':
 
                 else:
                     print('Pressure Sensor ded')
-                    with open(file_name,"a") as file:
+                    with open(file_path_name,"a") as file:
                         file.write('Pressure Sensor fail')
                     abortMission(configLoc)
 
                 if int(Ppressure)/1000 >= MAX_Depth:
-                    with open(file_name,"a") as file:
+                    with open(file_path_name,"a") as file:
                         file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
@@ -328,8 +339,9 @@ if __name__ == '__main__':
 
                 sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
-            with open(file_name,"a") as file:
-                file.write("{}\n".format(sensor_string))
+            with open(file_path_name,"a") as file:
+                #file.write("{}\n".format(sensor_string))
+                file.write("\n{}".format(sensor_string))  
 
             NumSamples = NumSamples + 1
 
