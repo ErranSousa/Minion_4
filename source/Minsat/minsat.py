@@ -9,7 +9,7 @@ import configparser
 #Load the shared object file for GPIO Drivers
 gpio =  CDLL('/home/pi/Documents/Minion_scripts/SC16IS752GPIO.so')
 
-DEV_ID = str('01')
+DEV_ID = str('$04')
 
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
