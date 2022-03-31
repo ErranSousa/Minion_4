@@ -13,19 +13,30 @@ import sys
 sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
+#Defines
 DATA_TYPE = '$03' #Final Sampling Type Data
+MIN_DEPTH = 5 #Minimum Depth in dBar
+MIN_DEPTH_CNTR_THRESHOLD = 5 #Number of minimum pressure measurements before triggering a minimum depth condition
+ENABLE_MIN_DEPTH_CUTOUT = True #Enables the Minimum Depth Cutout Feature
+ENABLE_MIN_DEPTH_CUTOUT_TEST = False #TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
 
+#Pin Assignments
 BURN = 33
 DATA_REC_PIN = 16
 
+#Initializations
 samp_count = 1
-
 NumSamples = 0
-
 BURN_WIRE = False
+min_depth_cntr = 0  #Count of the number of minimum depth measurements
+min_depth_flag = False #Flag to indicate that a minimum depth condition exists
+if ENABLE_MIN_DEPTH_CUTOUT_TEST == True:
+    min_depth_base_press = 17500
+
 
 ps_test = "pgrep -a python"
 
+#GPIO Initializations
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(BURN, GPIO.OUT)
@@ -217,7 +228,9 @@ if iniP100 == False and iniP30 == False:
     Pres_ini = 2000
 
 if __name__ == '__main__':
+    
     print("C--> samp_count: " + str(samp_count) + ", TotalCycles + 1: " + str(TotalCycles+1))
+    
     if Pres_ini == "Broken":
         print("Pressure Sensor Not Working...")
         abortMission(configLoc)
@@ -244,7 +257,7 @@ if __name__ == '__main__':
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
         # Spew readings
-        while(NumSamples <= TotalSamples):
+        while(NumSamples <= TotalSamples and min_depth_flag == False):
 
             tic = time.perf_counter()
             
@@ -278,6 +291,7 @@ if __name__ == '__main__':
                         file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
+
             if iniTmp == True:
 
                 if not sensor_temp.read():
@@ -305,6 +319,27 @@ if __name__ == '__main__':
                 timeS = Sf
 
             time.sleep(Sf - timeS)
+
+            #Minimum Depth Cutout Feature
+            if iniP100 or iniP30 == True:
+                if ENABLE_MIN_DEPTH_CUTOUT == True:
+                    if ENABLE_MIN_DEPTH_CUTOUT_TEST == True:
+                        min_depth_base_press -= 500 #decrement by 500
+                        if min_depth_base_press < 0:
+                            min_depth_base_press = 0  #Don't let it go negative
+                        Ppressure = min_depth_base_press
+                    if int(Ppressure)/1000 <= MIN_DEPTH:
+                        min_depth_cntr += 1
+                        print("\nMinimum Depth Count: " + str(min_depth_cntr) + ", Pressure: " + str(int(Ppressure)/1000))
+                    if min_depth_cntr >= MIN_DEPTH_CNTR_THRESHOLD:
+                        if(any(x in os.popen(ps_test).read() for x in scriptNames2)) == True:
+                            kill_sampling(scriptNames)
+                        print("Minimum Depth Condition Detected.")
+                        print("Ending Sampling and preparing to transmit data.")
+                        write_pickle_file(fname_final_status_pickle,True)
+                        min_depth_flag = True
+                        GPIO.output(DATA_REC_PIN, 0)  #Turn off the DATA Receive LED Inidicator
+                        os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
         #At this point, all final Pressure & Temperature samples have completed
         #Need to end sampling of other sensors as well
