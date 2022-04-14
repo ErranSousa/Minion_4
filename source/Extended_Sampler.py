@@ -11,6 +11,10 @@ import math
 import configparser
 import sys
 import atexit
+sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
+
+DATA_TYPE = '$01' #Initial Sampling Type Data
 
 BURN = 33
 data_rec = 16
@@ -55,6 +59,8 @@ def abortMission(configLoc):
     time.sleep(60)
     exit(0)
 
+minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
+
 scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Recovery_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
 
 data_config = configparser.ConfigParser()
@@ -95,7 +101,9 @@ samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zer
 Stime = float(config['Initial_Samples']['hours'])
 Srate = float(config['Initial_Samples']['TempPres_sample_rate'])
 
-file_name = "{}/minion_data/INI/{}_TEMPPRES-INI.txt".format(configDir, samp_time)
+file_name = "{}_TEMPPRES-INI.txt".format(samp_time)
+#file_path_name = "{}/minion_data/INI/{}_TEMPPRES-INI.txt".format(configDir, samp_time)
+file_path_name = "{}/minion_data/INI/".format(configDir) + file_name
 
 Sf = 1/Srate
 
@@ -105,66 +113,72 @@ TotalSamples = Stime*60*60*Srate
 
 time.sleep(1)
 
-#file = open(file_name,"a+")
-with open(file_name,"a+") as file:
+#file = open(file_path_name,"a+")
+#with open(file_path_name,"a+") as file:
 
-    file.write("{}_TEMPPRES.txt ".format(samp_time))
+#Prepare the Header Record
+#file.write(DATA_TYPE) #Write Data Type Identifier
+#file.write("{}_TEMPPRES.txt ".format(samp_time))
+#file.write("," + file_name)  #Write the file name
+#file.write("," + str(Srate)  #Write the sample rate
 
-    if iniP30 == True:
+if iniP30 == True:
 
-        Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
+    Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
 
-        if not Psensor.init():
-            print("Failed to initialize P30 sensor!")
-            exit(1)
+    if not Psensor.init():
+        print("Failed to initialize P30 sensor!")
+        exit(1)
 
-        depth_factor = .01
-        surface_offset = 10
+    depth_factor = .01
+    surface_offset = 10
 
-        # We have to read values from sensor to update pressure and temperature
-        if Psensor.read():
-            Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-        else:
-            Pres_ini = "Broken"
+    # We have to read values from sensor to update pressure and temperature
+    if Psensor.read():
+        Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+    else:
+        Pres_ini = "Broken"
 
-        #file.write("Pressure(dbar),Temp(C)")
-        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+    #file.write("Pressure(dbar),Temp(C)")
+    #file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
-    if iniP100 == True:
+if iniP100 == True:
 
-        Psensor = KellerLD()
+    Psensor = KellerLD()
 
-        if not Psensor.init():
-            print("Failed to initialize P100 sensor!")
-            exit(1)
+    if not Psensor.init():
+        print("Failed to initialize P100 sensor!")
+        exit(1)
 
-        depth_factor = 10
-        surface_offset = 0
+    depth_factor = 10
+    surface_offset = 0
 
-        # We have to read values from sensor to update pressure and temperature
-        if Psensor.read():
-            Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
-        else:
-            Pres_ini = "Broken"
+    # We have to read values from sensor to update pressure and temperature
+    if Psensor.read():
+        Pres_ini = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
+    else:
+        Pres_ini = "Broken"
 
-        #file.write("Pressure(dbar),Temp(C)")
-        file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+    #file.write("Pressure(dbar),Temp(C)")
+    #file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
 
-    if iniTmp == True:
+if iniTmp == True:
 
-        sensor_temp = tsys01.TSYS01()
+    sensor_temp = tsys01.TSYS01()
 
-        # We must initialize the sensor before reading it
-        if not sensor_temp.init():
-            print("Error initializing Temperature sensor")
-            exit(1)
+    # We must initialize the sensor before reading it
+    if not sensor_temp.init():
+        print("Error initializing Temperature sensor")
+        exit(1)
 
-        #file.write(", TempTSYS01(C)")
-        file.write(", TempTSYS01(C*100)")
+    #file.write(", TempTSYS01(C)")
+    #file.write(",TempTSYS01(C*100)")
 
-    file.write("\r\n")
+#file.write("\n")  
 #file.close()
-
+        
+#Write a header to the data file
+minion_tools.write_data_file_header(DATA_TYPE,file_path_name,file_name,Srate,iniP30,iniP100,iniTmp)
 
 if __name__ == '__main__':
 
@@ -185,7 +199,7 @@ if __name__ == '__main__':
 
         print("Initial Sampling Mode")  #Indicate to the user in which mode the Minion is operating
 
-        #file = open(file_name,"a")
+        #file = open(file_path_name,"a")
 
         sensor_string = ''
 
@@ -194,7 +208,7 @@ if __name__ == '__main__':
             if Psensor.read():
                 #Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
                 Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000 #shifting the decimal point out
-                Ppressure = "%06d" % Ppressure  #prepending zeros 
+                Ppressure = "%07d" % Ppressure  #prepending zeros 
                 #Ptemperature = round(Psensor.temperature(),3)
                 Ptemperature = round(Psensor.temperature(),2)*100
                 Ptemperature = "%04d" % Ptemperature
@@ -204,7 +218,7 @@ if __name__ == '__main__':
 
             else:
                 print('Pressure Sensor ded')
-                with open(file_name,"a") as file:
+                with open(file_path_name,"a") as file:
                     file.write('Pressure Sensor fail')
                 abortMission(configLoc)
 
@@ -212,7 +226,7 @@ if __name__ == '__main__':
 
             #if Ppressure >= MAX_Depth:
             if int(Ppressure)/1000 >= MAX_Depth:
-                with open(file_name,"a") as file:
+                with open(file_path_name,"a") as file:
                     file.write("Minion Exceeded Depth Maximum!")
                 abortMission(configLoc)
 
@@ -232,8 +246,9 @@ if __name__ == '__main__':
 
             sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
-        with open(file_name,"a") as file:
-            file.write("{}\n".format(sensor_string))
+        with open(file_path_name,"a") as file:
+            #file.write("{}\n".format(sensor_string))
+            file.write("\n{}".format(sensor_string))
 
         NumSamples = NumSamples + 1
 
