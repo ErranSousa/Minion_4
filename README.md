@@ -1,10 +1,13 @@
-# Minion 3 Install Instructions
+# !!! Minion 4 IS IN DEVELOPMENT !!!
+##     See https://github.com/melissaomand/Minion_3 for the latest stable version
+
+# Minion 4 Install Instructions
 
 ### Prepare a fresh install of raspbian on micro-sd card:
 
 &emsp; https://www.raspberrypi.org/software/
 
-&emsp; I highly recomend the raspberry pi foundation's rpi-imager
+&emsp; It is highly recommended to use the Raspberry Pi Imager
 
 ### Power Pi via micro-USB
 
@@ -33,7 +36,7 @@
 &emsp;Once the Pi reboots, open a terminal and type this command to download the repo:
 
 
-  `~$ sudo git clone https://github.com/ErranSousa/Minion_3.git`
+  `~$ sudo git clone https://github.com/ErranSousa/Minion_4.git`
   
 &emsp;Now navigate into the folder and begin the install process:
   
