@@ -61,7 +61,7 @@ def abortMission(configLoc):
 
 minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
 
-scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Recovery_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
 
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
