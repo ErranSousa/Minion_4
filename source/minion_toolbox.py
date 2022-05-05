@@ -14,8 +14,12 @@ light = 12
 
 
 data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
-#data_config_file = 'Data_config.ini'
 data_xmt_status_pickle_file = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
+
+#Command Aliases for Wifi
+ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
+iwlist = 'sudo iwlist wlan0 scan | grep -e "Minion_Hub" -e "Master_Hub"'
+net_cfg = "ls /etc/ | grep dhcp"
 
 class MinionToolbox():
 
@@ -46,6 +50,47 @@ class MinionToolbox():
         """
         result = ans2convert.lower() in ("Y", "y", "yes", "true", "t", "1")
         return result
+
+
+    def check_wifi(self,IgnoreStatus):
+        """Checks for a Minion Hub and connects
+           
+
+        Parameters
+        ----------
+        bool IgnoreStatus : Connect to Minion Hub (True), Do not connect to Minion Hub (False)
+
+        Returns:
+        --------
+        string status : Connection Status - "Connected" or "Not Connected"
+
+           
+        """
+
+        # Prerequisites:  ifswitch, iwlist, net_cfg are defined
+        networks = os.popen(iwlist).read()
+
+         if "Master_Hub" in networks:
+            print("Bypassing WIFI Lock")
+            status = "Connected"
+
+        elif "Minion_Hub" in networks and IgnoreStatus == False:
+            status = "Connected"
+
+        else:
+            print("No WIFI found.")
+            status = "Not Connected"
+
+        if status == "Connected":
+            net_status = os.popen(net_cfg).read()
+            if ".Minion" in net_status:
+                os.system(ifswitch)
+            else:
+                print("You have Minions!")
+
+        print(status)
+        return status
+
 
     def read_data_config(self):
         """Read the Minion Data Configuration Directory File
