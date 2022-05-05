@@ -1,3 +1,13 @@
+"""! @brief Blue Robotics Bar100 Pressure Sensor Driver.
+
+A python module to interface with the LD line of pressure sensors from Keller.
+Tested on Raspberry Pi 3 with Raspbian.
+
+See the Keller Communication Protocol 4LD-9LD document for more details on the
+I2C communication protocol, and the Keller 4LD-9LD Datasheet for sensor specification details.
+"""
+
+# Imports
 import time
 import smbus
 import struct
