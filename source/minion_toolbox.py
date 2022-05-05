@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""! @brief Toolbox for Commonly Used Functionality in the Minion
+
+"""
+
 import configparser
 import os
 import RPi.GPIO as GPIO
@@ -14,13 +18,51 @@ data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
 data_xmt_status_pickle_file = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 
 class MinionToolbox():
-    
+
+    #str2bool will be depricated!!!  Use ans2bool()
     def str2bool(self,v):
         """Convert a string to a boolean"""
-        return v.lower() in ("Y", "y", "yes", "true", "t", "1")   
+        return v.lower() in ("Y", "y", "yes", "true", "t", "1")
+    
+    def ans2bool(self,ans2convert):
+        """Convert a yes/no or true/false answer to a boolean
+
+        Answers that will result in a boolean 'True':
+            "Y", "y", "yes", "true", "t", "1"
+
+        Parameters
+        ----------
+        string ans2convert : Answer to convert
+
+        Returns:
+        --------
+        boolean result : boolean of Answer
+
+        Example:
+
+            result = ans2bool("Y")
+            print(result)
+
+        """
+        result = ans2convert.lower() in ("Y", "y", "yes", "true", "t", "1")
+        return result
 
     def read_data_config(self):
-        """Read the Minion Data Configuration Directory File"""
+        """Read the Minion Data Configuration Directory File
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        dict data_config : Data Configuration Directory
+
+        Example:
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_data_config_dict = minion_tools.read_data_config()
+        """
 
         keys = ['Data_Dir']
 
@@ -139,7 +181,22 @@ class MinionToolbox():
 
 
     def delete_data_xmt_status_pickle(self):
-        """Delete the Data Transmit Status Pickle File"""
+        """Delete the Data Transmit Status Pickle File
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        none
+
+        Example:
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.delete_data_xmt_status_pickle()
+        """
+        
         if os.path.exists(data_xmt_status_pickle_file):
             os.remove(data_xmt_status_pickle_file)
             print('[OK] Data Transmit Status Pickle File Removed.')
@@ -197,6 +254,27 @@ class MinionToolbox():
         #Finally, turn off the LED Ring    
         GPIO.output(light, 0)
 
+    def kill_sampling(self,scriptNames):
+        """Ends the python processes listed in scriptNames
+
+        Parameters
+        ----------
+        list scriptNames : List of python scripts to kill
+
+        Returns:
+        --------
+        none
+
+        Example:
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            scriptNames = ["TempPres.py", "Minion_image.py"]
+            minion_tools.kill_sampling(scriptNames)
+         
+        """
+        for script in scriptNames:
+            os.system("sudo pkill -9 -f {}".format(script))
+
     def write_data_file_header(self,data_type,file_path_name,file_name,samp_rate,iniP30,iniP100,iniTmp):
         """Write Header Record to Pressure & Temperature Data File
 
@@ -213,6 +291,7 @@ class MinionToolbox():
         Returns:
         --------
         none
+         
         """
 
         with open(file_path_name,"a+") as file:
