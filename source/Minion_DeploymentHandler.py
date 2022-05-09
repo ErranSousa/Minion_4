@@ -11,10 +11,6 @@ sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
 
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-
 def update_time():
     try:
         samp_time = os.popen("sudo hwclock -l -r").read()
