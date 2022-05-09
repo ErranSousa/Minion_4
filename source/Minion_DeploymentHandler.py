@@ -7,6 +7,8 @@ import math
 import configparser
 import sys
 import pickle
+sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
 
 def flash():
         j = 0
@@ -94,53 +96,23 @@ GPIO.setup(IO328, GPIO.OUT)
 GPIO.output(IO328, 1)
 GPIO.output(wifi, 1)
 
+# create an instance of MinionToolbox()
+minion_tools = MinionToolbox()
+# Load the Minion Configuration
+minion_mission_config = minion_tools.read_mission_config()
+
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
 
-configDir = data_config['Data_Dir']['Directory']
-configLoc = '{}/Minion_config.ini'.format(configDir)
-config = configparser.ConfigParser()
-config.read(configLoc)
-
-Ddays = int(config['Deployment_Time']['days'])
-Dhours = int(config['Deployment_Time']['hours'])
-
-Stime = config['Data_Sample']['Minion_sample_time']
-
-
-#Determine if the value entered into 'Minion_sample_time' is
-#    'Camera' or an actual number.
-#Note: Any text will work, not just 'Camera'
-try:
-    Stime = float(Stime)
-except:
-    #Since Stime cannot be cast as a float, there must be some text
-    #in the field such as 'Camera'
-    Stime = float(.2)
-
-Srate = float(config['Sleep_cycle']['Minion_sleep_cycle'])
-Abort = str2bool(config['Mission']['Abort'])
-iniImg = str2bool(config['Sampling_scripts']['Image'])
-iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
-iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
-iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
-iniO2  = str2bool(config['Sampling_scripts']['Oxybase'])
-iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
-
-
-INIsamp = float(config['Initial_Samples']['hours'])
-IG_WIFI_D = float(config['Mission']['Ignore_WIFI-days'])
-IG_WIFI_H = float(config['Mission']['Ignore_WIFI-hours'])
-
-IG_WIFI_Samples = (((IG_WIFI_D*24) + IG_WIFI_H)/Srate) - (INIsamp/Srate)
+IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) + minion_mission_config['IG_WIFI_H'])/minion_mission_config['Srate']) - (minion_mission_config['INIsamp_hours']/minion_mission_config['Srate'])
 
 print("Minion Deployment Handler")
 print("Time:  {}".format(samp_time))
-print("Days : {}".format(Ddays))
-print("Hours: {}".format(Dhours))
-print("Sample rate (hours) - {}".format(Srate))
+print("Days : {}".format(minion_mission_config['Ddays']))
+print("Hours: {}".format(minion_mission_config['Dhours']))
+print("Sample rate (hours) - {}".format(minion_mission_config['Srate']))
 
-TotalSamples = (((Ddays*24)+Dhours))/Srate
+TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / minion_mission_config['Srate']
 
 if samp_count >= TotalSamples:
     RemainSamples = 0
@@ -171,10 +143,10 @@ ping_google = "ping google.com -c 1"
 
 ps_test = "pgrep -a python"
 
-scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py", \
-               "OXYBASE_RS232.py","ACC_100Hz.py","Initial_Sampler.py", \
-               "Recovery_Sampler_Burn.py","TempPres_IF.py","OXYBASE_RS232_IF.py", \
-               "ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py", \
+scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py",
+               "OXYBASE_RS232.py", "ACC_100Hz.py", "Initial_Sampler.py",
+               "Recovery_Sampler_Burn.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
+               "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py",
                "xmt_minion_data.py"]
 
 if __name__ == '__main__':
@@ -182,21 +154,21 @@ if __name__ == '__main__':
     if samp_count == 0:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
 
-    elif samp_count >= TotalSamples + 1 or Abort == True:
+    elif samp_count >= TotalSamples + 1 or minion_mission_config['Abort'] == True:
         GPIO.output(IO328, 0)
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
     else:
-        if iniImg == True:
+        if minion_mission_config['iniImg'] == True:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py &')
 
-        if iniP30 == True or iniP100 == True or iniTmp == True:
+        if minion_mission_config['iniP30'] == True or minion_mission_config['iniP100'] == True or minion_mission_config['iniTmp'] == True:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
-        if iniO2 == True:
+        if minion_mission_config['iniO2'] == True:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
 
-        if iniAcc == True:
+        if minion_mission_config['iniAcc'] == True:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz.py &')
 
     time.sleep(5)
