@@ -3,31 +3,32 @@
 """! @brief Toolbox for Commonly Used Functionality in the Minion
 
 """
-
+from __future__ import division  # Ensures Python3 division rules
 import configparser
 import os
 import RPi.GPIO as GPIO
 import time
 
-#Pin Definitions
+
+# Pin Definitions
 light = 12
 
 
 data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
 data_xmt_status_pickle_file = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 
-#Command Aliases for Wifi
+# Command Aliases for Wifi
 ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
 iwlist = 'sudo iwlist wlan0 scan | grep -e "Minion_Hub" -e "Master_Hub"'
 net_cfg = "ls /etc/ | grep dhcp"
 
 class MinionToolbox():
 
-    #str2bool will be depricated!!!  Use ans2bool()
+    # str2bool will be depricated!!!  Use ans2bool()
     def str2bool(self,v):
         """Convert a string to a boolean"""
         return v.lower() in ("Y", "y", "yes", "true", "t", "1")
-    
+
     def ans2bool(self,ans2convert):
         """Convert a yes/no or true/false answer to a boolean
 
@@ -110,11 +111,11 @@ class MinionToolbox():
         keys = ['Data_Dir']
 
         data_config = dict.fromkeys(keys)
-        
+
         config = configparser.ConfigParser()
         config.read(data_config_file)
 
-        data_config['Data_Dir'] = config['Data_Dir']['Directory']  
+        data_config['Data_Dir'] = config['Data_Dir']['Directory']
 
         print('Data Config: ' + data_config['Data_Dir'])
         return data_config
@@ -181,7 +182,7 @@ class MinionToolbox():
         mission_config['Minion_ID'] = str(config['MINION']['Number'])
 
         mission_config['Abort'] = self.str2bool(config['Mission']['Abort'])
-        mission_config['MAX_Depth'] = float(config['Mission']['Max_Depth'])       
+        mission_config['MAX_Depth'] = float(config['Mission']['Max_Depth'])
         mission_config['IG_WIFI_D'] = float(config['Mission']['Ignore_WIFI-days'])
         mission_config['IG_WIFI_H'] = float(config['Mission']['Ignore_WIFI-hours'])
 
@@ -194,12 +195,12 @@ class MinionToolbox():
         mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['Camera_sample_rate'])
         mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['TempPres_sample_rate'])
         mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['Oxygen_sample_rate'])
-        
+
         mission_config['Ddays'] = int(config['Deployment_Time']['days'])
         mission_config['Dhours'] = int(config['Deployment_Time']['hours'])
- 
+
         mission_config['Srate'] = float(config['Sleep_cycle']['Minion_sleep_cycle'])
-        
+
         Stime = config['Data_Sample']['Minion_sample_time']
         #Determine if the value entered into 'Minion_sample_time' is
         #    'Camera' or an actual number.
@@ -212,7 +213,7 @@ class MinionToolbox():
             mission_config['Stime'] = float(.2)
         mission_config['TLPsamp_minion_rate'] = float(config['Data_Sample']['Minion_sample_rate'])
         mission_config['TLPsamp_oxygen_rate'] = float(config['Data_Sample']['Oxygen_sample_rate'])
-        
+
         mission_config['iniImg'] = self.str2bool(config['Sampling_scripts']['Image'])
         mission_config['iniP30'] = self.str2bool(config['Sampling_scripts']['30Ba-Pres'])
         mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100Ba-Pres'])
@@ -239,7 +240,7 @@ class MinionToolbox():
             minion_tools = MinionToolbox()
             minion_tools.delete_data_xmt_status_pickle()
         """
-        
+
         if os.path.exists(data_xmt_status_pickle_file):
             os.remove(data_xmt_status_pickle_file)
             print('[OK] Data Transmit Status Pickle File Removed.')
@@ -283,18 +284,18 @@ class MinionToolbox():
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(light, GPIO.OUT)
-        
+
         for val in range(num_flashes):
             GPIO.output(light, 1)
             time.sleep(ton/1000)
-            #If we have done the requisite number of flashes,
-            #no need for the final off time.
+            # If we have done the requisite number of flashes,
+            # no need for the final off time.
             if val == num_flashes - 1:
                 break
             GPIO.output(light, 0)
             time.sleep(toff/1000)
-            
-        #Finally, turn off the LED Ring    
+
+        #Finally, turn off the LED Ring
         GPIO.output(light, 0)
 
     def kill_sampling(self,scriptNames):
@@ -354,6 +355,6 @@ class MinionToolbox():
             if iniTmp == True:
                 #file.write(", TempTSYS01(C)")
                 file.write(",TempTSYS01(C*100)")
-        
-        
-        
+
+
+
