@@ -10,17 +10,10 @@ import pickle
 sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
-def flash():
-        j = 0
-        while j <= 2:
-                GPIO.output(light, 1)
-                time.sleep(.25)
-                GPIO.output(light, 0)
-                time.sleep(.25)
-                j = j + 1
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
 
 def check_wifi(IgnoreStatus):
 
@@ -47,10 +40,12 @@ def check_wifi(IgnoreStatus):
     print(status)
     return status
 
+
 def kill_sampling(scriptNames):
 
     for script in scriptNames:
         os.system("sudo pkill -9 -f {}".format(script))
+
 
 def update_time():
     try:
@@ -66,10 +61,12 @@ def update_time():
         print("update time failed")
     return samp_time
 
+
 def read_sampcount():
     with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb") as countp:
         sampcount = pickle.load(countp)
     return sampcount
+
 
 def update_sampcount():
     with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb") as countp:
@@ -179,7 +176,8 @@ if __name__ == '__main__':
     while(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
         if check_wifi(IgnoreWIFI) == "Connected":
             kill_sampling(scriptNames)
-            flash()
+            #flash()
+            minion_tools.flash(2, 250, 250)
             exit(0)
         else:
             print("Sampling")
