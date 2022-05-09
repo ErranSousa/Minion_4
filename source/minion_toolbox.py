@@ -51,7 +51,6 @@ class MinionToolbox():
         result = ans2convert.lower() in ("Y", "y", "yes", "true", "t", "1")
         return result
 
-
     def check_wifi(self,IgnoreStatus):
         """Checks for a Minion Hub and connects
            
@@ -70,7 +69,7 @@ class MinionToolbox():
         # Prerequisites:  ifswitch, iwlist, net_cfg are defined
         networks = os.popen(iwlist).read()
 
-         if "Master_Hub" in networks:
+        if "Master_Hub" in networks:
             print("Bypassing WIFI Lock")
             status = "Connected"
 
@@ -90,7 +89,6 @@ class MinionToolbox():
 
         print(status)
         return status
-
 
     def read_data_config(self):
         """Read the Minion Data Configuration Directory File
