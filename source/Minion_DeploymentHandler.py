@@ -15,38 +15,6 @@ def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
 
 
-def check_wifi(IgnoreStatus):
-
-    networks = os.popen(iwlist).read()
-
-    if "Master_Hub" in networks:
-        print("Bypassing WIFI Lock")
-        status = "Connected"
-
-    elif "Minion_Hub" in networks and IgnoreStatus == False:
-        status = "Connected"
-
-    else:
-        print("No WIFI found.")
-        status = "Not Connected"
-
-    if status == "Connected":
-        net_status = os.popen(net_cfg).read()
-        if ".Minion" in net_status:
-            os.system(ifswitch)
-        else:
-            print("You have Minions!")
-
-    print(status)
-    return status
-
-
-def kill_sampling(scriptNames):
-
-    for script in scriptNames:
-        os.system("sudo pkill -9 -f {}".format(script))
-
-
 def update_time():
     try:
         samp_time = os.popen("sudo hwclock -l -r").read()
@@ -174,9 +142,8 @@ if __name__ == '__main__':
     
     #Check for WiFi while any of the scripts in scriptNames are executing
     while(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
-        if check_wifi(IgnoreWIFI) == "Connected":
-            kill_sampling(scriptNames)
-            #flash()
+        if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
+            minion_tools.kill_sampling(scriptNames)
             minion_tools.flash(2, 250, 250)
             exit(0)
         else:
