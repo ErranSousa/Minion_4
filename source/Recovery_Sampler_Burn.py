@@ -17,7 +17,7 @@ from minion_toolbox import MinionToolbox
 DATA_TYPE = '$03' #Final Sampling Type Data
 MIN_DEPTH = 5 #Minimum Depth in dBar
 MIN_DEPTH_CNTR_THRESHOLD = 5 #Number of minimum pressure measurements before triggering a minimum depth condition
-ENABLE_MIN_DEPTH_CUTOUT = True #Enables the Minimum Depth Cutout Feature
+ENABLE_MIN_DEPTH_CUTOUT = False #Enables the Minimum Depth Cutout Feature
 ENABLE_MIN_DEPTH_CUTOUT_TEST = False #TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
 
 #Pin Assignments
