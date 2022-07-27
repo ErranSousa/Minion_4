@@ -115,7 +115,7 @@ os.system('sudo mkdir /home/pi/Documents/Minion_scripts /home/pi/Documents/Minio
 os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py source/Gelcam_DeploymentHandler.py \
         source/Minion_image.py source/Initial_Sampler.py source/Recovery_Sampler_Burn.py \
         source/OXYBASE_RS232.py source/TempPres.py source/ACC_100Hz.py source/ACC_100Hz_IF.py source/Minion_image_IF.py \
-        source/OXYBASE_RS232_IF.py source/minsat.py source/Minsat/SC16IS752GPIO.so source/Iridium_gps.py \
+        source/OXYBASE_RS232_IF.py source/Minsat/minsat.py source/Minsat/SC16IS752GPIO.so source/Iridium_gps.py \
         source/Iridium_data.py source/Iridium_test.py source/Temperature_test.py source/Pressure_test.py \
         source/sampcount.pkl source/xmt_minion_data.py \
         /home/pi/Documents/Minion_scripts')
