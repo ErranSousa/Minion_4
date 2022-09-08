@@ -6,6 +6,8 @@ import time
 import os
 import configparser
 
+test_image = '/home/pi/testimage.jpg'
+
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
 
@@ -15,7 +17,6 @@ config = configparser.ConfigParser()
 config.read(configLoc)
 
 mNumber = config['MINION']['Number']
-
 print(mNumber)
 
 GPIO.setwarnings(False)
@@ -42,13 +43,19 @@ def picture():
         camera.framerate = 15
         camera.start_preview()
         time.sleep(10)
-        camera.capture('/home/pi/testimage.jpg')
+        camera.capture(test_image)
         time.sleep(5)
     except:
         print("Camera error")
 
+
 if __name__ == '__main__':
 
+    # First, remove any old test images.
+    try:
+        os.remove(test_image)
+    except FileNotFoundError:
+        pass
     camera = PiCamera()
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(light, GPIO.OUT)
