@@ -14,29 +14,29 @@ sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
 #Defines
-DATA_TYPE = '$03' #Final Sampling Type Data
-MIN_DEPTH = 5 #Minimum Depth in dBar
-MIN_DEPTH_CNTR_THRESHOLD = 5 #Number of minimum pressure measurements before triggering a minimum depth condition
-ENABLE_MIN_DEPTH_CUTOUT = False #Enables the Minimum Depth Cutout Feature
-ENABLE_MIN_DEPTH_CUTOUT_TEST = False #TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
+DATA_TYPE = '$03'  # Final Sampling Type Data
+MIN_DEPTH = 5  # Minimum Depth in dBar
+MIN_DEPTH_CNTR_THRESHOLD = 5  # Number of minimum pressure measurements before triggering a minimum depth condition
+ENABLE_MIN_DEPTH_CUTOUT = False  # Enables the Minimum Depth Cutout Feature
+ENABLE_MIN_DEPTH_CUTOUT_TEST = False  # TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
 
-#Pin Assignments
+# Pin Assignments
 BURN = 33
 DATA_REC_PIN = 16
 
-#Initializations
+# Initializations
 samp_count = 1
 NumSamples = 0
 BURN_WIRE = False
-min_depth_cntr = 0  #Count of the number of minimum depth measurements
-min_depth_flag = False #Flag to indicate that a minimum depth condition exists
+min_depth_cntr = 0  # Count of the number of minimum depth measurements
+min_depth_flag = False  # Flag to indicate that a minimum depth condition exists
 if ENABLE_MIN_DEPTH_CUTOUT_TEST == True:
     min_depth_base_press = 17500
 
 
 ps_test = "pgrep -a python"
 
-#GPIO Initializations
+# GPIO Initializations
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(BURN, GPIO.OUT)
@@ -44,11 +44,13 @@ GPIO.output(BURN, 1)
 GPIO.setup(DATA_REC_PIN, GPIO.OUT)
 GPIO.output(DATA_REC_PIN, 1)
 
-#pickle to hold True or False denoting if the Final Samples have been performed
+# pickle to hold True or False denoting if the Final Samples have been performed
 fname_final_status_pickle = "/home/pi/Documents/Minion_scripts/final_samp_status.pkl"
+
 
 def str2bool(v):
     return v.lower() in ("yes", "true", "t", "1")
+
 
 def abortMission(configLoc):
 
@@ -58,10 +60,12 @@ def abortMission(configLoc):
     with open(config,'wb') as abortFile:
         abortConfig.write(abortFile)
 
+
 def kill_sampling(scriptNames):
 
     for script in scriptNames:
         os.system("sudo pkill -9 -f {}".format(script))
+
 
 def read_sampcount():
     #countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb")
@@ -70,12 +74,14 @@ def read_sampcount():
     #countp.close()
     return sampcount
 
+
 def write_pickle_file(fname_pickle,data):
     #print("File Name: " + fname_pickle)
     #disp_data_xmt_status_dict(dict_to_write)
     #pickle_file_fid = open(fname_pickle,'wb')
     with open(fname_pickle,'wb') as pickle_file_fid:
         pickle.dump(data,pickle_file_fid)
+
 
 def read_final_samp_status_pickle(fname_final_status_pickle):
     """Reads the Final Sampling Status Flag.
@@ -113,9 +119,10 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
         except:
             pass
 
-minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
 
-#Read out final samples status.
+minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
+
+# Read out final samples status.
 #    True = Final Samples Performed, False = Final Samples Not Performed
 final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
 
