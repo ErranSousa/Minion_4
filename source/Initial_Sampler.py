@@ -15,15 +15,12 @@ from minion_toolbox import MinionToolbox
 
 DATA_TYPE = '$01'  # Initial Sampling Type Data
 
+# Pin Definitions
 BURN = 33
 data_rec = 16
-
-samp_count = 1
-
-NumSamples = 0
-
 IO328 = 29
 
+# GPIO Setup
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(BURN, GPIO.OUT)
@@ -31,18 +28,12 @@ GPIO.setup(data_rec, GPIO.OUT)
 GPIO.output(BURN, 0)
 GPIO.output(data_rec, 1)
 
-
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-
-def kill_sampling(scriptNames):
-    for script in scriptNames:
-        os.system("sudo pkill -9 -f {}".format(script))
-
+# Initializations
+samp_count = 1
+NumSamples = 0
 
 def abortMission(configLoc):
-    kill_sampling(scriptNames)
+    minion_tools.kill_sampling(scriptNames)
 
     print("Max Depth Exceeded!")
 
@@ -60,29 +51,21 @@ def abortMission(configLoc):
     exit(0)
 
 
+# create an instance of MinionToolbox()
 minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
+
+# Load the Minion Configuration
+minion_mission_config = minion_tools.read_mission_config()
+
+# Load the Data Configuration Directory
+data_config = minion_tools.read_data_config()
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
 
-data_config = configparser.ConfigParser()
-data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
 
-configDir = data_config['Data_Dir']['Directory']
-configLoc = '{}/Minion_config.ini'.format(configDir)
-config = configparser.ConfigParser()
-config.read(configLoc)
-MAX_Depth = float(config['Mission']['Max_Depth'])
-# MAX_Depth = MAX_Depth*100.4  # Convert from meters to mBar
-Abort = str2bool(config['Mission']['Abort'])
-iniImg = str2bool(config['Sampling_scripts']['Image'])
-iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
-iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
-iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
-iniO2 = str2bool(config['Sampling_scripts']['Oxybase'])
-iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
-
-if Abort == True:
+#if Abort == True:
+if minion_mission_config['Abort'] == True:
     GPIO.setup(29, GPIO.OUT)
     GPIO.output(29, 0)
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
@@ -91,40 +74,26 @@ if Abort == True:
 with open("/home/pi/Documents/Minion_scripts/timesamp.pkl", "rb") as firstp:
     samp_time = pickle.load(firstp)
 
-for dataNum in os.listdir('{}/minion_data/INI/'.format(configDir)):
+for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
     if dataNum.endswith('_TEMPPRES-INI.txt'):
         samp_count = samp_count + 1
 
 samp_count_leading_zeros = "%03d" % samp_count
 
-# samp_time = "{}-{}".format(samp_count, samp_time)
 samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time)  # Add leading zeros to sample count
 
-Stime = float(config['Initial_Samples']['hours'])
-Srate = float(config['Initial_Samples']['TempPres_sample_rate'])
-
 file_name = "{}_TEMPPRES-INI.txt".format(samp_time)
-# file_path_name = "{}/minion_data/INI/{}_TEMPPRES-INI.txt".format(configDir, samp_time)
-file_path_name = "{}/minion_data/INI/".format(configDir) + file_name
+file_path_name = "{}/minion_data/INI/".format(data_config['Data_Dir']) + file_name
 
-Sf = 1 / Srate
+Sf = 1 / minion_mission_config['INIsamp_tempPres_rate']
 
-TotalSamples = Stime * 60 * 60 * Srate
+TotalSamples = minion_mission_config['INIsamp_hours'] * 60 * 60 * minion_mission_config['INIsamp_tempPres_rate']
 
 ######################
 
 time.sleep(1)
 
-# file = open(file_path_name,"a+")
-# with open(file_path_name,"a+") as file:
-
-# Prepare the Header Record
-# file.write(DATA_TYPE) #Write Data Type Identifier
-# file.write("{}_TEMPPRES.txt ".format(samp_time))
-# file.write("," + file_name)  #Write the file name
-# file.write("," + str(Srate)  #Write the sample rate
-
-if iniP30 == True:
+if minion_mission_config['iniP30'] == True:
 
     Psensor = ms5837.MS5837_30BA()  # Default I2C bus is 1 (Raspberry Pi 3)
 
@@ -141,10 +110,7 @@ if iniP30 == True:
     else:
         Pres_ini = "Broken"
 
-    # file.write("Pressure(dbar),Temp(C)")
-    # file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
-
-if iniP100 == True:
+if minion_mission_config['iniP100'] == True:
 
     Psensor = KellerLD()
 
@@ -161,10 +127,7 @@ if iniP100 == True:
     else:
         Pres_ini = "Broken"
 
-    # file.write("Pressure(dbar),Temp(C)")
-    # file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
-
-if iniTmp == True:
+if minion_mission_config['iniTmp'] == True:
 
     sensor_temp = tsys01.TSYS01()
 
@@ -173,24 +136,19 @@ if iniTmp == True:
         print("Error initializing Temperature sensor")
         exit(1)
 
-    # file.write(", TempTSYS01(C)")
-    # file.write(",TempTSYS01(C*100)")
-
-# file.write("\n")
-# file.close()
-
 # Write a header to the data file
-minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, Srate, iniP30, iniP100, iniTmp)
+minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion_mission_config['Srate'], minion_mission_config['iniP30'],
+                                    minion_mission_config['iniP100'], minion_mission_config['iniTmp'])
 
 if __name__ == '__main__':
 
-    if iniImg == True:
+    if minion_mission_config['iniImg'] == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
-    if iniO2 == True:
+    if minion_mission_config['iniO2'] == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
 
-    if iniAcc == True:
+    if minion_mission_config['iniAcc'] == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
     # Spew readings
@@ -198,13 +156,12 @@ if __name__ == '__main__':
 
         tic = time.perf_counter()
 
+        print("")
         print("Initial Sampling Mode")  # Indicate to the user in which mode the Minion is operating
-
-        # file = open(file_path_name,"a")
 
         sensor_string = ''
 
-        if iniP100 or iniP30 == True:
+        if minion_mission_config['iniP100'] or minion_mission_config['iniP30'] == True:
 
             if Psensor.read():
                 # Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
@@ -227,28 +184,25 @@ if __name__ == '__main__':
             print("Depth: " + str(int(Ppressure) / 1000))  # TESTING ONLY
 
             # if Ppressure >= MAX_Depth:
-            if int(Ppressure) / 1000 >= MAX_Depth:
+            if int(Ppressure) / 1000 >= minion_mission_config['MAX_Depth']:
                 with open(file_path_name, "a") as file:
                     file.write("Minion Exceeded Depth Maximum!")
                 abortMission(configLoc)
 
-        if iniTmp == True:
+        if minion_mission_config['iniTmp'] == True:
 
             if not sensor_temp.read():
                 print("Error reading sensor")
-                iniTmp = False
+                minion_mission_config['iniTmp'] = False # What is the purpose of this???
 
-            # Temp_acc = round(sensor_temp.temperature(),4)
             Temp_acc = round(sensor_temp.temperature(), 2) * 100
             Temp_acc = "%04d" % Temp_acc
 
-            # print("Temperature_accurate: {} C".format(Temp_acc))
             print("Temperature_accurate: {} C*100".format(Temp_acc))  # degrees Celsius * 100
 
             sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
         with open(file_path_name, "a") as file:
-            # file.write("{}\n".format(sensor_string))
             file.write("\n{}".format(sensor_string))
 
         NumSamples = NumSamples + 1
@@ -262,7 +216,6 @@ if __name__ == '__main__':
 
         time.sleep(Sf - timeS)
 
-    # file.close()
-    kill_sampling(scriptNames)
+    minion_tools.kill_sampling(scriptNames)
     GPIO.setup(data_rec, GPIO.OUT)
     GPIO.output(data_rec, 0)
