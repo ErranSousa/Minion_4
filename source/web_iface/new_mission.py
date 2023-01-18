@@ -4,10 +4,10 @@ import sys #for sys.path
 sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
-#print("\n\rClearing the Sample Counter...")
-with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","wb") as countp:
-    sampcount = 0
-    pickle.dump(sampcount, countp)
+# #print("\n\rClearing the Sample Counter...")
+# with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","wb") as countp:
+#     sampcount = 0
+#     pickle.dump(sampcount, countp)
 
 #Sets the Final Sample Status Flag to False
 #    False : Final Samples Not Performed
@@ -21,10 +21,14 @@ try:
 except:
     print("Could Not Set the Final Sample Status Flag to False")
 
-#Load the Minion Configuration
-minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
-#Delete the Data Transmit Status Pickle prior to mission start
+# create an instance of MinionToolbox() called minion_tools
+minion_tools = MinionToolbox()
+
+# Delete the Data Transmit Status Pickle prior to mission start
 minion_tools.delete_data_xmt_status_pickle()
+
+# Delete the Sample Number Pickle (samp_num.pkl) prior to mission start
+minion_tools.delete_samp_num_pickle()
 
 time = os.popen('ls /home/pi/Desktop/minion_data/INI/1-*.txt').read()
 
