@@ -5,8 +5,11 @@ import time
 import os
 import configparser
 import pickle
+import sys
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
 
-data_rec = 16
+#data_rec = 16
 
 NumSamples = 0
 samp_count = 1
@@ -22,8 +25,8 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(light, GPIO.OUT)
 GPIO.setup(power, GPIO.OUT)
 
-def str2bool(v):
-    return v.lower() in ("yes","true",'1','t')
+# create an instance of MinionToolbox()
+minion_tools = MinionToolbox()
 
 data_config = configparser.ConfigParser()
 data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
@@ -57,24 +60,15 @@ samp_count = max(sampNum) + 1
 
 TotalSamples = Stime*(60/Srate)
 
-def update_time():
-    try:
-        samp_time = os.popen("sudo hwclock -l -r").read()
-        samp_time = samp_time.split('.',1)[0]
-        samp_time = samp_time.replace("  ","_")
-        samp_time = samp_time.replace(" ","_")
-        samp_time = samp_time.replace(":","-")
-
-        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb") as firstp:
-            pickle.dump(samp_time, firstp)
-
-    except:
-        print("update time failed")
 
 def picture(configDir, NumSamples, RECOVER):
     try:
-        with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
-            samp_time = pickle.load(firstp)
+        # with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+        #     samp_time = pickle.load(firstp)
+
+        # Update the time stamp
+        samp_time = minion_tools.update_timestamp()  # Use when DS3231 is not enabled in config.txt
+        print('Time Stamp: ' + str(samp_time))
 
         GPIO.output(light, 1)
         camera.resolution = (2592, 1944)
@@ -122,6 +116,4 @@ while NumSamples <= TotalSamples:
         timeS = Srate
 
     time.sleep((Srate*60) - timeS)
-
-    update_time()
 
