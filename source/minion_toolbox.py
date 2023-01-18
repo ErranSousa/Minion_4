@@ -10,6 +10,7 @@ import sys
 import pickle
 import RPi.GPIO as GPIO
 import time
+import datetime
 from ds3231 import DS3231
 
 
@@ -595,7 +596,7 @@ class MinionToolbox(object):
             print("[OK]")
 
     def rtc_ext_sync_rpi(self):
-        """Synchronize the Raspberry Date and Time to the DS3231 External RTC
+        """Synchronize the Raspberry Pi Date and Time to the DS3231 External RTC
 
         Parameters
         ----------
@@ -613,6 +614,32 @@ class MinionToolbox(object):
         cmd = "sudo date -s " + "\"" + ext_rtc_time + "\""
         # 3. Execute the cmd
         os.system(cmd)
+
+    def rtc_ext_sync_ext(self):
+        """Synchronize the DS3231 External RTC Date and Time to the Raspberry Pi
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        bool success : True if successful, False if an error occurred
+
+        """
+
+        # Get the current Raspberry Pi time
+        rpi_datetime = datetime.datetime.now()
+
+        # Format the Raspberry Pi date/time for input to ds3231 set_time() method
+        date_str = "%04d/%02d/%02d %02d:%02d:%02d" % (rpi_datetime.year, rpi_datetime.month, rpi_datetime.day,
+                                                      rpi_datetime.hour, rpi_datetime.minute, rpi_datetime.second)
+
+        # Synchronize the external DS3231 RTC to the Raspberry Pi Date/Time
+        success = self._rtc_ext.set_time(date_str)
+
+        return success
+
 
     def read_samp_num(self):
         """Read the sample number from the samp_num pickle file.
