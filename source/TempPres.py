@@ -9,22 +9,14 @@ import os
 import configparser
 import pickle
 import sys
-sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
-DATA_TYPE = '$02' #Time-Lapse Sampling Type Data
+DATA_TYPE = '$02'  # Time-Lapse Sampling Type Data
 
 NumSamples = 0
 
 samp_count = 1
-
-def str2bool(v):
-    return v.lower() in ("yes","true",'1','t')
-
-def kill_sampling(scriptNames):
-
-    for script in scriptNames:
-        os.system("sudo pkill -9 -f {}".format(script))
 
 def abortMission(configLoc):
 
@@ -43,61 +35,40 @@ def abortMission(configLoc):
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
     exit(0)
 
-minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
 
-scriptNames = ["Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py",\
-               "Recovery_Sampler_Burn.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py",\
-               "Iridium_gps.py","Iridium_data.py"]
+# create an instance of MinionToolbox()
+minion_tools = MinionToolbox()
 
-data_config = configparser.ConfigParser()
-data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
+# Load the Minion Configuration
+minion_mission_config = minion_tools.read_mission_config()
 
-configDir = data_config['Data_Dir']['Directory']
+# Load the Data Configuration Directory
+data_config = minion_tools.read_data_config()
+configDir = data_config['Data_Dir']
 
-config = configparser.ConfigParser()
-configLoc = '{}/Minion_config.ini'.format(configDir)
+scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
+               "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py",
+               "Iridium_gps.py", "Iridium_data.py"]
 
-config.read(configLoc)
-MAX_Depth = float(config['Mission']['Max_Depth'])
-#MAX_Depth = MAX_Depth*100.4  # Convert from meters to mBar
-iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
-iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
-iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
+Sf = 1/minion_mission_config['Srate']
 
-Stime = config['Data_Sample']['Minion_sample_time']
-
-try :
-    #float(test_string)
-    Stime = float(Stime)
-except :
-    Stime = float(.2)
-
-Srate = float(config['Data_Sample']['Minion_sample_rate'])
-
-Sf = 1/Srate
-
-TotalSamples = Stime*60*Srate
+TotalSamples = minion_mission_config['Stime'] * 60 * minion_mission_config['Srate']
 
 with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
     samp_time = pickle.load(firstp)
 
-for dataNum in os.listdir('{}/minion_data/'.format(configDir)):
+for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
     if dataNum.endswith('_TEMPPRES.txt'):
         samp_count = samp_count + 1
 
 samp_count_leading_zeros = "%03d" % samp_count
 
-#samp_time = "{}-{}".format(samp_count, samp_time)
 samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zeros to sample count
 
 file_name = "{}_TEMPPRES.txt".format(samp_time)
-#file_path_name = "{}/minion_data/{}_TEMPPRES.txt".format(configDir, samp_time)
-file_path_name = "{}/minion_data/".format(configDir) + file_name
+file_path_name = "{}/minion_data/".format(data_config['Data_Dir']) + file_name
 
-#with open(file_path_name,"a+") as file:
-    #file.write("{}_TEMPPRES.txt ".format(samp_time))
-
-if iniP30 == True:
+if minion_mission_config['iniP30'] == True:
 
     Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
 
@@ -114,10 +85,7 @@ if iniP30 == True:
     else:
         Pres_ini = "Broken"
 
-    #file.write("Pressure(dbar),Temp(C)")
-    #file.write("Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
-
-if iniP100 == True:
+if minion_mission_config['iniP100'] == True:
 
     Psensor = KellerLD()
 
@@ -134,9 +102,7 @@ if iniP100 == True:
     else:
         Pres_ini = "Broken"
 
-    #file.write("Pressure(dbar),Temp(C)")
-
-if iniTmp == True:
+if minion_mission_config['iniTmp'] == True:
 
     sensor_temp = tsys01.TSYS01()
 
@@ -145,30 +111,26 @@ if iniTmp == True:
         print("Error initializing Temperature sensor")
         exit(1)
 
-    #file.write(", TempTSYS01(C)")
-    #file.write(", TempTSYS01(C*100)")
 
-#file.write("\r\n")
-
-#Write a header to the data file
-minion_tools.write_data_file_header(DATA_TYPE,file_path_name,file_name,Srate,iniP30,iniP100,iniTmp)
+minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion_mission_config['Srate'],
+                                    minion_mission_config['iniP30'], minion_mission_config['iniP100'],
+                                    minion_mission_config['iniTmp'])
 
 # Spew readings
 while NumSamples <= TotalSamples:
 
     tic = time.perf_counter()
 
+    print("")
     print("Time Lapse Sampling Mode")  #Indicate to the user in which mode the Minion is operating
 
     sensor_string = ''
 
-    if iniP100 or iniP30 == True:
+    if minion_mission_config['iniP100'] or minion_mission_config['iniP30'] == True:
 
         if Psensor.read():
-            #Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
             Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000 #shifting the decimal point out
             Ppressure = "%07d" % Ppressure  #fixed field / prepending zeros
-            #Ptemperature = round(Psensor.temperature(),3)
             Ptemperature = round(Psensor.temperature(),2)*100 #shifting the decimal point out
             Ptemperature = "%04d" % Ptemperature #fix field length by prepending zeros if necessary
             Pres_data = "{},{},".format(Ppressure, Ptemperature)
@@ -182,29 +144,26 @@ while NumSamples <= TotalSamples:
             abortMission(configLoc)
 
         #if Ppressure >= MAX_Depth:
-        if int(Ppressure)/1000 >= MAX_Depth:
+        if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
             with open(file_path_name,"a") as file:
                 file.write("Minion Exceeded Depth Maximum!")
             abortMission(configLoc)
 
 
-    if iniTmp == True:
+    if minion_mission_config['iniTmp'] == True:
 
         if not sensor_temp.read():
             print("Error reading sensor")
-            iniTmp = False
+            minion_mission_config['iniTmp'] = False
 
-        #Temp_acc = round(sensor_temp.temperature(),4)
         Temp_acc = round(sensor_temp.temperature(),2)*100
         Temp_acc = "%04d" % Temp_acc #fix field length by prepending zeros if necessary
 
-        #print("Temperature_accurate: {} C".format(Temp_acc))
         print("Temperature_accurate: {} C*100".format(Temp_acc)) #degrees Celsius * 100
 
         sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
     with open(file_path_name,"a") as file:
-        #file.write("{}\n".format(sensor_string))
         file.write("\n{}".format(sensor_string))
 
     NumSamples = NumSamples + 1
