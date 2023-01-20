@@ -120,7 +120,7 @@ os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py sou
 
 # Copy all required scripts to the Minion_tools directory
 os.system('sudo cp source/Keep_Me_Alive.py source/dhcp-configure.py source/dhcp-switch.py source/ds3231.py \
-          source/RTC_Finish.py source/RTC-set.py source/Shutdown.py \
+          source/RTC_Finish.py source/RTC-set.py source/Shutdown.py source/RTC_sync_rpi.py\
           source/sampcount_reset.py source/recovery_samp_status_flag_reset.py \
           source/minion_toolbox.py source/RTC_sync_rpi.py source/RTC_finish_2.py source/EXT_RTC_set_time.py\
           /home/pi/Documents/Minion_tools/')
