@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 import time
 import os
 
-print("Welcome to the Minion installer 3! \n")
+print("Welcome to the Minion installer 4! \n")
 
 ini_dir = os.getcwd()
 
@@ -77,7 +77,6 @@ else:
     print("Minion_Hub IP address = 192.168.0.%s" % IP_addr)
 
 # Write to /etc/dhcpcd.Minion file
-
 os.system('sudo cp source/dhcp/dhcpcd.conf source/dhcp/dhcpcd.Minion /etc/')
 
 # Open dhcpcd.Minion
@@ -92,7 +91,6 @@ with open('/etc/dhcpcd.Minion', 'w') as file:
     file.write(Minion_dhcp)
   
 # Set up wifi
-
 os.system("sudo sh -c 'cat source/dhcp/wpa_supplicant.txt >> /etc/wpa_supplicant/wpa_supplicant.conf'")
 
 # Enable the splash screen easter egg
@@ -109,9 +107,9 @@ elif Debug == False:
 else:
     print("WTH did you do??")
 
-USBdata = yes_no('Do you wish to configure a USB storage device? (NTFS file system) [Y/N]: ')
 os.system('sudo mkdir /home/pi/Documents/Minion_scripts /home/pi/Documents/Minion_tools')
-# Move the deployment handler so it knows where to look for config file
+
+# Copy all required files to the Minion_scripts directory
 os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py source/Gelcam_DeploymentHandler.py \
         source/Minion_image.py source/Initial_Sampler.py source/Recovery_Sampler_Burn.py \
         source/OXYBASE_RS232.py source/TempPres.py source/ACC_100Hz.py source/ACC_100Hz_IF.py source/Minion_image_IF.py \
@@ -119,6 +117,16 @@ os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py sou
         source/Iridium_data.py source/Iridium_test.py source/Temperature_test.py source/Pressure_test.py \
         source/sampcount.pkl source/xmt_minion_data.py \
         /home/pi/Documents/Minion_scripts')
+
+# Copy all required scripts to the Minion_tools directory
+os.system('sudo cp source/Keep_Me_Alive.py source/dhcp-configure.py source/dhcp-switch.py \
+          source/RTC_Finish.py source/RTC-set.py source/Shutdown.py source/flasher.py \
+          source/Iridium_gps.py source/FishTag_data.py source/sampcount_reset.py recovery_samp_status_flag_reset.py \
+          source/minion_toolbox.py \
+          /home/pi/Documents/Minion_tools/')
+
+# Setup data directory location and directory structure
+USBdata = yes_no('Do you wish to configure a USB storage device? (NTFS file system) [Y/N]: ')
 
 if USBdata == True:
 
@@ -211,21 +219,7 @@ os.system('sudo raspi-config nonint do_rgpio 0')
 os.system('sudo cat source/Minion_alias.txt >> /home/pi/.bashrc')
 #Create Driver Location
 os.system('sudo mkdir /home/pi/Documents/drivers')
-### Clone repos
-##os.chdir('/home/pi/Documents/drivers/')
-##os.system('git clone https://github.com/bluerobotics/tsys01-python.git')
-##os.system('git clone https://github.com/bluerobotics/ms5837-python.git')
-##os.system('git clone https://github.com/bluerobotics/KellerLD-python.git')
-##os.system('git clone https://github.com/pimoroni/adxl345-python.git')
-##os.system('git clone https://github.com/adafruit/Adafruit_Python_ADS1x15.git')
-# Clone repos
-# os.chdir('/home/pi/Documents/drivers/')
-# os.system('git clone https://github.com/ErranSousa/tsys01-python.git')
-# os.system('git clone https://github.com/ErranSousa/ms5837-python.git')
-# os.system('git clone https://github.com/ErranSousa/KellerLD-python.git')
-# os.system('git clone https://github.com/ErranSousa/adxl345-python.git')
-# os.system('git clone https://github.com/ErranSousa/Adafruit_Python_ADS1x15.git')
- 
+
 #Clone repositories 
 os.chdir('/home/pi/Documents/drivers/')
 os.system('git clone https://github.com/melissaomand/tsys01-python.git')
@@ -245,7 +239,7 @@ os.system('sudo cp -r /home/pi/Documents/drivers/tsys01-python/tsys01 /home/pi/D
 # Exit
 os.chdir(ini_dir)
 
-# Set up and sync RTC
+# Set up and sync RTC <-- Change is note
 print("Appending /boot/config.txt")
 os.system("echo 'dtoverlay=dwc2' >> /boot/config.txt")
 os.system("echo 'dtoverlay=i2c-rtc,ds3231' >> /boot/config.txt")
@@ -255,13 +249,6 @@ os.system("echo 'enable_uart=1' >> /boot/config.txt")
 
 print("Appending to /boot/cmdline.txt")
 os.system("echo 'modules-load=dwc2,g_ether plymoth.ignore-serial-consoles' >> /boot/cmdline.txt")
-
-# Move scripts to local build
-os.system('sudo cp source/Keep_Me_Alive.py source/dhcp-configure.py source/dhcp-switch.py \
-          source/RTC_Finish.py source/RTC-set.py source/Shutdown.py source/flasher.py \
-          source/Iridium_gps.py source/FishTag_data.py source/sampcount_reset.py recovery_samp_status_flag_reset.py \
-          source/minion_toolbox.py \
-          /home/pi/Documents/Minion_tools/')
 
 # Set pi to launch rest of script after reboot
 os.system("sudo sed -i '/# Print the IP/isudo python /home/pi/Documents/Minion_tools/RTC_Finish.py\n\n' /etc/rc.local")
