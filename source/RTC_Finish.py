@@ -52,7 +52,7 @@ os.system("sudo sed -i '/# Print the IP/i#sudo python /home/pi/Documents/Minion_
 # Remove self from rc.local and configure deployment
 
 # Open rc.local
-with open('/etc/rc.local', 'r') as file :
+with open('/etc/rc.local', 'r') as file:
     rclocal = file.read()
 
 # Replace the RTC string
