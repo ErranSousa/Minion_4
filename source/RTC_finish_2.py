@@ -16,7 +16,7 @@ GPIO.output(wifi, 1)
 os.system(
     "sudo sed -i '/# Print the IP/i# Synchronize the RPi clock to the external RTC\n' /etc/rc.local")
 os.system(
-    "sudo sed -i '/# Print the IP/isudo python /home/pi/Documents/Minion_scripts/RTC_sync_rpi.py\n' /etc/rc.local")
+    "sudo sed -i '/# Print the IP/isudo python /home/pi/Documents/Minion_tools/RTC_sync_rpi.py\n' /etc/rc.local")
 os.system(
     "sudo sed -i '/# Print the IP/i# Choose one of the following Handlers\n' /etc/rc.local")
 os.system(
