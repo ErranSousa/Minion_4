@@ -12,3 +12,5 @@ minion_tools = MinionToolbox()
 
 # Synchronize the Raspberry Pi time to the DS3231 RTC.
 minion_tools.rtc_ext_sync_rpi()
+
+print("[OK] Raspberry Pi Synchronized  to the DS3231")
