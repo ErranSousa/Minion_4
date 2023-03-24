@@ -243,7 +243,7 @@ os.chdir(ini_dir)
 print("Appending /boot/config.txt")
 os.system("echo 'dtoverlay=dwc2' >> /boot/config.txt")
 # os.system("echo 'dtoverlay=i2c-rtc,ds3231' >> /boot/config.txt") # Use custom python code
-os.system("echo 'dtoverlay=sc16is752-i2c,int_pin=16,addr=0x49' >> /boot/config.txt")
+os.system("echo 'dtoverlay=sc16is752-i2c,int_pin=23,addr=0x49' >> /boot/config.txt")
 os.system("echo 'dtoverlay=i2c_baudrate=400000' >> /boot/config.txt")
 os.system("echo 'enable_uart=1' >> /boot/config.txt")
 
