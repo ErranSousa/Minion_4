@@ -8,31 +8,31 @@ import time
 import random
 import minsat
 from minsat import MinSat
-sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
-#Number of times to try sending the data before sleeping
+# Number of times to try sending the data before sleeping
 MAX_TRIES = 5
 
-#Enable/Disable sending data from operating modes
+# Enable/Disable sending data from operating modes
 XMT_INI = True
 XMT_TLP = True
 XMT_FIN = True
 
-#Transmit Data Status Pickle File Name
+# Transmit Data Status Pickle File Name
 data_xmt_status_pickle_name = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 
-#Minsat Board Settings
+# Minsat Board Settings
 gps_port = "/dev/ttySC0"
 gps_baud = 9600
 modem_port = "/dev/ttySC1"
 modem_baud = 19200
 
-#Initializations
+# Initializations
 detect_data_files_flag = False   #Flag indicating if valid data files were found
 
 
-#Displays the returned struct from sbd_send_file
+# Displays the returned struct from sbd_send_file
 def display_sbd_resp_struct(resp_struct):
     print("=" * 50)
     print("File Name: " + str(resp_struct.file_name))
@@ -45,7 +45,7 @@ def display_sbd_resp_struct(resp_struct):
     print("Number of Bytes Transmitted: " + str(resp_struct.xmt_num_bytes)) #Note that the transmitted number of bytes can be larger than the file size if num_hearder_lines > 0
     print("Current File Location: " + str(resp_struct.curr_file_loc))
 
-#Displays the returned struct from sbd_send_position
+# Displays the returned struct from sbd_send_position
 def display_gps_resp_struct(ret_info):
     print("="*50)
     print("Valid Position: " + str(ret_info.valid_position))
@@ -62,13 +62,13 @@ def display_gps_resp_struct(ret_info):
     print("Latitude,Longitude: {:.6f},{:06f}".format(ret_info.latitude,ret_info.longitude))
     print("="*50)
 
-#Displays the Key-Value pairs contained in the Data Transmit Status Dictionary
+# Displays the Key-Value pairs contained in the Data Transmit Status Dictionary
 def disp_data_xmt_status_dict(data_xmt_status_dict):
     print("Data Transmit Status:")
     for key in data_xmt_status_dict:
         print("    " + str(key) + ": " + str(data_xmt_status_dict[key]))
 
-#clears all values for all keys in dictionary except for curr_file_name
+# clears all values for all keys in dictionary except for curr_file_name
 def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
     data_xmt_status_dict['file_open_success'] = False
     data_xmt_status_dict['file_size'] = 0
@@ -80,7 +80,7 @@ def clear_data_xmt_status_dict(data_xmt_status_dict,keys):
     data_xmt_status_dict['start_file_location'] = 0
     #Do not need to return anything since the dictionary is accessed from here
 
-#Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
+# Default values for selected keys in dictionary. Except for curr_file_name & all_files_transmitted
 def default_data_xmt_status_dict(data_xmt_status_dict):
     data_xmt_status_dict['num_gps_sent'] = 0
     data_xmt_status_dict['all_files_transmitted'] = False
@@ -95,7 +95,7 @@ def default_data_xmt_status_dict(data_xmt_status_dict):
     data_xmt_status_dict['start_file_location'] = 0
     #Do not need to return anything since the dictionary is accessed from here
     
-#Writes the Data Transmit Status Dictionary to the pickle file
+# Writes the Data Transmit Status Dictionary to the pickle file
 def write_pickle_file(fname_pickle,dict_to_write):
     #print("File Name: " + fname_pickle)
     #disp_data_xmt_status_dict(dict_to_write)
@@ -104,49 +104,49 @@ def write_pickle_file(fname_pickle,dict_to_write):
         pickle.dump(dict_to_write,pickle_file_fid)
         #pickle_file_fid.close()
 
-#create an empty dictionary with empty values
+# create an empty dictionary with empty values
 keys = ['num_gps_sent','all_files_transmitted','curr_file_name', 'file_open_success',\
         'file_size','xmt_file_complete', 'xmt_num_bytes','xmt_num_sbd_success',\
         'xmt_num_sbd_required', 'curr_file_location', 'start_file_location']
 data_xmt_status_dict = dict.fromkeys(keys)
 
-#try to open the Data Transmit Status pickle file
+# try to open the Data Transmit Status pickle file
 try:
-    #Try to open the pickle file.  If it exists, read the data out.
-    #data_xmt_status_pickle_file = open(data_xmt_status_pickle_name,'rb')
+    # Try to open the pickle file.  If it exists, read the data out.
+    # data_xmt_status_pickle_file = open(data_xmt_status_pickle_name,'rb')
     with open(data_xmt_status_pickle_name,'rb') as data_xmt_status_pickle_file:
         print("\n\rFound pickle file: " + data_xmt_status_pickle_name)
         print("Loading " + data_xmt_status_pickle_name)
         data_xmt_status_dict = pickle.load(data_xmt_status_pickle_file)
         disp_data_xmt_status_dict(data_xmt_status_dict)
 except:
-    #Could not open the pickle file so it must be the first time through
+    # Could not open the pickle file so it must be the first time through
     print("\n\rCould not find the pickle file.  Creating " + data_xmt_status_pickle_name)
-    #Write Default Values for all fields
+    # Write Default Values for all fields
     data_xmt_status_dict['all_files_transmitted'] = False
     data_xmt_status_dict['curr_file_name'] = ''
     default_data_xmt_status_dict(data_xmt_status_dict) #default states for all other members
     write_pickle_file(data_xmt_status_pickle_name,data_xmt_status_dict)
 finally:
-    #Now, close the pickle file.
+    # Now, close the pickle file.
     try:
         data_xmt_status_pickle_file.close()
         print("File Closed: " + data_xmt_status_pickle_name)
     except:
         pass
 
-#disp_data_xmt_status_dict(data_xmt_status_dict) #display for testing
+# disp_data_xmt_status_dict(data_xmt_status_dict) #display for testing
 
-#Load the Minion Configuration
+# Load the Minion Configuration
 minion_tools = MinionToolbox() #create an instance of MinionToolbox() called minion_tools
 minion_mission_config = minion_tools.read_mission_config()
 for key in minion_mission_config:
         print("    " + str(key) + ": " + str(minion_mission_config[key]))
-#Load the Data Configuration
+# Load the Data Configuration
 minion_data_config_dict = minion_tools.read_data_config()
 
-#****** Locate Data Files ******
-#Get the file names (with paths).
+# ****** Locate Data Files ******
+# Get the file names (with paths).
 fnames_with_paths = [] #create an empty list
 if XMT_INI == True:  #If configured to transmit the Initial Mode Data File
     fnames_with_paths = fnames_with_paths + glob.glob(minion_data_config_dict['Data_Dir']  + '/minion_data/INI/*_TEMPPRES-INI.txt')
@@ -163,17 +163,17 @@ else:
     detect_data_files_flag = False
 
 
-#Choose if to send a GPS Position or move onto transmitting data
+# Choose if to send a GPS Position or move onto transmitting data
 if (data_xmt_status_dict['num_gps_sent'] < 2) or \
    (data_xmt_status_dict['num_gps_sent'] >= 2 and data_xmt_status_dict['all_files_transmitted'] == True) or \
    (detect_data_files_flag == False):
     
     print('Acquire and Transmit a GPS Position')
 
-    #Create an instance of the Minsat class (sets up the Minsat hardware and software)
+    # Create an instance of the Minsat class (sets up the Minsat hardware and software)
     m1 = MinSat(gps_port,gps_baud,modem_port,modem_baud)
     
-    #Attempt to acquire and transmit a GPS Position
+    # Attempt to acquire and transmit a GPS Position
     (success,ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=True,gps_timeout=120)
     
     if success and ret_data.valid_position:
@@ -194,43 +194,43 @@ if (data_xmt_status_dict['num_gps_sent'] < 2) or \
     if success == False:
         print('[FAILURE] No Position Available or Could not Transmit to Iridium')
 
-    #Cleanup instance of MinSat
+    # Cleanup instance of MinSat
     m1.gps_pwr(m1.dev_off)
     m1.modem_pwr(m1.dev_off)
     del m1
 
-#Transmit Data via the Iridium Constellation  
+# Transmit Data via the Iridium Constellation
 else:
     print('Data Transmission to Iridium Constellation')
 
-    #print(fnames_with_paths)
+    # print(fnames_with_paths)
 
-    #We need to split up the row elements of the list (fnames_with_paths) based on the backslash
+    # We need to split up the row elements of the list (fnames_with_paths) based on the backslash
     fnames_with_paths_split = [i.split("/") for i in fnames_with_paths]
-    #fnames_with_paths_split = [i.split("\\") for i in fnames_with_paths] #FOR WINDOWS OS!!!
+    # fnames_with_paths_split = [i.split("\\") for i in fnames_with_paths] #FOR WINDOWS OS!!!
 
-    #Now, just grab the last column which is the actual file name without a path
+    # Now, just grab the last column which is the actual file name without a path
         #Note: the -1 addresses the last column
     fnames = [row[-1] for row in fnames_with_paths_split]
     print("\n\rList of raw file names without paths:")
     for f in fnames:
         print(f)
 
-    #print('\n\rfnames object type: ' + str(type(fnames))) #just a test line!
+    # print('\n\rfnames object type: ' + str(type(fnames))) #just a test line!
 
-    #At this point, we have the file names (fnames) without the path.
-    #Let's trust that the list is sorted (for now)
+    # At this point, we have the file names (fnames) without the path.
+    # Let's trust that the list is sorted (for now)
 
     print("")
     print("Sorting the list of file names based on sample number...")
-    #Sort the list based on the sample number.
-    #The sample number is the first three digits before the first '-'
-    #Therefore, we want to key on element 0 when the name is split.
+    # Sort the list based on the sample number.
+    # The sample number is the first three digits before the first '-'
+    # Therefore, we want to key on element 0 when the name is split.
     sorted_list = fnames
     sorted_list.sort(key = lambda x: x.split('-')[0])
 
-    #A very brute force way of getting the full paths back as part of the sorted file names
-    #There must be a better way!!!
+    # A very brute force way of getting the full paths back as part of the sorted file names
+    # There must be a better way!!!
     for idx,value in enumerate(sorted_list):
         if value.find('INI') > -1:
             #print('Found Initial Type File.')
