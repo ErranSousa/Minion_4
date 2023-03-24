@@ -1,32 +1,20 @@
 #!/usr/bin/env python3
 
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import time
 import os
 import math
 import configparser
 import sys
 import pickle
-sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
-
-# Pin Declarations
-wifi = 22
-light = 12
-IO328 = 29
-
-# GPIO Setup
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(light, GPIO.OUT)
-GPIO.setup(wifi, GPIO.OUT)
-GPIO.setup(IO328, GPIO.OUT)
-GPIO.output(IO328, 1)
-GPIO.output(wifi, 1)
-
 
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
+
+# Configure the Raspberry Pi GPIOs
+GPIO, pin_defs_dict = minion_tools.config_gpio()
 
 # Get the current time stamp information
 samp_time = minion_tools.update_timestamp()  # Use when DS3231 is not enabled in config.txt
@@ -37,7 +25,7 @@ samp_num = minion_tools.read_samp_num()
 # Load the Minion Configuration
 minion_mission_config = minion_tools.read_mission_config()
 
-i = 0  # Not sure why this should be here.
+# i = 0  # Not sure why this should be here.
 
 IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) + minion_mission_config['IG_WIFI_H'])/minion_mission_config['Srate']) - (minion_mission_config['INIsamp_hours']/minion_mission_config['Srate'])
 
@@ -86,13 +74,21 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py",
 
 if __name__ == '__main__':
 
+    # First, check for Wifi
+    if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
+        minion_tools.kill_sampling(scriptNames)
+        minion_tools.flash(2, 250, 250)
+        GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+        GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
+        exit(0)
+
     # Initial Sampling Mode
     if samp_num == 0:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
 
     # Recovery Sampling Mode
     elif samp_num >= TotalSamples + 1 or minion_mission_config['Abort'] == True:
-        GPIO.output(IO328, 0)
+        # GPIO.output(IO328, 0)
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
     # Time-Lapse Sampling Mode
@@ -119,6 +115,7 @@ if __name__ == '__main__':
         if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
             minion_tools.kill_sampling(scriptNames)
             minion_tools.flash(2, 250, 250)
+            GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
             exit(0)
         else:
             print("Sampling")
@@ -126,6 +123,6 @@ if __name__ == '__main__':
 
     # Once we get here, there are none of the scripts in scriptNames are running.
     print('Goodbye')
-    GPIO.output(wifi, 0)
+    # GPIO.output(wifi, 0)
     time.sleep(5)
     os.system('sudo shutdown now')
