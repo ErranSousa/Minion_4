@@ -8,7 +8,8 @@ import configparser
 import os
 import sys
 import pickle
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
+import RPi.GPIO
 import time
 import datetime
 from ds3231 import DS3231
@@ -17,9 +18,10 @@ from ds3231 import DS3231
 # Pin Definitions
 light = 12
 
+GPIO = RPi.GPIO
 
 data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
-pin_defs_file = '/home/pi/Documents/Minion_scripts/pin_defs.ini'
+pin_defs_file = '/home/pi/Documents/Minion_tools/pin_defs.ini'
 data_xmt_status_pickle_file = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 samp_num_pickle_file = '/home/pi/Documents/Minion_scripts/samp_num.pkl'
 time_stamp_pickle_file = '/home/pi/Documents/Minion_scripts/timesamp.pkl'
@@ -34,6 +36,7 @@ class MinionToolbox(object):
     def __init__(self):
         self._py_ver_major = sys.version_info.major
         self._rtc_ext = DS3231()
+        #self.GPIO = RPi.GPIO
 
     # str2bool will be depricated!!!  Use ans2bool()
     def str2bool(self,v):
@@ -259,8 +262,9 @@ class MinionToolbox(object):
 
         return mission_config
 
-    def read_pin_defs(self):
-        """Read the Minion Data Configuration Directory File
+    def config_gpio(self):
+        """Reads the pin_config.ini file, configures pin directions and default states.
+        Returns a dictionary with pin names & assignments
 
         Parameters
         ----------
@@ -270,28 +274,34 @@ class MinionToolbox(object):
         --------
         dict pin_defs_dict : Minion Pin Definitions Dictionary
             keys:
-                int SAMPLE_LED_RING : Sample LED Ring
-                int BURN : Burn Wire Control
-                int IO328 : I/O Line to ATMEGA328
+                based on pin_defs.ini
 
         Example:
             from minion_toolbox import MinionToolbox
             minion_tools = MinionToolbox()
-            pin_defs_dict = minion_tools.read_pin_defs()
+            GPIO, pin_defs_dict = minion_tools.config_gpio()
+            GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
+            GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
         """
+        parser = configparser.ConfigParser()
+        parser.read(pin_defs_file)
 
-        keys = ['SAMPLE_LED_RING', 'BURN', 'IO328']
+        # Create an empty dictionary
+        pin_defs_dict = dict()
 
-        pin_defs_dict = dict.fromkeys(keys)
+        GPIO.setmode(GPIO.BOARD)
 
-        config = configparser.ConfigParser()
-        config.read(pin_defs_file)
+        for sect in parser.sections():
+            pin_defs_dict[sect] = int(parser.get(sect, 'pin'))
+            if parser.get(sect, 'direction').upper() == 'IN':
+                print('Setting {} pin {} as an input'.format(sect, parser.get(sect, 'pin')))
+                GPIO.setup(int(parser.get(sect, 'pin')), GPIO.IN)
+            if parser.get(sect, 'direction').upper() == 'OUT':
+                print('Setting {} pin {} as an output'.format(sect, parser.get(sect, 'pin')))
+                GPIO.setup(int(parser.get(sect, 'pin')), GPIO.OUT)
+                GPIO.output(int(parser.get(sect, 'pin')), int(parser.get(sect, 'default_state')))
 
-        pin_defs_dict['SAMPLE_LED_RING'] = int(config['pin_defs']['SAMPLE_LED_RING'])
-        pin_defs_dict['BURN'] = int(config['pin_defs']['BURN'])
-        pin_defs_dict['IO328'] = int(config['pin_defs']['IO328'])
-
-        return pin_defs_dict
+        return GPIO, pin_defs_dict
 
     def update_timestamp(self):
         """Updates the timesamp piclke file
