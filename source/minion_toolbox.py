@@ -8,12 +8,11 @@ import configparser
 import os
 import sys
 import pickle
-#import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import RPi.GPIO
 import time
 import datetime
 from ds3231 import DS3231
-
 
 # Pin Definitions
 light = 12
@@ -31,18 +30,18 @@ ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
 iwlist = 'sudo iwlist wlan0 scan | grep -e "Minion_Hub" -e "Master_Hub"'
 net_cfg = "ls /etc/ | grep dhcp"
 
+
 class MinionToolbox(object):
 
     def __init__(self):
         self._py_ver_major = sys.version_info.major
         self._rtc_ext = DS3231()
-        #self.GPIO = RPi.GPIO
+        # self.GPIO = RPi.GPIO
 
     # str2bool will be depricated!!!  Use ans2bool()
-    def str2bool(self,v):
+    def str2bool(self, v):
         """Convert a string to a boolean"""
         return v.lower() in ("Y", "y", "yes", "true", "t", "1")
-
 
     def abort_mission(self):
 
@@ -68,8 +67,7 @@ class MinionToolbox(object):
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
         exit(0)
 
-
-    def ans2bool(self,ans2convert):
+    def ans2bool(self, ans2convert):
         """Convert a yes/no or true/false answer to a boolean
 
         Answers that will result in a boolean 'True':
@@ -92,7 +90,7 @@ class MinionToolbox(object):
         result = ans2convert.lower() in ("Y", "y", "yes", "true", "t", "1")
         return result
 
-    def check_wifi(self,IgnoreStatus):
+    def check_wifi(self, IgnoreStatus):
         """Checks for a Minion Hub and connects
            
 
@@ -200,13 +198,13 @@ class MinionToolbox(object):
 
         """
 
-        #list of keys
-        keys = ['Minion_ID','Abort','MAX_Depth','IG_WIFI_D','IG_WIFI_H',\
-                'INIsamp_hours','INIsamp_camera_rate','INIsamp_tempPres_rate',\
-                'INIsamp_oxygen_rate','FINsamp_hours','FINsamp_camera_rate',\
-                'FINsamp_tempPres_rate','FINsamp_oxygen_rate','TLPsamp_minion_rate',\
-                'TLPsamp_oxygen_rate','Ddays','Dhours','Stime','Srate','iniImg',\
-                'iniP30','iniP100','iniTmp','iniO2','iniAcc'\
+        # list of keys
+        keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_D', 'IG_WIFI_H', \
+                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate', \
+                'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate', \
+                'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate', \
+                'TLPsamp_oxygen_rate', 'Ddays', 'Dhours', 'Stime', 'Srate', 'iniImg', \
+                'iniP30', 'iniP100', 'iniTmp', 'iniO2', 'iniAcc' \
                 ]
 
         mission_config = dict.fromkeys(keys)
@@ -241,14 +239,14 @@ class MinionToolbox(object):
         mission_config['Srate'] = float(config['Sleep_cycle']['Minion_sleep_cycle'])
 
         Stime = config['Data_Sample']['Minion_sample_time']
-        #Determine if the value entered into 'Minion_sample_time' is
+        # Determine if the value entered into 'Minion_sample_time' is
         #    'Camera' or an actual number.
-        #Note: Any text will work, not just 'Camera'
+        # Note: Any text will work, not just 'Camera'
         try:
             mission_config['Stime'] = float(Stime)
         except:
-            #Since Stime cannot be cast as a float, there must be some text
-            #in the field such as 'Camera'
+            # Since Stime cannot be cast as a float, there must be some text
+            # in the field such as 'Camera'
             mission_config['Stime'] = float(.2)
         mission_config['TLPsamp_minion_rate'] = float(config['Data_Sample']['Minion_sample_rate'])
         mission_config['TLPsamp_oxygen_rate'] = float(config['Data_Sample']['Oxygen_sample_rate'])
@@ -257,32 +255,48 @@ class MinionToolbox(object):
         mission_config['iniP30'] = self.str2bool(config['Sampling_scripts']['30Ba-Pres'])
         mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100Ba-Pres'])
         mission_config['iniTmp'] = self.str2bool(config['Sampling_scripts']['Temperature'])
-        mission_config['iniO2']  = self.str2bool(config['Sampling_scripts']['Oxybase'])
+        mission_config['iniO2'] = self.str2bool(config['Sampling_scripts']['Oxybase'])
         mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['ACC_100Hz'])
 
         return mission_config
 
-    def config_gpio(self):
+    def config_gpio(self, **kwargs):
         """Reads the pin_config.ini file, configures pin directions and default states.
         Returns a dictionary with pin names & assignments
 
-        Parameters
-        ----------
-        none
+        Keyword Args:
+        -------------
+        verbose : displays additional information (default False)
+        defaults : Configures the pins to their default states as listed in pin_defs.ini (default False)
 
         Returns:
         --------
+        GPIO : An instance of RPi.GPIO
         dict pin_defs_dict : Minion Pin Definitions Dictionary
             keys:
                 based on pin_defs.ini
 
-        Example:
+        Example: Configure the GPIOs and configure their default states
             from minion_toolbox import MinionToolbox
             minion_tools = MinionToolbox()
+            GPIO, pin_defs_dict = minion_tools.config_gpio(defaults=True, verbose=True)
+
+        Example: Configure the GPIOs and toggle the Green LED
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            import time
             GPIO, pin_defs_dict = minion_tools.config_gpio()
             GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
+            time.sleep(1)
             GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
         """
+
+        options = {
+            'verbose': False,
+            'defaults': False
+        }
+        options.update(kwargs)
+
         parser = configparser.ConfigParser()
         parser.read(pin_defs_file)
 
@@ -294,17 +308,22 @@ class MinionToolbox(object):
         for sect in parser.sections():
             pin_defs_dict[sect] = int(parser.get(sect, 'pin'))
             if parser.get(sect, 'direction').upper() == 'IN':
-                print('Setting {} pin {} as an input'.format(sect, parser.get(sect, 'pin')))
+                if options['verbose']:
+                    print('Configuring {} pin {} as an input'.format(sect, parser.get(sect, 'pin')))
                 GPIO.setup(int(parser.get(sect, 'pin')), GPIO.IN)
             if parser.get(sect, 'direction').upper() == 'OUT':
-                print('Setting {} pin {} as an output'.format(sect, parser.get(sect, 'pin')))
+                if options['verbose']:
+                    print('Configuring {} pin {} as an output'.format(sect, parser.get(sect, 'pin')))
                 GPIO.setup(int(parser.get(sect, 'pin')), GPIO.OUT)
+            if parser.get(sect, 'direction').upper() == 'OUT' and options['defaults']:
+                if options['verbose']:
+                    print('Configuring {} pin {} default state as {}'.format(sect, parser.get(sect, 'pin'), parser.get(sect, 'default_state')))
                 GPIO.output(int(parser.get(sect, 'pin')), int(parser.get(sect, 'default_state')))
 
         return GPIO, pin_defs_dict
 
     def update_timestamp(self):
-        """Updates the timesamp piclke file
+        """Updates the timesamp pickle file
 
         Parameters
         ----------
@@ -326,7 +345,8 @@ class MinionToolbox(object):
             tm_now_dict = self.rtc_ext_get_time()
 
             # Compose the time_stamp string
-            time_stamp = tm_now_dict['YYYY'] + "-" + tm_now_dict['MM'] + "-" + tm_now_dict['DD'] + "_" + tm_now_dict['hh'] + "-" + tm_now_dict['mm'] + "-" + tm_now_dict['ss']
+            time_stamp = tm_now_dict['YYYY'] + "-" + tm_now_dict['MM'] + "-" + tm_now_dict['DD'] + "_" + tm_now_dict[
+                'hh'] + "-" + tm_now_dict['mm'] + "-" + tm_now_dict['ss']
 
             # Write the new time stamp to the pickle file
             with open("/home/pi/Documents/Minion_scripts/timesamp.pkl", "wb") as tm_stamp_pkl:
@@ -361,7 +381,6 @@ class MinionToolbox(object):
 
         return time_stamp
 
-
     def delete_data_xmt_status_pickle(self):
         """Delete the Data Transmit Status Pickle File
 
@@ -385,7 +404,7 @@ class MinionToolbox(object):
         else:
             print("[OK] Data Transmit Status Pickle File Already Removed or Does Not Exist.")
 
-    def flash(self,num_flashes, ton, toff):
+    def flash(self, num_flashes, ton, toff):
         """Flash the sampling LED Ring
 
         Parameters
@@ -402,40 +421,38 @@ class MinionToolbox(object):
         
             from minion_toolbox import MinionToolbox
             minion_tools = MinionToolbox()
-            minion_tools.strobe(2,250,250)
+            minion_tools.flash(2,250,250)
 
         Example: Simply illuminates the LED Ring for 2 seconds
 
             from minion_toolbox import MinionToolbox
             minion_tools = MinionToolbox()
-            minion_tools.strobe(1,2000,0)
+            minion_tools.flash(1,2000,0)
 
         Example: Dimmable Setting
 
             from minion_toolbox import MinionToolbox
             minion_tools = MinionToolbox()
-            minion_tools.strobe(100,5,5)#Dim by 50%
+            minion_tools.flash(100,5,5)#Dim by 50%
         
         """
-        #Setup the pin - eventually move this to its own method
-        GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(light, GPIO.OUT)
+
+        gpio_pins, pin_defs_dict = self.config_gpio()
 
         for val in range(num_flashes):
-            GPIO.output(light, 1)
-            time.sleep(ton/1000)
+            gpio_pins.output(pin_defs_dict['LED_RING_CTRL'], GPIO.HIGH)
+            time.sleep(ton / 1000)
             # If we have done the requisite number of flashes,
             # no need for the final off time.
             if val == num_flashes - 1:
                 break
-            GPIO.output(light, 0)
-            time.sleep(toff/1000)
+            gpio_pins.output(pin_defs_dict['LED_RING_CTRL'], GPIO.LOW)
+            time.sleep(toff / 1000)
 
-        #Finally, turn off the LED Ring
-        GPIO.output(light, 0)
+        # Finally, turn off the LED Ring
+        gpio_pins.output(pin_defs_dict['LED_RING_CTRL'], GPIO.LOW)
 
-    def kill_sampling(self,scriptNames):
+    def kill_sampling(self, scriptNames):
         """Ends the python processes listed in scriptNames
 
         Parameters
@@ -456,7 +473,7 @@ class MinionToolbox(object):
         for script in scriptNames:
             os.system("sudo pkill -9 -f {}".format(script))
 
-    def write_data_file_header(self,data_type,file_path_name,file_name,samp_rate,iniP30,iniP100,iniTmp):
+    def write_data_file_header(self, data_type, file_path_name, file_name, samp_rate, iniP30, iniP100, iniTmp):
         """Write Header Record to Pressure & Temperature Data File
 
         Parameters
@@ -475,22 +492,22 @@ class MinionToolbox(object):
          
         """
 
-        with open(file_path_name,"a+") as file:
+        with open(file_path_name, "a+") as file:
 
-            file.write(data_type) #Write Data Type Identifier
-            file.write("," + file_name)  #Write the file name
-            file.write("," + str(samp_rate))  #Write the sample rate
+            file.write(data_type)  # Write Data Type Identifier
+            file.write("," + file_name)  # Write the file name
+            file.write("," + str(samp_rate))  # Write the sample rate
 
             if iniP30 == True:
-                #file.write("Pressure(dbar),Temp(C)")
-                file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+                # file.write("Pressure(dbar),Temp(C)")
+                file.write(",Pressure(dbar*1000),Temp(C*100)")  # Meta-Record for fixed field Press and Temp
 
             if iniP100 == True:
-                #file.write("Pressure(dbar),Temp(C)")
-                file.write(",Pressure(dbar*1000),Temp(C*100)")  #Meta-Record for fixed field Press and Temp
+                # file.write("Pressure(dbar),Temp(C)")
+                file.write(",Pressure(dbar*1000),Temp(C*100)")  # Meta-Record for fixed field Press and Temp
 
             if iniTmp == True:
-                #file.write(", TempTSYS01(C)")
+                # file.write(", TempTSYS01(C)")
                 file.write(",TempTSYS01(C*100)")
 
     def rtc_ext_get_time(self):
@@ -650,7 +667,6 @@ class MinionToolbox(object):
 
         return success
 
-
     def read_samp_num(self):
         """Read the sample number from the samp_num pickle file.
         Creates and initializes a samp_num pickle file if it does not exist.
@@ -730,4 +746,3 @@ class MinionToolbox(object):
             print('[OK] Sample Number Pickle File Removed.')
         else:
             print("[OK] Sample Number Pickle File Already Removed or Does Not Exist.")
-
