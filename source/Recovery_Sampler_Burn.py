@@ -324,4 +324,4 @@ if __name__ == '__main__':
         minion_hat.burn_wire(minion_hat.ENABLE)
         os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
-    time.sleep(60)  # Do we need to wait this long???
+    time.sleep(10)
