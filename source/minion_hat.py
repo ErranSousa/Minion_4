@@ -41,7 +41,6 @@ class MinionHat(object):
             print("Available busses are listed as /dev/i2c*")
             if os.uname()[1] == 'raspberrypi':
                 print("Enable the i2c interface using raspi-config!")
-        print("Initialized MinionHat Class")
 
     def led(self, new_state):
         """Status LED Control
