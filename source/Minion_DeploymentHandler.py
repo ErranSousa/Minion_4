@@ -13,8 +13,8 @@ from minion_toolbox import MinionToolbox
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
 
-# Configure the Raspberry Pi GPIOs
-GPIO, pin_defs_dict = minion_tools.config_gpio()
+# Configure the Raspberry Pi GPIOs & configure pins to their default states
+GPIO, pin_defs_dict = minion_tools.config_gpio(defaults=True)
 
 # Get the current time stamp information
 samp_time = minion_tools.update_timestamp()  # Use when DS3231 is not enabled in config.txt
@@ -79,7 +79,6 @@ if __name__ == '__main__':
         minion_tools.kill_sampling(scriptNames)
         minion_tools.flash(2, 250, 250)
         GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
-        GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
         exit(0)
 
     # Initial Sampling Mode
@@ -115,6 +114,7 @@ if __name__ == '__main__':
         if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
             minion_tools.kill_sampling(scriptNames)
             minion_tools.flash(2, 250, 250)
+            GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
             GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
             exit(0)
         else:
