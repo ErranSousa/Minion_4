@@ -44,7 +44,8 @@ if(isset($_POST['new_mission'])){
 
 $command = escapeshellcmd('sudo python /var/www/html/new_mission.py');
 $output = shell_exec($command);
-echo $output;
+// echo $output;
+echo nl2br($output);
 echo '<br>Ready to begin Mission!<br>';
 }
 ?>
