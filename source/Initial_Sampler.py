@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 import tsys01
 import ms5837
 from kellerLD import KellerLD
@@ -16,17 +16,17 @@ from minion_toolbox import MinionToolbox
 DATA_TYPE = '$01'  # Initial Sampling Type Data
 
 # Pin Definitions
-BURN = 33
-data_rec = 16
-IO328 = 29
+# BURN = 33
+# data_rec = 16
+# IO328 = 29
 
 # GPIO Setup
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(BURN, GPIO.OUT)
-GPIO.setup(data_rec, GPIO.OUT)
-GPIO.output(BURN, 0)
-GPIO.output(data_rec, 1)
+# GPIO.setwarnings(False)
+# GPIO.setmode(GPIO.BOARD)
+# GPIO.setup(BURN, GPIO.OUT)
+# GPIO.setup(data_rec, GPIO.OUT)
+# GPIO.output(BURN, 0)
+# GPIO.output(data_rec, 1)
 
 # Initializations
 samp_count = 1
@@ -51,14 +51,20 @@ def abortMission(configLoc):
     exit(0)
 
 
-# create an instance of MinionToolbox()
+# Create an instance of MinionToolbox()
 minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
+
+# Configure the Raspberry Pi GPIOs
+GPIO, pin_defs_dict = minion_tools.config_gpio()
 
 # Load the Minion Configuration
 minion_mission_config = minion_tools.read_mission_config()
 
 # Load the Data Configuration Directory
 data_config = minion_tools.read_data_config()
+
+# Minion Mission Configuration file
+configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
@@ -142,6 +148,8 @@ minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion
 
 if __name__ == '__main__':
 
+    GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
+
     if minion_mission_config['iniImg'] == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
@@ -217,5 +225,6 @@ if __name__ == '__main__':
         time.sleep(Sf - timeS)
 
     minion_tools.kill_sampling(scriptNames)
-    GPIO.setup(data_rec, GPIO.OUT)
-    GPIO.output(data_rec, 0)
+    GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
+    #GPIO.setup(data_rec, GPIO.OUT)
+    #GPIO.output(data_rec, 0)
