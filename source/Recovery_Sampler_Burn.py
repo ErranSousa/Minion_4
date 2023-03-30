@@ -21,15 +21,9 @@ MIN_DEPTH_CNTR_THRESHOLD = 5  # Number of minimum pressure measurements before t
 ENABLE_MIN_DEPTH_CUTOUT = False  # Enables the Minimum Depth Cutout Feature
 ENABLE_MIN_DEPTH_CUTOUT_TEST = False  # TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
 
-# Pin Assignments
-# BURN = 33
-# DATA_REC_PIN = 16
-
 # Initializations
-# samp_count = 1
 samp_num = 1
 NumSamples = 0
-# BURN_WIRE = False
 min_depth_cntr = 0  # Count of the number of minimum depth measurements
 min_depth_flag = False  # Flag to indicate that a minimum depth condition exists
 if ENABLE_MIN_DEPTH_CUTOUT_TEST:
@@ -67,18 +61,6 @@ minion_hat.burn_wire(minion_hat.ENABLE)
 # Indicate that data is being collected
 GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
 
-# GPIO Initializations
-# GPIO.setwarnings(False)
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(BURN, GPIO.OUT)
-# GPIO.output(BURN, 1)
-# GPIO.setup(DATA_REC_PIN, GPIO.OUT)
-# GPIO.output(DATA_REC_PIN, 1)
-
-# def str2bool(v):
-#     return v.lower() in ("yes", "true", "t", "1")
-
-
 def abortMission(configLoc):
 
     abortConfig = configparser.ConfigParser()
@@ -86,20 +68,6 @@ def abortMission(configLoc):
     abortConfig.set('Mission', 'Abort', '1')
     with open(config, 'wb') as abortFile:
         abortConfig.write(abortFile)
-
-
-# def kill_sampling(scriptNames):
-#
-#     for script in scriptNames:
-#         os.system("sudo pkill -9 -f {}".format(script))
-
-
-# def read_sampcount():
-#     #countp = open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb")
-#     with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","rb") as countp:
-#         sampcount = pickle.load(countp)
-#     #countp.close()
-#     return sampcount
 
 
 def write_pickle_file(fname_pickle, data):
@@ -148,7 +116,7 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
 
 
 # Read out final samples status.
-#    True = Final Samples Performed, False = Final Samples Not Performed
+# True = Final Samples Performed, False = Final Samples Not Performed
 final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
@@ -156,61 +124,25 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
                "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
 
 if any(x in os.popen(ps_test).read() for x in scriptNames):
-    # kill_sampling(scriptNames)
     minion_tools.kill_sampling(scriptNames)
 
-# data_config = configparser.ConfigParser()
-# data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
-
-# configDir = data_config['Data_Dir']['Directory']
-# configLoc = '{}/Minion_config.ini'.format(configDir)
-# config = configparser.ConfigParser()
-# config.read(configLoc)
-# Abort = str2bool(config['Mission']['Abort'])
-# iniImg = str2bool(config['Sampling_scripts']['Image'])
-# iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
-# iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
-# iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
-# iniO2  = str2bool(config['Sampling_scripts']['Oxybase'])
-# iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
-
-# MAX_Depth = int(config['Mission']['MAX_Depth'])
-
-# Ddays = int(config['Deployment_Time']['days'])
-# Dhours = int(config['Deployment_Time']['hours'])
-
-# Srate = float(config['Sleep_cycle']['Minion_sleep_cycle'])  # becomes mission_config['Srate']
-
-# TotalCycles = int((((Ddays*24)+Dhours))/Srate)
 TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / minion_mission_config['Srate']
 
-# samp_count = int(read_sampcount())
-
-# print("A--> Srate: " + str(Srate) + ", TotalCycles: " + str(TotalCycles) + \
-#       ", samp_count: " + str(samp_count))
 print("A--> Srate: " + str(minion_mission_config['Srate']) + ", TotalCycles: " + str(TotalSamples) +
       ", samp_num: " + str(samp_num))
 
 with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
     samp_time = pickle.load(firstp)
 
-# samp_count_leading_zeros = "%03d" % samp_count
 samp_num_leading_zeros = "%03d" % samp_num
 
-# samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zeros to sample count
-samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time) #Add leading zeros to sample count
-
-# Stime = float(config['Final_Samples']['hours'])  # becomes mission_config['FINsamp_hours']
-# Srate = float(config['Final_Samples']['TempPres_sample_rate']) # becomes mission_config['FINsamp_tempPres_rate']
+samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
 file_name = "{}_TEMPPRES-FIN.txt".format(samp_time)
-# file_path_name = "{}/minion_data/FIN/".format(configDir) + file_name
 file_path_name = "{}/minion_data/FIN/".format(data_config['Data_Dir']) + file_name
 
-# Sf = 1/Srate
 Sf = 1/minion_mission_config['FINsamp_tempPres_rate']
 
-# TotalSamples = Stime*60*60*Srate
 TotalSamples = minion_mission_config['FINsamp_hours']*60*60*minion_mission_config['FINsamp_tempPres_rate']
 
 #print for testing only!
@@ -221,7 +153,6 @@ print("B--> Final Samples Press/Temp rate: " + str(minion_mission_config['FINsam
 
 time.sleep(1)
 
-#if iniP30 == True:
 if minion_mission_config['iniP30']:
 
     Psensor = ms5837.MS5837_30BA()  # Default I2C bus is 1 (Raspberry Pi 3)
@@ -239,7 +170,6 @@ if minion_mission_config['iniP30']:
     else:
         Pres_ini = "Broken"
 
-# if iniP100 == True:
 if minion_mission_config['iniP100']:
 
     Psensor = KellerLD()
@@ -257,7 +187,6 @@ if minion_mission_config['iniP100']:
     else:
         Pres_ini = "Broken"
 
-# if iniTmp == True:
 if minion_mission_config['iniTmp']:
 
     sensor_temp = tsys01.TSYS01()
@@ -267,13 +196,11 @@ if minion_mission_config['iniTmp']:
         print("Error initializing Temperature sensor")
         exit(1)
 
-# if iniP100 == False and iniP30 == False:
 if not minion_mission_config['iniP100'] and not minion_mission_config['iniP30']:
     Pres_ini = 2000
 
 if __name__ == '__main__':
     
-    # print("C--> samp_count: " + str(samp_count) + ", TotalCycles + 1: " + str(TotalCycles+1))
     print("C--> samp_num: " + str(samp_num) + ", TotalSamples + 1: " + str(TotalSamples + 1))
     
     if Pres_ini == "Broken":
@@ -281,15 +208,9 @@ if __name__ == '__main__':
         abortMission(configLoc)
         os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
 
-#    if Abort == True:
-#        GPIO.output(BURN,1)
-#        os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
-
     if not final_samp_status_flag:
-        # GPIO.output(BURN,1)
         minion_hat.burn_wire(minion_hat.ENABLE)
         # Create the final samples' data file only if the final samples have not been performed
-        # minion_tools.write_data_file_header(DATA_TYPE,file_path_name,file_name,Srate,iniP30,iniP100,iniTmp)
         # Write a header to the data file
         minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
                                             minion_mission_config['FINsamp_tempPres_rate'],
@@ -297,20 +218,17 @@ if __name__ == '__main__':
                                             minion_mission_config['iniTmp'])
 
         scriptNames2 = ["Minion_image_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py"]
-        
-        # if iniImg == True:
+
         if minion_mission_config['iniImg']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
-        # if iniO2 == True:
         if minion_mission_config['iniO2']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
 
-        # if iniAcc == True:
         if minion_mission_config['iniAcc']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
-        # Spew readings
+        # Display readings
         while NumSamples <= TotalSamples and not min_depth_flag:
 
             tic = time.perf_counter()
@@ -322,7 +240,6 @@ if __name__ == '__main__':
 
             sensor_string = ''
 
-            # if iniP100 or iniP30 == True:
             if minion_mission_config['iniP100'] or minion_mission_config['iniP30']:
 
                 if Psensor.read():
@@ -346,13 +263,10 @@ if __name__ == '__main__':
                         file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
-
-            # if iniTmp == True:
             if minion_mission_config['iniTmp']:
 
                 if not sensor_temp.read():
                     print("Error reading sensor")
-                    # iniTmp = False
                     minion_mission_config['iniTmp'] = False
 
                 Temp_acc = round(sensor_temp.temperature(), 2)*100
@@ -378,7 +292,6 @@ if __name__ == '__main__':
             time.sleep(Sf - timeS)
 
             # Minimum Depth Cutout Feature
-            # if iniP100 or iniP30 == True:
             if minion_mission_config['iniP100'] or minion_mission_config['iniP30']:
                 if ENABLE_MIN_DEPTH_CUTOUT:
                     if ENABLE_MIN_DEPTH_CUTOUT_TEST:
@@ -391,29 +304,24 @@ if __name__ == '__main__':
                         print("\nMinimum Depth Count: " + str(min_depth_cntr) + ", Pressure: " + str(int(Ppressure)/1000))
                     if min_depth_cntr >= MIN_DEPTH_CNTR_THRESHOLD:
                         if any(x in os.popen(ps_test).read() for x in scriptNames2):
-                            # kill_sampling(scriptNames)
                             minion_tools.kill_sampling(scriptNames)
                         print("Minimum Depth Condition Detected.")
                         print("Ending Sampling and preparing to transmit data.")
                         write_pickle_file(fname_final_status_pickle, True)
                         min_depth_flag = True
-                        # GPIO.output(DATA_REC_PIN, 0)  #Turn off the DATA Receive LED Inidicator
                         GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)  # Turn off the DATA ACQ LED Inidicator
                         os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
         # At this point, all final Pressure & Temperature samples have completed
         # Need to end sampling of other sensors as well
         if any(x in os.popen(ps_test).read() for x in scriptNames2):
-            # kill_sampling(scriptNames)
             minion_tools.kill_sampling(scriptNames)
         write_pickle_file(fname_final_status_pickle, True)
-        # GPIO.output(DATA_REC_PIN, 0)  #Turn off the DATA Receive LED Inidicator
         GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)  # Turn off the DATA ACQ LED Inidicator
 
     else:
         print("Final Sampling Stage is complete.")
-        # GPIO.output(BURN,1)
         minion_hat.burn_wire(minion_hat.ENABLE)
         os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
-    time.sleep(60)
+    time.sleep(60)  # Do we need to wait this long???
