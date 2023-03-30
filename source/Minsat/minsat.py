@@ -211,10 +211,15 @@ class MinSat():
 
         self.gps_pwr(self.dev_on)
         print("GPS Power On.")
+        success = False  # Set success flag to false
+        gpsStruct = self.GPSStruct()  # Create an instance of the GPSStruct()
         #uart = serial.Serial("/dev/ttySC0", baudrate=9600, timeout=10)
-        uart = serial.Serial(self.gps_com_port, baudrate=self.gps_baud, timeout=10)
+        try:
+            uart = serial.Serial(self.gps_com_port, baudrate=self.gps_baud, timeout=10)
+        except:
+            return success, gpsStruct
+
         gps = GPS(uart, debug=False)  # Use UART/pyserial
-        gpsStruct = self. GPSStruct() #Create an instance of the GPSStruct()
         last_print = time.time()
         time_start = time.time()
         gpsTimeout = options['gps_timeout']
@@ -276,15 +281,18 @@ class MinSat():
                     #gpsStruct.longitude = gps.longitude
                     print("=" * 40)
 
-        if(valid_position == False):
+        if not valid_position:
             print("No GPS Position Available.")
+            success = False
+        else:
+            success = True
         if options['maintain_gps_pwr'] == False:
             self.gps_pwr(self.dev_off)
             print("GPS Power Off.")
         else:
             print("GPS Power Maintained.")
-        return gpsStruct
-        pass
+
+        return success, gpsStruct
 
 #   class rockBlockProtocol():
     def rockBlockConnected(self):pass
@@ -560,7 +568,7 @@ class MinSat():
 
         options.update(kwargs) #Now update the dictionary with any duplicate keys from kwargs
 
-        gpsData = self.gps_get_position(verbose=options['verbose'],gps_timeout=options['gps_timeout'],ird_sig_timeout=options['ird_sig_timeout'],maintain_gps_pwr=options['maintain_gps_pwr'],maintain_ird_pwr=options['maintain_ird_pwr'])
+        success, gpsData = self.gps_get_position(verbose=options['verbose'], gps_timeout=options['gps_timeout'], ird_sig_timeout=options['ird_sig_timeout'],maintain_gps_pwr=options['maintain_gps_pwr'],maintain_ird_pwr=options['maintain_ird_pwr'])
 
         gpsDataStr = "{},{},{:04},{:02},{:02},{:02},{:02},{:02},{:.6f},{:.6f}".format(
             DEV_ID,
