@@ -171,10 +171,10 @@ if (data_xmt_status_dict['num_gps_sent'] < 2) or \
     print('Acquire and Transmit a GPS Position')
 
     # Create an instance of the Minsat class (sets up the Minsat hardware and software)
-    m1 = MinSat(gps_port,gps_baud,modem_port,modem_baud)
+    m1 = MinSat(gps_port, gps_baud, modem_port, modem_baud)
     
     # Attempt to acquire and transmit a GPS Position
-    (success,ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=True,gps_timeout=120)
+    (success, ret_data) = m1.sbd_send_position(verbose=False, maintain_gps_pwr=True, gps_timeout=120)
     
     if success and ret_data.valid_position:
         print('[OK] GPS Position Acquired and Transmitted to Iridium Successfully.')
@@ -182,15 +182,15 @@ if (data_xmt_status_dict['num_gps_sent'] < 2) or \
     elif not success and not ret_data.valid_position:
         print('[FAILURE] Could not acquire a GPS Position. ')
         print('Trying Again...')
-        (success,ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=False,gps_timeout=120)
+        (success, ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=False, gps_timeout=120)
     elif not success and ret_data.valid_position:
         print('[FAILURE] Could not transmit the acquired position to Iridium')
         print('Trying Again...')
-        (success,ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=False,gps_timeout=120)
+        (success, ret_data) = m1.sbd_send_position(verbose=False, maintain_gps_pwr=False, gps_timeout=120)
         
     if success == True:
         data_xmt_status_dict['num_gps_sent'] += 1
-        write_pickle_file(data_xmt_status_pickle_name,data_xmt_status_dict)
+        write_pickle_file(data_xmt_status_pickle_name, data_xmt_status_dict)
     if success == False:
         print('[FAILURE] No Position Available or Could not Transmit to Iridium')
 
@@ -341,8 +341,9 @@ else:
             #----------------------------------------------------------------------------------------#
         
 print("Exiting xmt_minion_data.py...")
-time.sleep(5)
-sys.exit()
+time.sleep(1)
+# sys.exit()
+exit(0)
 
 
 
