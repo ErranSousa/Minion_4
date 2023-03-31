@@ -58,11 +58,11 @@ samp_count = max(sampNum) + 1
 
 def picture(config_dir, num_samples, samp_mode):
     try:
-        print("Mode: " + mode)
+        print("Sample Mode: " + mode)
 
         # Update the time stamp
         samp_time = minion_tools.update_timestamp()  # Use when DS3231 is not enabled in config.txt
-        print('Time Stamp: ' + str(samp_time))
+        # print('Time Stamp: ' + str(samp_time))
 
         GPIO.output(pin_defs_dict['LED_RING_CTRL'], GPIO.HIGH)
         camera.resolution = (2592, 1944)
