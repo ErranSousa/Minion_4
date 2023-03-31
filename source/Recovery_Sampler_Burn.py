@@ -55,6 +55,9 @@ configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 # Get the current sample number
 samp_num = minion_tools.read_samp_num()
 
+# Get the current time stamp information
+samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+
 # Enable the burn wire
 minion_hat.burn_wire(minion_hat.ENABLE)
 
@@ -131,8 +134,9 @@ TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['D
 print("A--> Srate: " + str(minion_mission_config['Srate']) + ", TotalCycles: " + str(TotalSamples) +
       ", samp_num: " + str(samp_num))
 
-with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
-    samp_time = pickle.load(firstp)
+print('Timestamp: {}'.format(samp_time))
+# with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+#     samp_time = pickle.load(firstp)
 
 samp_num_leading_zeros = "%03d" % samp_num
 
