@@ -155,7 +155,7 @@ class MinionToolbox(object):
 
         data_config['Data_Dir'] = config['Data_Dir']['Directory']
 
-        print('Data Config: ' + data_config['Data_Dir'])
+        # print('Data Config: ' + data_config['Data_Dir'])
         return data_config
 
     def read_mission_config(self):
@@ -211,7 +211,7 @@ class MinionToolbox(object):
 
         data_config = self.read_data_config()
         config_file = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
-        print('Mission Config: ' + config_file)
+        # print('Mission Config: ' + config_file)
 
         config = configparser.ConfigParser()
         config.read(config_file)
@@ -303,6 +303,7 @@ class MinionToolbox(object):
         # Create an empty dictionary
         pin_defs_dict = dict()
 
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
 
         for sect in parser.sections():
