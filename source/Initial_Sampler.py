@@ -1,32 +1,17 @@
 #!/usr/bin/env python3
 
-# import RPi.GPIO as GPIO
 import tsys01
 import ms5837
 from kellerLD import KellerLD
 import pickle
 import time
 import os
-import math
 import configparser
 import sys
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
 DATA_TYPE = '$01'  # Initial Sampling Type Data
-
-# Pin Definitions
-# BURN = 33
-# data_rec = 16
-# IO328 = 29
-
-# GPIO Setup
-# GPIO.setwarnings(False)
-# GPIO.setmode(GPIO.BOARD)
-# GPIO.setup(BURN, GPIO.OUT)
-# GPIO.setup(data_rec, GPIO.OUT)
-# GPIO.output(BURN, 0)
-# GPIO.output(data_rec, 1)
 
 # Initializations
 samp_count = 1
@@ -63,22 +48,25 @@ minion_mission_config = minion_tools.read_mission_config()
 # Load the Data Configuration Directory
 data_config = minion_tools.read_data_config()
 
+# Get the current time stamp information
+samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
 
+print('Timestamp: {}'.format(samp_time))
 
-#if Abort == True:
-if minion_mission_config['Abort'] == True:
-    GPIO.setup(29, GPIO.OUT)
-    GPIO.output(29, 0)
+if minion_mission_config['Abort']:
+    # GPIO.setup(29, GPIO.OUT)
+    # GPIO.output(29, 0)
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
 # firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-with open("/home/pi/Documents/Minion_scripts/timesamp.pkl", "rb") as firstp:
-    samp_time = pickle.load(firstp)
+# with open("/home/pi/Documents/Minion_scripts/timesamp.pkl", "rb") as firstp:
+#     samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
     if dataNum.endswith('_TEMPPRES-INI.txt'):
@@ -99,7 +87,7 @@ TotalSamples = minion_mission_config['INIsamp_hours'] * 60 * 60 * minion_mission
 
 time.sleep(1)
 
-if minion_mission_config['iniP30'] == True:
+if minion_mission_config['iniP30']:
 
     Psensor = ms5837.MS5837_30BA()  # Default I2C bus is 1 (Raspberry Pi 3)
 
@@ -116,7 +104,7 @@ if minion_mission_config['iniP30'] == True:
     else:
         Pres_ini = "Broken"
 
-if minion_mission_config['iniP100'] == True:
+if minion_mission_config['iniP100']:
 
     Psensor = KellerLD()
 
@@ -133,7 +121,7 @@ if minion_mission_config['iniP100'] == True:
     else:
         Pres_ini = "Broken"
 
-if minion_mission_config['iniTmp'] == True:
+if minion_mission_config['iniTmp']:
 
     sensor_temp = tsys01.TSYS01()
 
@@ -150,13 +138,13 @@ if __name__ == '__main__':
 
     GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
 
-    if minion_mission_config['iniImg'] == True:
+    if minion_mission_config['iniImg']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
-    if minion_mission_config['iniO2'] == True:
+    if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
 
-    if minion_mission_config['iniAcc'] == True:
+    if minion_mission_config['iniAcc']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
     # Spew readings
@@ -169,7 +157,7 @@ if __name__ == '__main__':
 
         sensor_string = ''
 
-        if minion_mission_config['iniP100'] or minion_mission_config['iniP30'] == True:
+        if minion_mission_config['iniP100'] or minion_mission_config['iniP30']:
 
             if Psensor.read():
                 # Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)
@@ -184,9 +172,9 @@ if __name__ == '__main__':
                 sensor_string = "{}{}".format(sensor_string, Pres_data)
 
             else:
-                print('Pressure Sensor ded')
+                print('Pressure Sensor not responding.')
                 with open(file_path_name, "a") as file:
-                    file.write('Pressure Sensor fail')
+                    file.write('Pressure Sensor reading failure.')
                 abortMission(configLoc)
 
             print("Depth: " + str(int(Ppressure) / 1000))  # TESTING ONLY
@@ -197,11 +185,11 @@ if __name__ == '__main__':
                     file.write("Minion Exceeded Depth Maximum!")
                 abortMission(configLoc)
 
-        if minion_mission_config['iniTmp'] == True:
+        if minion_mission_config['iniTmp']:
 
             if not sensor_temp.read():
                 print("Error reading sensor")
-                minion_mission_config['iniTmp'] = False # What is the purpose of this???
+                minion_mission_config['iniTmp'] = False  # What is the purpose of this???
 
             Temp_acc = round(sensor_temp.temperature(), 2) * 100
             Temp_acc = "%04d" % Temp_acc
@@ -226,5 +214,3 @@ if __name__ == '__main__':
 
     minion_tools.kill_sampling(scriptNames)
     GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
-    #GPIO.setup(data_rec, GPIO.OUT)
-    #GPIO.output(data_rec, 0)
