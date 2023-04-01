@@ -120,7 +120,7 @@ os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py sou
 
 # Copy all required scripts to the Minion_tools directory
 os.system('sudo cp source/dhcp-configure.py source/dhcp-switch.py source/ds3231.py source/EXT_RTC_set_time.py \
-          source/Keep_Me_Alive.py source/minion_hat.py source/minion_toolbox.py source/pin_defs.ini \
+          source/minion_hat.py source/minion_toolbox.py source/pin_defs.ini \
           source/RTC_Finish.py source/RTC_sync_rpi.py source/RTC-set.py source/sampcount_reset.py source/Shutdown.py \
           /home/pi/Documents/Minion_tools/')
 
@@ -206,7 +206,7 @@ else:
 # Get updates
 #os.system('sudo apt-get update && sudo apt-get upgrade -y') 
 # Get needed packages
-os.system('sudo apt-get install -y build-essential python-smbus i2c-tools avrdude nmap nginx php-fpm php-zip')
+os.system('sudo apt-get install -y build-essential python-smbus i2c-tools nmap nginx php-fpm php-zip')
 # raspi-config
 #os.system('sudo raspi-config nonint do_change_locale en_IS.UTF-8')
 os.system('sudo raspi-config nonint do_boot_behaviour B2')
