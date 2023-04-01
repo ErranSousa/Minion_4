@@ -61,8 +61,14 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 # Enable the burn wire
 minion_hat.burn_wire(minion_hat.ENABLE)
 
+# Enable the Recovery Strobe
+minion_hat.strobe(minion_hat.ENABLE)
+
 # Indicate that data is being collected
 GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
+
+# Temporary Setting for Testing Only
+minion_hat.strobe_timing(500, 500)  # On for .5 Seconds / Off for .5 seconds
 
 def abortMission(configLoc):
 
@@ -74,9 +80,6 @@ def abortMission(configLoc):
 
 
 def write_pickle_file(fname_pickle, data):
-    # print("File Name: " + fname_pickle)
-    # disp_data_xmt_status_dict(dict_to_write)
-    # pickle_file_fid = open(fname_pickle,'wb')
     with open(fname_pickle, 'wb') as pickle_file_fid:
         pickle.dump(data, pickle_file_fid)
 
