@@ -14,8 +14,6 @@ alias kill-Minion='sudo killall Minion.py shutdown.py python'
 
 alias ifswitch='sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py'
 
-alias RTC-set='sudo python /home/pi/Documents/Minion_tools/RTC-set.py'
-
 alias Minion-off='sudo python /home/pi/Documents/Minion_tools/Shutdown.py'
 
 alias preview-Minion='sudo raspivid -t 0'
