@@ -30,7 +30,11 @@ minion_tools.delete_samp_num_pickle()
 
 # Reset the Burn Wire
 minion_hat.burn_wire(minion_hat.DISABLE)
-print('[OK] Disabled Burn Wire')
+print('[OK] Disabled the Burn Wire')
+
+# Reset the Recovery Strobe
+minion_hat.strobe(minion_hat.DISABLE)
+print('[OK] Disabled the Recovery Strobe')
 
 time = os.popen('ls /home/pi/Desktop/minion_data/INI/1-*.txt').read()
 
