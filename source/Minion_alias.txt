@@ -19,6 +19,3 @@ alias RTC-set='sudo python /home/pi/Documents/Minion_tools/RTC-set.py'
 alias Minion-off='sudo python /home/pi/Documents/Minion_tools/Shutdown.py'
 
 alias preview-Minion='sudo raspivid -t 0'
-
-alias stay-on='sudo python ~/Documents/Minion_tools/Keep_Me_Alive.py'
-
