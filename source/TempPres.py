@@ -18,20 +18,20 @@ NumSamples = 0
 
 samp_count = 1
 
-def abortMission(configLoc):
+def abort_mission():
 
 #    kill_sampling(scriptNames)
 
     print("Max Depth Exceeded!")
-
-    abortConfig = configparser.ConfigParser()
-    abortConfig.read(configLoc)
-    abortConfig.set('Mission','Abort','1')
-    with open(configLoc,'wb') as abortFile:
-        abortConfig.write(abortFile)
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(29, GPIO.OUT)
-    GPIO.output(29, 0)
+    minion_tools.write_mission_config_option('Mission', 'Abort', '1')
+    # abortConfig = configparser.ConfigParser()
+    # abortConfig.read(configLoc)
+    # abortConfig.set('Mission', 'Abort', '1')
+    # with open(configLoc, 'wb') as abortFile:
+    #     abortConfig.write(abortFile)
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setup(29, GPIO.OUT)
+    # GPIO.output(29, 0)
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
     exit(0)
 
@@ -44,7 +44,12 @@ minion_mission_config = minion_tools.read_mission_config()
 
 # Load the Data Configuration Directory
 data_config = minion_tools.read_data_config()
-configDir = data_config['Data_Dir']
+
+# Get the current time stamp information
+samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+
+# Minion Mission Configuration file
+configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
 scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
                "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py",
@@ -54,8 +59,8 @@ Sf = 1/minion_mission_config['Srate']
 
 TotalSamples = minion_mission_config['Stime'] * 60 * minion_mission_config['Srate']
 
-with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
-    samp_time = pickle.load(firstp)
+# with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
+#     samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
     if dataNum.endswith('_TEMPPRES.txt'):
@@ -122,17 +127,17 @@ while NumSamples <= TotalSamples:
     tic = time.perf_counter()
 
     print("")
-    print("Time Lapse Sampling Mode")  #Indicate to the user in which mode the Minion is operating
+    print("Time Lapse Sampling Mode")  # Indicate to the user in which mode the Minion is operating
 
     sensor_string = ''
 
     if minion_mission_config['iniP100'] or minion_mission_config['iniP30'] == True:
 
         if Psensor.read():
-            Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000 #shifting the decimal point out
+            Ppressure = round((Psensor.pressure() * depth_factor) - surface_offset, 3)*1000  # shifting the decimal point out
             Ppressure = "%07d" % Ppressure  #fixed field / prepending zeros
-            Ptemperature = round(Psensor.temperature(),2)*100 #shifting the decimal point out
-            Ptemperature = "%04d" % Ptemperature #fix field length by prepending zeros if necessary
+            Ptemperature = round(Psensor.temperature(), 2)*100  # shifting the decimal point out
+            Ptemperature = "%04d" % Ptemperature  # fix field length by prepending zeros if necessary
             Pres_data = "{},{},".format(Ppressure, Ptemperature)
             print("Pressure sensor data: {}".format(Pres_data))
             sensor_string = "{}{}".format(sensor_string,Pres_data)
@@ -141,13 +146,13 @@ while NumSamples <= TotalSamples:
             print('Pressure Sensor ded')
             with open(file_path_name,"a") as file:
                 file.write('Pressure Sensor fail')
-            abortMission(configLoc)
+            abort_mission()
 
         #if Ppressure >= MAX_Depth:
         if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
             with open(file_path_name,"a") as file:
                 file.write("Minion Exceeded Depth Maximum!")
-            abortMission(configLoc)
+            abort_mission()
 
 
     if minion_mission_config['iniTmp'] == True:
@@ -157,7 +162,7 @@ while NumSamples <= TotalSamples:
             minion_mission_config['iniTmp'] = False
 
         Temp_acc = round(sensor_temp.temperature(),2)*100
-        Temp_acc = "%04d" % Temp_acc #fix field length by prepending zeros if necessary
+        Temp_acc = "%04d" % Temp_acc  # fix field length by prepending zeros if necessary
 
         print("Temperature_accurate: {} C*100".format(Temp_acc)) #degrees Celsius * 100
 
