@@ -124,7 +124,8 @@ class MinionToolbox(object):
             if ".Minion" in net_status:
                 os.system(ifswitch)
             else:
-                print("You have Minions!")
+                # print("You have Minions!")
+                pass
 
         print(status)
         return status
@@ -259,6 +260,37 @@ class MinionToolbox(object):
         mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['ACC_100Hz'])
 
         return mission_config
+
+    def write_mission_config_option(self, section, option, value):
+        """Set an option in the mission config file.
+
+         Parameters
+         ----------
+         section : string
+             Configuration Section
+         option : string
+             Configuration Option
+         value : string
+             Configuration Value
+
+         Returns:
+         --------
+         none
+         """
+        # Read the location of the mission configuration file
+        data_config = self.read_data_config()
+        config_file = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
+
+        mission_config = configparser.ConfigParser()
+        mission_config.read(config_file)
+
+        # Set the option
+        mission_config.set(section, option, value)
+
+        # Write the mission to the file
+        with open(config_file, 'w') as configFile:
+            mission_config.write(configFile)
+
 
     def config_gpio(self, **kwargs):
         """Reads the pin_config.ini file, configures pin directions and default states.
