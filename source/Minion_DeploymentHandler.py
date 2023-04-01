@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
-# import RPi.GPIO as GPIO
 import time
 import os
-import math
-import configparser
 import sys
-import pickle
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
@@ -27,7 +23,9 @@ minion_mission_config = minion_tools.read_mission_config()
 
 # i = 0  # Not sure why this should be here.
 
-IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) + minion_mission_config['IG_WIFI_H'])/minion_mission_config['Srate']) - (minion_mission_config['INIsamp_hours']/minion_mission_config['Srate'])
+IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) +
+                    minion_mission_config['IG_WIFI_H'])/minion_mission_config['Srate']) - \
+                  (minion_mission_config['INIsamp_hours']/minion_mission_config['Srate'])
 
 print("Minion Deployment Handler")
 print("Time:  {}".format(samp_time))
@@ -35,7 +33,8 @@ print("Days : {}".format(minion_mission_config['Ddays']))
 print("Hours: {}".format(minion_mission_config['Dhours']))
 print("Sample rate (hours) - {}".format(minion_mission_config['Srate']))
 
-TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / minion_mission_config['Srate']
+TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / \
+               minion_mission_config['Srate']
 
 if samp_num >= TotalSamples:
     RemainSamples = 0
@@ -52,7 +51,7 @@ if IG_WIFI_Samples >= samp_num:
 
 else:
     IgnoreWIFI = False
-    print("Searching for WIFI")
+    print("Searching for WIFI...")
 
 ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
 
@@ -86,22 +85,22 @@ if __name__ == '__main__':
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
 
     # Recovery Sampling Mode
-    elif samp_num >= TotalSamples + 1 or minion_mission_config['Abort'] == True:
+    elif samp_num >= TotalSamples + 1 or minion_mission_config['Abort']:
         # GPIO.output(IO328, 0)
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
     # Time-Lapse Sampling Mode
     else:
-        if minion_mission_config['iniImg'] == True:
+        if minion_mission_config['iniImg']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py &')
 
-        if minion_mission_config['iniP30'] == True or minion_mission_config['iniP100'] == True or minion_mission_config['iniTmp'] == True:
+        if minion_mission_config['iniP30'] or minion_mission_config['iniP100'] or minion_mission_config['iniTmp']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
-        if minion_mission_config['iniO2'] == True:
+        if minion_mission_config['iniO2']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
 
-        if minion_mission_config['iniAcc'] == True:
+        if minion_mission_config['iniAcc']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz.py &')
 
     time.sleep(5)
@@ -110,7 +109,7 @@ if __name__ == '__main__':
     minion_tools.increment_samp_num()
     
     # Check for WiFi while any of the scripts in scriptNames are executing
-    while(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
+    while any(x in os.popen(ps_test).read() for x in scriptNames):
         if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
             minion_tools.kill_sampling(scriptNames)
             minion_tools.flash(2, 250, 250)
