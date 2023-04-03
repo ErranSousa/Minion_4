@@ -2,18 +2,20 @@
 
 alias clear_INI_FIN='sudo rm -rf /home/pi/Desktop/Minion_pics/INI/* && sudo rm -rf /home/pi/Minion_pics/FIN/*'
 
-alias clear_Minion_pics='sudo rm -rf /home/pi/Desktop/Minion_pics/*.jpg'
+alias clear_minion_pics='sudo rm -rf /home/pi/Desktop/Minion_pics/*.jpg'
 
-alias clear_Minion_data='sudo rm -rf /home/pi/Desktop/Minion_data/*.txt'
+alias clear_minion_data='sudo rm -rf /home/pi/Desktop/Minion_data/*.txt'
 
-alias clear_Minion_tests='sudo rm -rf /home/pi/Desktop/*.jpg && sudo rm -rf /home/pi/Desktop/*.txt'
+alias clear_minion_tests='sudo rm -rf /home/pi/Desktop/*.jpg && sudo rm -rf /home/pi/Desktop/*.txt'
 
-alias list-Minion-pics='ls /home/pi/Desktop/Minion_pics/'
+alias list_minion_pics='ls /home/pi/Desktop/Minion_pics/'
 
-alias kill-Minion='sudo killall Minion.py shutdown.py python'
+alias kill_minion='sudo killall shutdown.py python'
 
 alias ifswitch='sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py'
 
-alias Minion-off='sudo python /home/pi/Documents/Minion_tools/Shutdown.py'
+alias minion_off='sudo python /home/pi/Documents/Minion_tools/Shutdown.py'
 
-alias preview-Minion='sudo raspivid -t 0'
+alias preview_minion='sudo raspivid -t 0'
+
+alias set_ext_rtc='sudo python3 /home/pi/Documents/Minion_tools/EXT_RTC_set_time.py'
