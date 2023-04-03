@@ -70,30 +70,30 @@ $header = "#This is the Minion config file.\n\n";
 fwrite($myfile, $header);
 
 $Minion = "[MINION]\n"
-  ."Number = ".$_POST["MNumber"]."\n\n";
+  ."number = ".$_POST["MNumber"]."\n\n";
 
 fwrite($myfile, $Minion);
 
 $Mission = "[Mission]\n"
-  ."Abort = 0"."\n"
-  ."Max_Depth = ".$_POST["DMAX"]."\n"
-  ."Ignore_WIFI-days = ".$_POST["IG_WIFI-days"]."\n"
-  ."Ignore_WIFI-hours = ".$_POST["IG_WIFI-hours"]."\n\n";
+  ."abort = 0"."\n"
+  ."max_depth = ".$_POST["DMAX"]."\n"
+  ."ignore_wifi-days = ".$_POST["IG_WIFI-days"]."\n"
+  ."ignore_wifi-hours = ".$_POST["IG_WIFI-hours"]."\n\n";
 fwrite($myfile, $Mission);
 
 $Initial_Samples = "[Initial_Samples]\n"
   ."hours = ".$_POST["IHours"]."\n"
-  ."Camera_sample_rate = ".$_POST["ICamFS"]."\n"
-  ."TempPres_sample_rate = ".$_POST["ITPFS"]."\n"
-  ."Oxygen_sample_rate = ".$_POST["IOXYFS"]."\n\n";
+  ."camera_sample_rate = ".$_POST["ICamFS"]."\n"
+  ."temppres_sample_rate = ".$_POST["ITPFS"]."\n"
+  ."oxygen_sample_rate = ".$_POST["IOXYFS"]."\n\n";
 
 fwrite($myfile, $Initial_Samples);
 
 $Final_Samples = "[Final_Samples]\n"
   ."hours = ".$_POST["FHours"]."\n"
-  ."Camera_sample_rate = ".$_POST["FCamFS"]."\n"
-  ."TempPres_sample_rate = ".$_POST["FTPFS"]."\n"
-  ."Oxygen_sample_rate = ".$_POST["FOXYFS"]."\n\n";
+  ."camera_sample_rate = ".$_POST["FCamFS"]."\n"
+  ."temppres_sample_rate = ".$_POST["FTPFS"]."\n"
+  ."oxygen_sample_rate = ".$_POST["FOXYFS"]."\n\n";
 
 fwrite($myfile, $Final_Samples);
 
@@ -104,14 +104,14 @@ $Deployment_Time = "[Deployment_Time]\n"
 fwrite($myfile, $Deployment_Time);
 
 $Sleep_cycle = "[Sleep_cycle]\n"
-  ."Minion_sleep_cycle = ".$_POST["SCycle"]."\n\n";
+  ."minion_sleep_cycle = ".$_POST["SCycle"]."\n\n";
 
 fwrite($myfile, $Sleep_cycle);
 
 $Data_Sample = "[Data_Sample]\n"
-  ."Minion_sample_time = ".$_POST["DS_Time"]."\n"
-  ."Minion_sample_rate = ".$_POST["SensorFS"]."\n"
-  ."Oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";
+  ."minion_sample_time = ".$_POST["DS_Time"]."\n"
+  ."minion_sample_rate = ".$_POST["SensorFS"]."\n"
+  ."oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";
 
 fwrite($myfile, $Data_Sample);
 
@@ -123,12 +123,12 @@ if ($_POST["OXY"]=="OXY"){$boxy = "True";}else{$boxy = "False";}
 if ($_POST["ACC"]=="ACC"){$bacc = "True";}else{$bacc = "False";}
 
 $Sampling_scripts = "[Sampling_scripts]\n"
-  ."Image = ".$bImage."\n"
-  ."30Ba-Pres = ".$b30bar."\n"
-  ."100Ba-Pres = ".$b100bar."\n"
-  ."Temperature = ".$btemp."\n"
-  ."Oxybase = ".$boxy."\n"
-  ."ACC_100Hz = ".$bacc."\n\n";
+  ."image = ".$bImage."\n"
+  ."30Ba-pres = ".$b30bar."\n"
+  ."100Ba-pres = ".$b100bar."\n"
+  ."temperature = ".$btemp."\n"
+  ."oxybase = ".$boxy."\n"
+  ."acc_100Hz = ".$bacc."\n\n";
 
 fwrite($myfile, $Sampling_scripts);
 
