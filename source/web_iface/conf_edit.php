@@ -20,37 +20,37 @@
 
 $cfg_file = parse_ini_file("/home/pi/Desktop/Minion_config.ini", true);
 
-if ($cfg_file['Sampling_scripts']['Image'] == 1) { $Image = "checked";} else { $Image = "";}
-if ($cfg_file['Sampling_scripts']['30Ba-Pres'] == 1) { $BA30 = "checked";} else { $BA30 = "";}
-if ($cfg_file['Sampling_scripts']['100Ba-Pres'] == 1) { $BA100 = "checked";} else { $BA100 = "";}
-if ($cfg_file['Sampling_scripts']['Temperature'] == 1) { $Temp = "checked";} else { $Temp = "";}
-if ($cfg_file['Sampling_scripts']['Oxybase'] == 1) { $OXY = "checked";} else { $OXY = "";}
-if ($cfg_file['Sampling_scripts']['ACC_100Hz'] == 1) { $ACC = "checked";} else { $ACC = "";}
+if ($cfg_file['Sampling_scripts']['image'] == 1) { $Image = "checked";} else { $Image = "";}
+if ($cfg_file['Sampling_scripts']['30Ba-pres'] == 1) { $BA30 = "checked";} else { $BA30 = "";}
+if ($cfg_file['Sampling_scripts']['100Ba-pres'] == 1) { $BA100 = "checked";} else { $BA100 = "";}
+if ($cfg_file['Sampling_scripts']['temperature'] == 1) { $Temp = "checked";} else { $Temp = "";}
+if ($cfg_file['Sampling_scripts']['oxybase'] == 1) { $OXY = "checked";} else { $OXY = "";}
+# if ($cfg_file['Sampling_scripts']['acc_100Hz'] == 1) { $ACC = "checked";} else { $ACC = "";}
 
 echo '<form action="/action_page.php" method="post">
   <label for="DMAX">Maximum Depth (meters):</label>
-  <input type="text" id="DMAX" name="DMAX" value="'.$cfg_file['Mission']['Max_Depth'].'"><br><br>
+  <input type="text" id="DMAX" name="DMAX" value="'.$cfg_file['Mission']['max_depth'].'"><br><br>
   <fieldset>
   <legend>Initial Samples:</legend>
   <label for="IHours">Initial Sample Time (hours):</label><br>
   <input type="text" id="IHours" name="IHours" value="'.$cfg_file['Initial_Samples']['hours'].'"><br>
   <label for="ICamFS">Camera Sample Rate (minutes):</label><br>
-  <input type="text" id="ICamFS" name="ICamFS" value="'.$cfg_file['Initial_Samples']['Camera_sample_rate'].'"><br>
+  <input type="text" id="ICamFS" name="ICamFS" value="'.$cfg_file['Initial_Samples']['camera_sample_rate'].'"><br>
   <label for="ITPFS">Temperatrue and Pressure Sample Rate (Hz):</label><br>
-  <input type="text" id="ITPFS" name="ITPFS" value="'.$cfg_file['Initial_Samples']['TempPres_sample_rate'].'"><br>
+  <input type="text" id="ITPFS" name="ITPFS" value="'.$cfg_file['Initial_Samples']['temppres_sample_rate'].'"><br>
   <label for="IOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
-  <input type="text" id="IOXYFS" name="IOXYFS" value="'.$cfg_file['Initial_Samples']['Oxygen_sample_rate'].'"><br>
+  <input type="text" id="IOXYFS" name="IOXYFS" value="'.$cfg_file['Initial_Samples']['oxygen_sample_rate'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Final Samples:</legend>
   <label for="FHours">Final Sample Time (hours):</label><br>
   <input type="text" id="FHours" name="FHours" value="'.$cfg_file['Final_Samples']['hours'].'"><br>
   <label for="FCamFS">Camera Sample Rate (minutes):</label><br>
-  <input type="text" id="FCamFS" name="FCamFS" value="'.$cfg_file['Final_Samples']['Camera_sample_rate'].'"><br>
+  <input type="text" id="FCamFS" name="FCamFS" value="'.$cfg_file['Final_Samples']['camera_sample_rate'].'"><br>
   <label for="FTPFS">Temperatrue and Pressure Sample Rate (Hz):</label><br>
-  <input type="text" id="FTPFS" name="FTPFS" value="'.$cfg_file['Final_Samples']['TempPres_sample_rate'].'"><br>
+  <input type="text" id="FTPFS" name="FTPFS" value="'.$cfg_file['Final_Samples']['temppres_sample_rate'].'"><br>
   <label for="FOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
-  <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['Oxygen_sample_rate'].'"><br>
+  <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['oxygen_sample_rate'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Deplpyment Time:</legend>
@@ -62,16 +62,16 @@ echo '<form action="/action_page.php" method="post">
   <fieldset>
   <legend>Sleep Cycle:</legend>
   <label for="SCycle">Sleep Cycle programmed on micro controller in hours:</label><br>
-  <input type="text" id="SCycle" name="SCycle" value="'.$cfg_file['Sleep_cycle']['Minion_sleep_cycle'].'"><br>
+  <input type="text" id="SCycle" name="SCycle" value="'.$cfg_file['Sleep_cycle']['minion_sleep_cycle'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Data Sample</legend>
   <label for="DS_Time">Data Sample Time (min):</label><br>
-  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Data_Sample']['Minion_sample_time'].'"><br>
+  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Data_Sample']['minion_sample_time'].'"><br>
   <label for="SensorFS">Sensor Sample Rate (Hz):</label><br>
-  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Data_Sample']['Minion_sample_rate'].'"><br>
+  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Data_Sample']['minion_sample_rate'].'"><br>
   <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>
-  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Data_Sample']['Oxygen_sample_rate'].'"><br>
+  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Data_Sample']['oxygen_sample_rate'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Sampling Methods</legend>
@@ -92,15 +92,15 @@ echo '<form action="/action_page.php" method="post">
   <legend>Ignore WIFI Signal:</legend>
   <br>
   <label for="IG_WIFI-days">Days:</label>
-  <input type="text" id="IG_WIFI-days" name="IG_WIFI-days" value="'.$cfg_file['Mission']['Ignore_WIFI-days'].'"><br><br>
+  <input type="text" id="IG_WIFI-days" name="IG_WIFI-days" value="'.$cfg_file['Mission']['ignore_wifi-days'].'"><br><br>
   <label for="IG_WIFI-hours">Hours:</label>
-  <input type="text" id="IG_WIFI-hours" name="IG_WIFI-hours" value="'.$cfg_file['Mission']['Ignore_WIFI-hours'].'"><br>
+  <input type="text" id="IG_WIFI-hours" name="IG_WIFI-hours" value="'.$cfg_file['Mission']['ignore_wifi-hours'].'"><br>
   </fieldset>
   </fieldset>
   <br>
   <fieldset>
   <legend>Confirm Minion Number:</legend>
-  <input type="text" id="MNumber" name="MNumber" value="'.$cfg_file['MINION']['Number'].'"  required/>
+  <input type="text" id="MNumber" name="MNumber" value="'.$cfg_file['MINION']['number'].'"  required/>
   </fieldset>
   <br>
   <input type="submit" value="Review">
