@@ -7,7 +7,6 @@ Minion camera/sensor/vehicle.
 More tools to be added in future versions
 
 '''
-import RPi.GPIO as GPIO
 import time
 import os
 
