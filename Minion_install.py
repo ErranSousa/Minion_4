@@ -79,7 +79,7 @@ else:
 os.system('sudo cp source/dhcp/dhcpcd.conf source/dhcp/dhcpcd.Minion /etc/')
 
 # Open dhcpcd.Minion
-with open('/etc/dhcpcd.Minion', 'r') as file :
+with open('/etc/dhcpcd.Minion', 'r') as file:
     Minion_dhcp = file.read()
 
 # Replace the IP string
@@ -99,12 +99,12 @@ Debug = yes_no('Do you want to enable debug mode? [Y/N] : ')
 os.system('sudo mv /usr/share/plymouth/themes/pix/splash.png /usr/share/plymouth/themes/pix/splash.png.old')
 os.system('sudo cp source/splash.png /usr/share/plymouth/themes/pix/')
 
-if Debug == True:
+if Debug:
     os.system("sudo raspi-config nonint do_boot_splash 1")
-elif Debug == False:
+elif not Debug:
     os.system("sudo raspi-config nonint do_boot_splash 0")
 else:
-    print("WTH did you do??")
+    print("Something went wrong.")
 
 os.system('sudo mkdir /home/pi/Documents/Minion_scripts /home/pi/Documents/Minion_tools')
 
@@ -126,7 +126,7 @@ os.system('sudo cp source/dhcp-configure.py source/dhcp-switch.py source/ds3231.
 # Setup data directory location and directory structure
 USBdata = yes_no('Do you wish to configure a USB storage device? (NTFS file system) [Y/N]: ')
 
-if USBdata == True:
+if USBdata:
 
     # Mount SD card for use
     os.system("sudo mkdir /media/Data")
@@ -175,7 +175,7 @@ if USBdata == True:
     with open('/home/pi/Documents/Minion_scripts/Data_config.ini', 'w') as file:
         file.write(Minion_conf)
 
-elif USBdata == False:
+elif not USBdata:
 
     print("All files for operation found inside /home/pi/Desktop!")
     os.system('sudo mkdir /home/pi/Desktop/minion_pics /home/pi/Desktop/minion_data /home/pi/Desktop/minion_memory')
@@ -183,7 +183,7 @@ elif USBdata == False:
     os.system('sudo cp source/Minion_config.ini /home/pi/Desktop')
 
     # Add IP address to config file
-    with open('/home/pi/Desktop/Minion_config.ini', 'r') as file :
+    with open('/home/pi/Desktop/Minion_config.ini', 'r') as file:
         Minion_conf = file.read()
 
     # Replace the directory
@@ -198,7 +198,6 @@ elif USBdata == False:
 
 
 else:
-
     print('How did you do this..')
 
 # Set up external software and raspi-config
@@ -214,7 +213,7 @@ os.system('sudo raspi-config nonint do_ssh 0')
 os.system('sudo raspi-config nonint do_i2c 0')
 os.system('sudo raspi-config nonint do_rgpio 0')
 # Add alias list to .bashrc
-os.system('sudo cat source/Minion_alias.txt >> /home/pi/.bashrc')
+os.system('sudo cat source/Minion_alias.txt >> /home/pi/.bashrc')  # should change this to bash-aliases instead
 #Create Driver Location
 os.system('sudo mkdir /home/pi/Documents/drivers')
 
@@ -224,11 +223,11 @@ os.system('git clone https://github.com/melissaomand/tsys01-python.git')
 os.system('git clone https://github.com/melissaomand/ms5837-python.git')
 os.system('git clone https://github.com/melissaomand/KellerLD-python.git')
 os.system('git clone https://github.com/melissaomand/adxl345-python.git')
-os.system('git clone https://github.com/melissaomand/Adafruit_Python_ADS1x15.git')
+# os.system('git clone https://github.com/melissaomand/Adafruit_Python_ADS1x15.git')
 
-# Install adc driver
-os.chdir('Adafruit_Python_ADS1x15/')
-os.system('sudo python setup.py install')
+# # Install adc driver
+# os.chdir('Adafruit_Python_ADS1x15/')
+# os.system('sudo python setup.py install')
 
 os.system('sudo cp /home/pi/Documents/drivers/adxl345-python/adxl345.py /home/pi/Documents/Minion_scripts/')
 os.system('sudo cp /home/pi/Documents/drivers/KellerLD-python/kellerLD.py /home/pi/Documents/Minion_scripts/')
