@@ -54,8 +54,11 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
-scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
-               "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
+# scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
+#                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
+
+scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
+               "TempPres_IF.py", "OXYBASE_RS232_IF.py", "Iridium_gps.py", "Iridium_data.py"]
 
 print('Timestamp: {}'.format(samp_time))
 
@@ -144,8 +147,8 @@ if __name__ == '__main__':
     if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
 
-    if minion_mission_config['iniAcc']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
+    # if minion_mission_config['iniAcc']:
+    #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
     # Spew readings
     while NumSamples <= TotalSamples:
