@@ -125,9 +125,13 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
 # True = Final Samples Performed, False = Final Samples Not Performed
 final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
 
+# scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
+#                "ACC_100Hz.py", "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
+#                "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
+
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-               "ACC_100Hz.py", "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
-               "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
+               "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
+               "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
 
 if any(x in os.popen(ps_test).read() for x in scriptNames):
     minion_tools.kill_sampling(scriptNames)
@@ -224,7 +228,7 @@ if __name__ == '__main__':
                                             minion_mission_config['iniP30'], minion_mission_config['iniP100'],
                                             minion_mission_config['iniTmp'])
 
-        scriptNames2 = ["Minion_image_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py"]
+        scriptNames2 = ["Minion_image_IF.py", "OXYBASE_RS232_IF.py"]
 
         if minion_mission_config['iniImg']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
@@ -232,8 +236,8 @@ if __name__ == '__main__':
         if minion_mission_config['iniO2']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
 
-        if minion_mission_config['iniAcc']:
-            os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
+        # if minion_mission_config['iniAcc']:
+        #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
         # Display readings
         while NumSamples <= TotalSamples and not min_depth_flag:
@@ -261,12 +265,12 @@ if __name__ == '__main__':
 
                 else:
                     print('Pressure Sensor ded')
-                    with open(file_path_name,"a") as file:
+                    with open(file_path_name, "a") as file:
                         file.write('Pressure Sensor fail')
                     abortMission(configLoc)
 
                 if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
-                    with open(file_path_name,"a") as file:
+                    with open(file_path_name, "a") as file:
                         file.write("Minion Exceeded Depth Maximum!")
                     abortMission(configLoc)
 
