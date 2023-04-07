@@ -51,11 +51,14 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
-scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
-               "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py",
-               "Iridium_gps.py", "Iridium_data.py"]
+# scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
+#                "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py",
+#                "Iridium_gps.py", "Iridium_data.py"]
 
-Sf = 1/minion_mission_config['Srate']
+scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
+               "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py"]
+
+Sf = 1/minion_mission_config['TLPsamp_minion_rate']
 
 TotalSamples = minion_mission_config['Stime'] * 60 * minion_mission_config['Srate']
 
@@ -140,17 +143,17 @@ while NumSamples <= TotalSamples:
             Ptemperature = "%04d" % Ptemperature  # fix field length by prepending zeros if necessary
             Pres_data = "{},{},".format(Ppressure, Ptemperature)
             print("Pressure sensor data: {}".format(Pres_data))
-            sensor_string = "{}{}".format(sensor_string,Pres_data)
+            sensor_string = "{}{}".format(sensor_string, Pres_data)
 
         else:
             print('Pressure Sensor ded')
-            with open(file_path_name,"a") as file:
+            with open(file_path_name, "a") as file:
                 file.write('Pressure Sensor fail')
             abort_mission()
 
         #if Ppressure >= MAX_Depth:
         if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
-            with open(file_path_name,"a") as file:
+            with open(file_path_name, "a") as file:
                 file.write("Minion Exceeded Depth Maximum!")
             abort_mission()
 
@@ -168,7 +171,7 @@ while NumSamples <= TotalSamples:
 
         sensor_string = '{}{}'.format(sensor_string, Temp_acc)
 
-    with open(file_path_name,"a") as file:
+    with open(file_path_name, "a") as file:
         file.write("\n{}".format(sensor_string))
 
     NumSamples = NumSamples + 1
