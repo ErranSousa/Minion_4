@@ -239,12 +239,12 @@ class MinionToolbox(object):
 
         mission_config['Srate'] = float(config['Sleep_cycle']['minion_sleep_cycle'])
 
-        Stime = config['Data_Sample']['minion_sample_time']
+        stime = config['Data_Sample']['minion_sample_time']
         # Determine if the value entered into 'Minion_sample_time' is
         #    'Camera' or an actual number.
         # Note: Any text will work, not just 'Camera'
         try:
-            mission_config['Stime'] = float(Stime)
+            mission_config['Stime'] = float(stime)
         except:
             # Since Stime cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
