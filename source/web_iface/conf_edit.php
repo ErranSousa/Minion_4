@@ -42,8 +42,6 @@ echo '<form action="/action_page.php" method="post">
   <label for="Temp"> BR Temperature Sensor</label><br>
   <input '.$OXY.' type="checkbox" id="OXY" name="OXY" value="OXY">
   <label for="OXY"> Oxybase O2 Sensor</label><br>
-  <input '.$ACC.' type="checkbox" id="ACC" name="ACC" value="ACC">
-  <label for="ACC"> ADXL345 Accelerometer </label><br>
   </fieldset>
   <fieldset>
   <legend>Initial Sampling Mode:</legend>
