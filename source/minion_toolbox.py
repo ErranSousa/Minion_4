@@ -200,12 +200,12 @@ class MinionToolbox(object):
         """
 
         # list of keys
-        keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_D', 'IG_WIFI_H', \
-                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate', \
-                'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate', \
-                'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate', \
-                'TLPsamp_oxygen_rate', 'Ddays', 'Dhours', 'Stime', 'Srate', 'iniImg', \
-                'iniP30', 'iniP100', 'iniTmp', 'iniO2', 'iniAcc' \
+        keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_D', 'IG_WIFI_H',
+                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate',
+                'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
+                'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate',
+                'TLPsamp_oxygen_rate', 'Ddays', 'Dhours', 'Stime', 'Srate', 'iniImg',
+                'iniP30', 'iniP100', 'iniTmp', 'iniO2', 'iniAcc'
                 ]
 
         mission_config = dict.fromkeys(keys)
@@ -217,29 +217,29 @@ class MinionToolbox(object):
         config = configparser.ConfigParser()
         config.read(config_file)
 
-        mission_config['Minion_ID'] = str(config['MINION']['Number'])
+        mission_config['Minion_ID'] = str(config['MINION']['number'])
 
-        mission_config['Abort'] = self.str2bool(config['Mission']['Abort'])
-        mission_config['MAX_Depth'] = float(config['Mission']['Max_Depth'])
-        mission_config['IG_WIFI_D'] = float(config['Mission']['Ignore_WIFI-days'])
-        mission_config['IG_WIFI_H'] = float(config['Mission']['Ignore_WIFI-hours'])
+        mission_config['Abort'] = self.str2bool(config['Mission']['abort'])
+        mission_config['MAX_Depth'] = float(config['Mission']['max_depth'])
+        mission_config['IG_WIFI_D'] = float(config['Mission']['ignore_wifi-days'])
+        mission_config['IG_WIFI_H'] = float(config['Mission']['ignore_wifi-hours'])
 
         mission_config['INIsamp_hours'] = float(config['Initial_Samples']['hours'])
-        mission_config['INIsamp_camera_rate'] = float(config['Initial_Samples']['Camera_sample_rate'])
-        mission_config['INIsamp_tempPres_rate'] = float(config['Initial_Samples']['TempPres_sample_rate'])
-        mission_config['INIsamp_oxygen_rate'] = float(config['Initial_Samples']['Oxygen_sample_rate'])
+        mission_config['INIsamp_camera_rate'] = float(config['Initial_Samples']['camera_sample_rate'])
+        mission_config['INIsamp_tempPres_rate'] = float(config['Initial_Samples']['temppres_sample_rate'])
+        mission_config['INIsamp_oxygen_rate'] = float(config['Initial_Samples']['oxygen_sample_rate'])
 
         mission_config['FINsamp_hours'] = float(config['Final_Samples']['hours'])
-        mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['Camera_sample_rate'])
-        mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['TempPres_sample_rate'])
-        mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['Oxygen_sample_rate'])
+        mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['camera_sample_rate'])
+        mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['temppres_sample_rate'])
+        mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['oxygen_sample_rate'])
 
         mission_config['Ddays'] = int(config['Deployment_Time']['days'])
         mission_config['Dhours'] = int(config['Deployment_Time']['hours'])
 
-        mission_config['Srate'] = float(config['Sleep_cycle']['Minion_sleep_cycle'])
+        mission_config['Srate'] = float(config['Sleep_cycle']['minion_sleep_cycle'])
 
-        Stime = config['Data_Sample']['Minion_sample_time']
+        Stime = config['Data_Sample']['minion_sample_time']
         # Determine if the value entered into 'Minion_sample_time' is
         #    'Camera' or an actual number.
         # Note: Any text will work, not just 'Camera'
@@ -249,15 +249,15 @@ class MinionToolbox(object):
             # Since Stime cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
             mission_config['Stime'] = float(.2)
-        mission_config['TLPsamp_minion_rate'] = float(config['Data_Sample']['Minion_sample_rate'])
-        mission_config['TLPsamp_oxygen_rate'] = float(config['Data_Sample']['Oxygen_sample_rate'])
+        mission_config['TLPsamp_minion_rate'] = float(config['Data_Sample']['minion_sample_rate'])
+        mission_config['TLPsamp_oxygen_rate'] = float(config['Data_Sample']['oxygen_sample_rate'])
 
-        mission_config['iniImg'] = self.str2bool(config['Sampling_scripts']['Image'])
-        mission_config['iniP30'] = self.str2bool(config['Sampling_scripts']['30Ba-Pres'])
-        mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100Ba-Pres'])
-        mission_config['iniTmp'] = self.str2bool(config['Sampling_scripts']['Temperature'])
-        mission_config['iniO2'] = self.str2bool(config['Sampling_scripts']['Oxybase'])
-        mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['ACC_100Hz'])
+        mission_config['iniImg'] = self.str2bool(config['Sampling_scripts']['image'])
+        mission_config['iniP30'] = self.str2bool(config['Sampling_scripts']['30ba-pres'])
+        mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100ba-pres'])
+        mission_config['iniTmp'] = self.str2bool(config['Sampling_scripts']['temperature'])
+        mission_config['iniO2'] = self.str2bool(config['Sampling_scripts']['oxybase'])
+        mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['acc_100hz'])
 
         return mission_config
 
