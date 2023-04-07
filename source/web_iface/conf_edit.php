@@ -31,50 +31,7 @@ echo '<form action="/action_page.php" method="post">
   <label for="DMAX">Maximum Depth (meters):</label>
   <input type="text" id="DMAX" name="DMAX" value="'.$cfg_file['Mission']['max_depth'].'"><br><br>
   <fieldset>
-  <legend>Initial Samples:</legend>
-  <label for="IHours">Initial Sample Time (hours):</label><br>
-  <input type="text" id="IHours" name="IHours" value="'.$cfg_file['Initial_Samples']['hours'].'"><br>
-  <label for="ICamFS">Camera Sample Rate (minutes):</label><br>
-  <input type="text" id="ICamFS" name="ICamFS" value="'.$cfg_file['Initial_Samples']['camera_sample_rate'].'"><br>
-  <label for="ITPFS">Temperatrue and Pressure Sample Rate (Hz):</label><br>
-  <input type="text" id="ITPFS" name="ITPFS" value="'.$cfg_file['Initial_Samples']['temppres_sample_rate'].'"><br>
-  <label for="IOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
-  <input type="text" id="IOXYFS" name="IOXYFS" value="'.$cfg_file['Initial_Samples']['oxygen_sample_rate'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Final Samples:</legend>
-  <label for="FHours">Final Sample Time (hours):</label><br>
-  <input type="text" id="FHours" name="FHours" value="'.$cfg_file['Final_Samples']['hours'].'"><br>
-  <label for="FCamFS">Camera Sample Rate (minutes):</label><br>
-  <input type="text" id="FCamFS" name="FCamFS" value="'.$cfg_file['Final_Samples']['camera_sample_rate'].'"><br>
-  <label for="FTPFS">Temperatrue and Pressure Sample Rate (Hz):</label><br>
-  <input type="text" id="FTPFS" name="FTPFS" value="'.$cfg_file['Final_Samples']['temppres_sample_rate'].'"><br>
-  <label for="FOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
-  <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['oxygen_sample_rate'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Deplpyment Time:</legend>
-  <label for="TDays">Days:</label><br>
-  <input type="text" id="TDays" name="TDays" value="'.$cfg_file['Deployment_Time']['days'].'"><br>
-  <label for="THours">Hours:</label><br>
-  <input type="text" id="THours" name="THours" value="'.$cfg_file['Deployment_Time']['hours'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Sleep Cycle:</legend>
-  <label for="SCycle">Sleep Cycle programmed on micro controller in hours:</label><br>
-  <input type="text" id="SCycle" name="SCycle" value="'.$cfg_file['Sleep_cycle']['minion_sleep_cycle'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Data Sample</legend>
-  <label for="DS_Time">Data Sample Time (min):</label><br>
-  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Data_Sample']['minion_sample_time'].'"><br>
-  <label for="SensorFS">Sensor Sample Rate (Hz):</label><br>
-  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Data_Sample']['minion_sample_rate'].'"><br>
-  <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>
-  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Data_Sample']['oxygen_sample_rate'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Sampling Methods</legend>
+  <legend>Sensors</legend>
   <input '.$Image.' type="checkbox" id="Image" name="Image" value="Image">
   <label for="Image"> Image</label><br>
   <input '.$BA30.' type="checkbox" id="30Bar_Pres" name="30Bar_Pres" value="30Bar_Pres">
@@ -87,6 +44,46 @@ echo '<form action="/action_page.php" method="post">
   <label for="OXY"> Oxybase O2 Sensor</label><br>
   <input '.$ACC.' type="checkbox" id="ACC" name="ACC" value="ACC">
   <label for="ACC"> ADXL345 Accelerometer </label><br>
+  </fieldset>
+  <fieldset>
+  <legend>Initial Sampling Mode:</legend>
+  <label for="IHours">Initial Sample Time (hours):</label><br>
+  <input type="text" id="IHours" name="IHours" value="'.$cfg_file['Initial_Samples']['hours'].'"><br>
+  <label for="ICamFS">Camera Sample Rate (minutes):</label><br>
+  <input type="text" id="ICamFS" name="ICamFS" value="'.$cfg_file['Initial_Samples']['camera_sample_rate'].'"><br>
+  <label for="ITPFS">Temperature and Pressure Sample Rate (Hz):</label><br>
+  <input type="text" id="ITPFS" name="ITPFS" value="'.$cfg_file['Initial_Samples']['temppres_sample_rate'].'"><br>
+  <label for="IOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
+  <input type="text" id="IOXYFS" name="IOXYFS" value="'.$cfg_file['Initial_Samples']['oxygen_sample_rate'].'"><br>
+  </fieldset>
+  <fieldset>
+  <legend>Time Lapse Sampling Mode:</legend>
+  <label for="TDays">Days:</label><br>
+  <input type="text" id="TDays" name="TDays" value="'.$cfg_file['Deployment_Time']['days'].'"><br>
+  <label for="THours">Hours:</label><br>
+  <input type="text" id="THours" name="THours" value="'.$cfg_file['Deployment_Time']['hours'].'"><br>
+  <label for="DS_Time">Data Sample Time (min):</label><br>
+  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Data_Sample']['minion_sample_time'].'"><br>
+  <label for="SensorFS">Sensor Sample Rate (Hz):</label><br>
+  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Data_Sample']['minion_sample_rate'].'"><br>
+  <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>
+  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Data_Sample']['oxygen_sample_rate'].'"><br>
+  </fieldset>
+  <fieldset>
+  <legend>Final Sampling Mode:</legend>
+  <label for="FHours">Final Sample Time (hours):</label><br>
+  <input type="text" id="FHours" name="FHours" value="'.$cfg_file['Final_Samples']['hours'].'"><br>
+  <label for="FCamFS">Camera Sample Rate (minutes):</label><br>
+  <input type="text" id="FCamFS" name="FCamFS" value="'.$cfg_file['Final_Samples']['camera_sample_rate'].'"><br>
+  <label for="FTPFS">Temperature and Pressure Sample Rate (Hz):</label><br>
+  <input type="text" id="FTPFS" name="FTPFS" value="'.$cfg_file['Final_Samples']['temppres_sample_rate'].'"><br>
+  <label for="FOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
+  <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['oxygen_sample_rate'].'"><br>
+  </fieldset>
+  <fieldset>
+  <legend>Sleep Cycle:</legend>
+  <label for="SCycle">Sleep Cycle programmed on micro controller in hours:</label><br>
+  <input type="text" id="SCycle" name="SCycle" value="'.$cfg_file['Sleep_cycle']['minion_sleep_cycle'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Ignore WIFI Signal:</legend>
