@@ -119,7 +119,9 @@ ping_google = "ping google.com -c 1"
 
 ps_test = "pgrep -a python"
 
-scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Initial_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+# scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Initial_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
+scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
+               "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py"]
 
 if __name__ == '__main__':
 
@@ -132,8 +134,8 @@ if __name__ == '__main__':
     if iniO2 == True:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
 
-    if iniAcc == True:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz.py &')
+    # if iniAcc == True:
+    #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz.py &')
 
     time.sleep(5)
 
