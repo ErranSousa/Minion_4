@@ -20,7 +20,15 @@ Ignore_WIFI-days: <?php echo $_POST["IG_WIFI-days"]; ?><br>
 Ignore_WIFI-hours: <?php echo $_POST["IG_WIFI-hours"]; ?><br>
 </fieldset>
 <fieldset>
-<legend>Initial Samples:</legend>
+<legend>Sensors:</legend>
+Image: <?php if ($_POST["Image"]=="Image"){echo "True";}else{echo "False";} ?><br>
+BR 30 Bar Pressure Sensor: <?php if ($_POST["30Bar_Pres"]=="30Bar_Pres"){echo "True";}else{echo "False";} ?><br>
+BR 100 Bar Pressure Sensor: <?php if ($_POST["100Bar_Pres"]=="100Bar_Pres"){echo "True";}else{echo "False";} ?><br>
+BR Temperature Sensor: <?php if ($_POST["Temp"]=="Temp"){echo "True";}else{echo "False";} ?><br>
+Oxybase O2 Sensor: <?php if ($_POST["OXY"]=="OXY"){echo "True";}else{echo "False";} ?><br>
+</fieldset>
+<fieldset>
+<legend>Initial Sampling Mode:</legend>
 Initial Sample Time (hours): <?php echo $_POST["IHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["ICamFS"]; ?><br>
 Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["ITPFS"]; ?><br>
@@ -28,7 +36,16 @@ Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["IOXYFS"]; ?><br>
 </fieldset>
 
 <fieldset>
-<legend>Final Samples:</legend>
+<legend>Time Lapse Sampling Mode:</legend>
+Days: <?php echo $_POST["TDays"]; ?><br>
+Hours: <?php echo $_POST["THours"]; ?><br>
+Data Sample Time (min): <?php echo $_POST["DS_Time"]; ?><br>
+Sensor Sample Rate (Hz): <?php echo $_POST["SensorFS"]; ?><br>
+Oxybase Sample Rate (Hz): <?php echo $_POST["OxygenFS"]; ?><br>
+</fieldset>
+
+<fieldset>
+<legend>Final Sampling Mode:</legend>
 Final Sample Time (hours): <?php echo $_POST["FHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["FCamFS"]; ?><br>
 Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
@@ -36,31 +53,8 @@ Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["FOXYFS"]; ?><br>
 </fieldset>
 
 <fieldset>
-<legend>Deployment Time:</legend>
-Days: <?php echo $_POST["TDays"]; ?><br>
-Hours: <?php echo $_POST["THours"]; ?><br>
-</fieldset>
-
-<fieldset>
 <legend>Sleep Cycle:</legend>
 <?php echo $_POST["SCycle"]; ?><br>
-</fieldset>
-
-<fieldset>
-<legend>Data Sample:</legend>
-Data Sample Time (min): <?php echo $_POST["DS_Time"]; ?><br>
-Sensor Sample Rate (Hz): <?php echo $_POST["SensorFS"]; ?><br>
-Oxybase Sample Rate (Hz): <?php echo $_POST["OxygenFS"]; ?><br>
-</fieldset>
-
-<fieldset>
-<legend>Sampling Methods:</legend>
-Image: <?php if ($_POST["Image"]=="Image"){echo "True";}else{echo "False";} ?><br>
-BR 30 Bar Pressure Sensor: <?php if ($_POST["30Bar_Pres"]=="30Bar_Pres"){echo "True";}else{echo "False";} ?><br>
-BR 100 Bar Pressure Sensor: <?php if ($_POST["100Bar_Pres"]=="100Bar_Pres"){echo "True";}else{echo "False";} ?><br>
-BR Temperature Sensor: <?php if ($_POST["Temp"]=="Temp"){echo "True";}else{echo "False";} ?><br>
-Oxybase O2 Sensor: <?php if ($_POST["OXY"]=="OXY"){echo "True";}else{echo "False";} ?><br>
-ADXL345 Accelerometer: <?php if ($_POST["ACC"]=="ACC"){echo "True";}else{echo "False";} ?><br>
 </fieldset>
 
 <?php
@@ -120,15 +114,15 @@ if ($_POST["30Bar_Pres"]=="30Bar_Pres"){$b30bar = "True";}else{$b30bar = "False"
 if ($_POST["100Bar_Pres"]=="100Bar_Pres"){$b100bar = "True";}else{$b100bar = "False";}
 if ($_POST["Temp"]=="Temp"){$btemp = "True";}else{$btemp = "False";}
 if ($_POST["OXY"]=="OXY"){$boxy = "True";}else{$boxy = "False";}
-if ($_POST["ACC"]=="ACC"){$bacc = "True";}else{$bacc = "False";}
+// if ($_POST["ACC"]=="ACC"){$bacc = "True";}else{$bacc = "False";}
 
 $Sampling_scripts = "[Sampling_scripts]\n"
   ."image = ".$bImage."\n"
   ."30Ba-pres = ".$b30bar."\n"
   ."100Ba-pres = ".$b100bar."\n"
   ."temperature = ".$btemp."\n"
-  ."oxybase = ".$boxy."\n"
-  ."acc_100Hz = ".$bacc."\n\n";
+  ."oxybase = ".$boxy."\n\n";
+  //."acc_100Hz = ".$bacc."\n\n";
 
 fwrite($myfile, $Sampling_scripts);
 
