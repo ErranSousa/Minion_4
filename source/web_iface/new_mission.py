@@ -1,19 +1,19 @@
 import os
 import pickle
-import sys #for sys.path
-sys.path.insert(0,'/home/pi/Documents/Minion_tools/')
+import sys  # for sys.path
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 from minion_hat import MinionHat
 
-#Sets the Final Sample Status Flag to False
+# Sets the Final Sample Status Flag to False
 #    False : Final Samples Not Performed
 #    True  : Final Samples Were Performed
 try:
-    with open("/home/pi/Documents/Minion_scripts/final_samp_status.pkl","wb") as final_samp_status_fid:
+    with open("/home/pi/Documents/Minion_scripts/final_samp_status.pkl", "wb") as final_samp_status_fid:
         final_sample_status_flag = False
         pickle.dump(final_sample_status_flag, final_samp_status_fid)
     print("[OK] Set Final Sample Status Flag to False")
-except:
+except FileNotFoundError:
     print("[Error] Could Not Set the Final Sample Status Flag to False")
 
 # create an instance of MinionToolbox() called minion_tools
