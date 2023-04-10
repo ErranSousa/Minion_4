@@ -2,20 +2,22 @@ from zipfile import ZipFile
 import os
 import time
 
+
 def get_all_files(directory):
 
-    paths = []
+    file_paths = []
 
     for root, directories, files in os.walk(directory):
-        for filename in files:
-            filepath = os.path.join(root,filename)
-            paths.append(filepath)
+        for fname in files:
+            filepath = os.path.join(root, fname)
+            file_paths.append(filepath)
 
-    return paths
+    return file_paths
+
 
 def clear_log():
-    with open('/var/www/html/livefeed.txt','w') as output:
-        output.write('')
+    with open('/var/www/html/livefeed.txt', 'w') as output_file:
+        output_file.write('')
 
 
 data_dir = "/home/pi/Desktop/minion_data/"
@@ -33,15 +35,15 @@ paths.append(conf)
 
 clear_log()
 
-with ZipFile('MinionXXX.zip','w') as zip:
+with ZipFile('MinionXXX.zip', 'w') as archive:
     for file in paths:
-        filename = file.replace('/home/pi/Desktop','')
-        zip.write(file,filename)
-        with open('/var/www/html/livefeed.txt','a+') as output:
+        filename = file.replace('/home/pi/Desktop', '')
+        archive.write(file, filename)
+        with open('/var/www/html/livefeed.txt', 'a+') as output:
             output.write(file)
             output.write('<br><br>')
 
-with open('/var/www/html/livefeed.txt','w') as output:
+with open('/var/www/html/livefeed.txt', 'w') as output:
     output.write(endmessage)
     output.write("<br><br>")
 
