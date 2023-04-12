@@ -205,7 +205,7 @@ class MinionToolbox(object):
                 'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
                 'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate',
                 'TLPsamp_oxygen_rate', 'Ddays', 'Dhours', 'Stime', 'Srate', 'iniImg',
-                'iniP30', 'iniP100', 'iniTmp', 'iniO2', 'iniAcc'
+                'iniP30', 'iniP100', 'iniTmp', 'iniO2'
                 ]
 
         mission_config = dict.fromkeys(keys)
@@ -257,7 +257,7 @@ class MinionToolbox(object):
         mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100ba-pres'])
         mission_config['iniTmp'] = self.str2bool(config['Sampling_scripts']['temperature'])
         mission_config['iniO2'] = self.str2bool(config['Sampling_scripts']['oxybase'])
-        mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['acc_100hz'])
+        # mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['acc_100hz'])
 
         return mission_config
 
@@ -724,6 +724,7 @@ class MinionToolbox(object):
             samp_num = 0
             with open(samp_num_pickle_file, "wb") as pickle_file:
                 pickle.dump(samp_num, pickle_file)
+            print("[OK] Created sample number pickle file.")
 
         return samp_num
 
