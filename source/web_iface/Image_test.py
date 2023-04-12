@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 from picamera import PiCamera
-# import RPi.GPIO as GPIO
 import time
 import os
-# import configparser
 import sys
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
