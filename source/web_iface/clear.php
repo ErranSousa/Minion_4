@@ -35,7 +35,7 @@ if(isset($_POST['clear'])){
 
 $command = escapeshellcmd('sudo python /var/www/html/clear_minion_data.py');
 $output = shell_exec($command);
-echo $output;
+echo nl2br($output);
 
 }
 ?>
