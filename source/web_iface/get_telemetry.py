@@ -25,6 +25,6 @@ print("<fieldset><h3>")
 
 print("Time:  {}<br>".format(samp_time))
 
-print("Sample counter: {}<br>".format(minion_tools.read_samp_num()))
+print("<br>Sample counter: {}<br>".format(minion_tools.read_samp_num()))
 
 print("</h3></fieldset>")
