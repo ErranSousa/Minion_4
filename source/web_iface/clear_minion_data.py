@@ -1,17 +1,21 @@
 #!/usr/bin/env python
 
 import os
-import pickle
+# import pickle
+import sys
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
 
-with open("/home/pi/Documents/Minion_scripts/sampcount.pkl","wb") as countp:   
-    sampcount = 0
-    pickle.dump(sampcount, countp)
-    countp.close()
+# create an instance of MinionToolbox()
+minion_tools = MinionToolbox()
+
+# Delete the Sample Number Pickle (samp_num.pkl) prior to mission start
+minion_tools.delete_samp_num_pickle()
 
 os.system('sudo rm -r /home/pi/Desktop/minion_pics/*')
 os.system('sudo rm -r /home/pi/Desktop/minion_data/*.txt')
 os.system('sudo rm -r /home/pi/Desktop/minion_data/INI/*')
 os.system('sudo rm -r /home/pi/Desktop/minion_data/FIN/*')
 
-print('Minion Data Cleared!')
+print('[OK] Minion Data Cleared!')
 
