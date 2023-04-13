@@ -1,16 +1,21 @@
-#!/usr/bin/env python
-import os
-import time
-import RPi.GPIO as GPIO
+#!/usr/bin/env python3
 
-wifi = 22
+import sys
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
+from minion_hat import MinionHat
 
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(wifi, GPIO.OUT)
+# Create and instance of MinionHat()
+minion_hat = MinionHat()
 
 print('Goodbye')
-GPIO.output(wifi, 0)
-time.sleep(5)
-os.system('sudo shutdown now')
+
+# Turn on the LED controlled by the Minion Hat microcontroller.
+# Once this LED is turned off, the user can attach the magnet to keep the minion off.
+minion_hat.led(minion_hat.ON)
+
+# Shutdown the minion for 60 seconds,  this should be enough time to get the magnet on.
+# After 60 seconds, the minion will restart.  This is a fail-safe method to ensure that we do not accidentally
+# enter sleep forever.
+minion_hat.shutdown(60)
 
 
