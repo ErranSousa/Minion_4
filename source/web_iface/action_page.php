@@ -91,18 +91,13 @@ $Final_Samples = "[Final_Samples]\n"
 
 fwrite($myfile, $Final_Samples);
 
-$Deployment_Time = "[Deployment_Time]\n"
-  ."days = ".$_POST["TDays"]."\n"
-  ."hours = ".$_POST["THours"]."\n\n";
-
-fwrite($myfile, $Deployment_Time);
-
 $Sleep_cycle = "[Sleep_cycle]\n"
   ."minion_sleep_cycle = ".$_POST["SCycle"]."\n\n";
 
 fwrite($myfile, $Sleep_cycle);
 
-$Data_Sample = "[Data_Sample]\n"
+$Data_Sample = "[Time_Lapse_Samples]\n"
+  ."hours = ".$_POST["THours"]."\n"
   ."minion_sample_time = ".$_POST["DS_Time"]."\n"
   ."minion_sample_rate = ".$_POST["SensorFS"]."\n"
   ."oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";

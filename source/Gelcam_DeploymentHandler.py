@@ -79,10 +79,11 @@ configLoc = '{}/Minion_config.ini'.format(configDir)
 config = configparser.ConfigParser()
 config.read(configLoc)
 
-Ddays = int(config['Deployment_Time']['days'])
-Dhours = int(config['Deployment_Time']['hours'])
+# Ddays = int(config['Deployment_Time']['days'])
+# Dhours = int(config['Deployment_Time']['hours'])
+Dhours = int(config['Time_Lapse_Samples']['hours'])
 
-Stime = config['Data_Sample']['Minion_sample_time']
+Stime = config['Time_Lapse_Samples']['Minion_sample_time']
 
 try:
     float(test_string)
@@ -96,14 +97,15 @@ iniImg = str2bool(config['Sampling_scripts']['Image'])
 iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
 iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
 iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
-iniO2  = str2bool(config['Sampling_scripts']['Oxybase'])
+iniO2 = str2bool(config['Sampling_scripts']['Oxybase'])
 iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
 
-print("Days : {}".format(Ddays))
+# print("Days : {}".format(Ddays))
 print("Hours: {}".format(Dhours))
 print("Sample rate (hours) - {}".format(Srate))
 
-TotalSamples = (((Ddays*24)+Dhours))/Srate
+# TotalSamples = (((Ddays*24)+Dhours))/Srate
+TotalSamples = Dhours/Srate
 
 print("Total Cycles ------- {}".format(TotalSamples))
 

@@ -29,12 +29,14 @@ IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) +
 
 print("Minion Deployment Handler")
 print("Time:  {}".format(samp_time))
-print("Days : {}".format(minion_mission_config['Ddays']))
+# print("Days : {}".format(minion_mission_config['Ddays']))
 print("Hours: {}".format(minion_mission_config['Dhours']))
 print("Sample rate (hours) - {}".format(minion_mission_config['Srate']))
 
-TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / \
-               minion_mission_config['Srate']
+# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / \
+#                minion_mission_config['Srate']
+
+TotalSamples = minion_mission_config['Dhours'] / minion_mission_config['Srate']
 
 if samp_num >= TotalSamples:
     RemainSamples = 0
@@ -64,12 +66,6 @@ ping_hub = "ping 192.168.0.1 -c 1"
 ping_google = "ping google.com -c 1"
 
 ps_test = "pgrep -a python"
-
-# scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py",
-#                "OXYBASE_RS232.py", "ACC_100Hz.py", "Initial_Sampler.py",
-#                "Recovery_Sampler_Burn.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
-#                "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py",
-#                "xmt_minion_data.py"]
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py",
                "OXYBASE_RS232.py", "Initial_Sampler.py",

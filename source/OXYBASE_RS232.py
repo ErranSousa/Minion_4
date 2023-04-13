@@ -28,7 +28,7 @@ ser= serial.Serial(
     timeout=1
 )
 
-Stime = config['Data_Sample']['Minion_sample_time']
+Stime = config['Time_Lapse_Samples']['Minion_sample_time']
 
 try :
     float(test_string)
@@ -36,7 +36,7 @@ try :
 except :
     Stime = float(.2)
 
-Srate = float(config['Data_Sample']['Oxygen_sample_rate'])
+Srate = float(config['Time_Lapse_Samples']['Oxygen_sample_rate'])
 
 Sample_number = Stime*60*Srate
 Sf = 1/Srate

@@ -56,16 +56,14 @@ echo '<form action="/action_page.php" method="post">
   </fieldset>
   <fieldset>
   <legend>Time Lapse Sampling Mode:</legend>
-  <label for="TDays">Days:</label><br>
-  <input type="text" id="TDays" name="TDays" value="'.$cfg_file['Deployment_Time']['days'].'"><br>
   <label for="THours">Hours:</label><br>
-  <input type="text" id="THours" name="THours" value="'.$cfg_file['Deployment_Time']['hours'].'"><br>
+  <input type="text" id="THours" name="THours" value="'.$cfg_file['Time_Lapse_Samples']['hours'].'"><br>
   <label for="DS_Time">Data Sample Time (min):</label><br>
-  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Data_Sample']['minion_sample_time'].'"><br>
+  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Time_Lapse_Samples']['minion_sample_time'].'"><br>
   <label for="SensorFS">Sensor Sample Rate (Hz):</label><br>
-  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Data_Sample']['minion_sample_rate'].'"><br>
+  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Time_Lapse_Samples']['minion_sample_rate'].'"><br>
   <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>
-  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Data_Sample']['oxygen_sample_rate'].'"><br>
+  <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Time_Lapse_Samples']['oxygen_sample_rate'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Final Sampling Mode:</legend>
