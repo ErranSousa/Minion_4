@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-# import pickle
 import sys
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
