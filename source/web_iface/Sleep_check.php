@@ -53,7 +53,7 @@ echo '<br>Ready to begin Mission!<br>';
 <?php
 if(isset($_POST['shutdown'])){
 
-$command = escapeshellcmd('sudo python /var/www/html/Minion_sleep.py');
+$command = escapeshellcmd('sudo python3 /var/www/html/Minion_sleep.py');
 $output = shell_exec($command);
 echo "Minion returned to sleep cycle!\n";
 echo "Goodbye!";
