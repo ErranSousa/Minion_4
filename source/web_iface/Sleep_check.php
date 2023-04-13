@@ -6,9 +6,11 @@
 <style>
     body {
         width: 35em;
+        height: 100vh;
         margin: 0 auto;
         font-family: Tahoma, Verdana, Arial, sans-serif;
-        background-color:green;
+        //background-color:green;
+        background-image: linear-gradient(lightblue, darkblue);
     }
 </style>
 </head>
@@ -28,7 +30,8 @@
 <input type='submit' name='shutdown' value='Set Minion XXX to Sleep' />
 </form>
 <br>
-<h3>Step 3: After 30 seconds, attach the magnet to keep the Minion off.</h3>
+<h3>Step 3: Once the Blue LED is no longer illuminated, attach the magnet to keep the Minion off.
+If the magnet is not attached, the Minion will automatically restart after 60 seconds.</h3>
 <br>
 <form action="/index.php" method="post">
 <input type="submit" value="Return">
