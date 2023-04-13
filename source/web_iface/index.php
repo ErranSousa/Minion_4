@@ -5,8 +5,10 @@
 <style>
     body {
         width: 35em;
+        height: 100vh;
         margin: 0 auto;
         font-family: Tahoma, Verdana, Arial, sans-serif;
+        background-image: linear-gradient(lightblue, darkblue);
     }
     hr {
         width:100%;
