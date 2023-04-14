@@ -186,7 +186,7 @@ class MinionToolbox(object):
                 int TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
                 float Srate : Sleep Cycle
                 float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
-                float TLPsamp_minion_rate : Minion Sample Rate (Time-Lapse Mode)
+                float TLPsamp_tempPress_rate : Temperature / Pressure Sample Rate (Time-Lapse Mode)
                 float TLPsamp_oxygen_rate : Oxygen Sample Rate (Time-Lapse Mode)
                 bool iniImg : Enable / Disable Image Capture
                 bool iniP30 : Enable / Disable 30 Bar Pressure Sensor
@@ -202,7 +202,7 @@ class MinionToolbox(object):
         keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_D', 'IG_WIFI_H',
                 'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate',
                 'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
-                'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate',
+                'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_tempPress_rate',
                 'TLPsamp_oxygen_rate', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'Srate', 'iniImg',
                 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
                 ]
@@ -248,7 +248,7 @@ class MinionToolbox(object):
             # Since tlp_samp_burst_minutes cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
             mission_config['TLPsamp_burst_minutes'] = float(.2)
-        mission_config['TLPsamp_minion_rate'] = float(config['Time_Lapse_Samples']['minion_sample_rate'])
+        mission_config['TLPsamp_tempPress_rate'] = float(config['Time_Lapse_Samples']['temppres_sample_rate'])
         mission_config['TLPsamp_oxygen_rate'] = float(config['Time_Lapse_Samples']['oxygen_sample_rate'])
 
         mission_config['iniImg'] = self.str2bool(config['Sampling_scripts']['image'])

@@ -58,7 +58,7 @@ configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py"]
 
-Sf = 1/minion_mission_config['TLPsamp_minion_rate']
+Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
 
 TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['Srate']
 

@@ -61,7 +61,7 @@ echo '<form action="/action_page.php" method="post">
   <label for="DS_Time">Data Sample Time (min):</label><br>
   <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Time_Lapse_Samples']['minion_sample_time'].'"><br>
   <label for="SensorFS">Sensor Sample Rate (Hz):</label><br>
-  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Time_Lapse_Samples']['minion_sample_rate'].'"><br>
+  <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_rate'].'"><br>
   <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>
   <input type="text" id="OxygenFS" name="OxygenFS" value="'.$cfg_file['Time_Lapse_Samples']['oxygen_sample_rate'].'"><br>
   </fieldset>
