@@ -83,7 +83,7 @@ config.read(configLoc)
 # TLPsamp_hours = int(config['Deployment_Time']['hours'])
 TLPsamp_hours = int(config['Time_Lapse_Samples']['hours'])
 
-TLPsamp_burst_minutes = config['Time_Lapse_Samples']['Minion_sample_time']
+TLPsamp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
 
 try:
     float(test_string)

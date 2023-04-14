@@ -83,6 +83,14 @@ $Initial_Samples = "[Initial_Samples]\n"
 
 fwrite($myfile, $Initial_Samples);
 
+$Data_Sample = "[Time_Lapse_Samples]\n"
+  ."hours = ".$_POST["THours"]."\n"
+  ."sample_burst_duration = ".$_POST["DS_Time"]."\n"
+  ."temppres_sample_rate = ".$_POST["SensorFS"]."\n"
+  ."oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";
+
+fwrite($myfile, $Data_Sample);
+
 $Final_Samples = "[Final_Samples]\n"
   ."hours = ".$_POST["FHours"]."\n"
   ."camera_sample_rate = ".$_POST["FCamFS"]."\n"
@@ -96,13 +104,6 @@ $Sleep_cycle = "[Sleep_cycle]\n"
 
 fwrite($myfile, $Sleep_cycle);
 
-$Data_Sample = "[Time_Lapse_Samples]\n"
-  ."hours = ".$_POST["THours"]."\n"
-  ."minion_sample_time = ".$_POST["DS_Time"]."\n"
-  ."temppres_sample_rate = ".$_POST["SensorFS"]."\n"
-  ."oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";
-
-fwrite($myfile, $Data_Sample);
 
 if ($_POST["Image"]=="Image"){$bImage = "True";}else{$bImage = "False";}
 if ($_POST["30Bar_Pres"]=="30Bar_Pres"){$b30bar = "True";}else{$b30bar = "False";}

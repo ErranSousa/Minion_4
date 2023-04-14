@@ -238,8 +238,8 @@ class MinionToolbox(object):
 
         mission_config['Srate'] = float(config['Sleep_cycle']['minion_sleep_cycle'])
 
-        tlp_samp_burst_minutes = config['Time_Lapse_Samples']['minion_sample_time']
-        # Determine if the value entered into 'Minion_sample_time' is
+        tlp_samp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
+        # Determine if the value entered into 'sample_burst_duration' is
         #    'Camera' or an actual number.
         # Note: Any text will work, not just 'Camera'
         try:

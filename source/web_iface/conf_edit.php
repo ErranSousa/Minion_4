@@ -58,8 +58,8 @@ echo '<form action="/action_page.php" method="post">
   <legend>Time Lapse Sampling Mode:</legend>
   <label for="THours">Hours:</label><br>
   <input type="text" id="THours" name="THours" value="'.$cfg_file['Time_Lapse_Samples']['hours'].'"><br>
-  <label for="DS_Time">Data Sample Time (min):</label><br>
-  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Time_Lapse_Samples']['minion_sample_time'].'"><br>
+  <label for="DS_Time">Sample Burst Duration (min):</label><br>
+  <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Time_Lapse_Samples']['sample_burst_duration'].'"><br>
   <label for="SensorFS">Temperature and Pressure Sample Rate (Hz):</label><br>
   <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_rate'].'"><br>
   <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>

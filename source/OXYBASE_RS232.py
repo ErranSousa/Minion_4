@@ -28,7 +28,7 @@ ser= serial.Serial(
     timeout=1
 )
 
-TLPsamp_burst_minutes = config['Time_Lapse_Samples']['Minion_sample_time']
+TLPsamp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
 
 try :
     float(test_string)
