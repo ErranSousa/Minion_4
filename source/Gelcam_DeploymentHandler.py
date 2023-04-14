@@ -80,16 +80,16 @@ config = configparser.ConfigParser()
 config.read(configLoc)
 
 # Ddays = int(config['Deployment_Time']['days'])
-# Dhours = int(config['Deployment_Time']['hours'])
-Dhours = int(config['Time_Lapse_Samples']['hours'])
+# TLPsamp_hours = int(config['Deployment_Time']['hours'])
+TLPsamp_hours = int(config['Time_Lapse_Samples']['hours'])
 
-Stime = config['Time_Lapse_Samples']['Minion_sample_time']
+TLPsamp_burst_minutes = config['Time_Lapse_Samples']['Minion_sample_time']
 
 try:
     float(test_string)
-    Stime = float(Stime)
+    TLPsamp_burst_minutes = float(TLPsamp_burst_minutes)
 except:
-    Stime = float(.2)
+    TLPsamp_burst_minutes = float(.2)
 
 Srate = float(config['Sleep_cycle']['Minion_sleep_cycle'])
 Abort = str2bool(config['Mission']['Abort'])
@@ -101,11 +101,11 @@ iniO2 = str2bool(config['Sampling_scripts']['Oxybase'])
 iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
 
 # print("Days : {}".format(Ddays))
-print("Hours: {}".format(Dhours))
+print("Hours: {}".format(TLPsamp_hours))
 print("Sample rate (hours) - {}".format(Srate))
 
-# TotalSamples = (((Ddays*24)+Dhours))/Srate
-TotalSamples = Dhours/Srate
+# TotalSamples = (((Ddays*24)+TLPsamp_hours))/Srate
+TotalSamples = TLPsamp_hours/Srate
 
 print("Total Cycles ------- {}".format(TotalSamples))
 
@@ -152,7 +152,7 @@ if __name__ == '__main__':
 
         else:
             print("Sampling")
-            time.sleep(Stime*30)
+            time.sleep(TLPsamp_burst_minutes*30)
 
     print('Goodbye')
     GPIO.output(wifi, 0)

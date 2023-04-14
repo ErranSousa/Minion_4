@@ -30,13 +30,13 @@ IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) +
 print("Minion Deployment Handler")
 print("Time:  {}".format(samp_time))
 # print("Days : {}".format(minion_mission_config['Ddays']))
-print("Hours: {}".format(minion_mission_config['Dhours']))
+print("Hours: {}".format(minion_mission_config['TLPsamp_hours']))
 print("Sample rate (hours) - {}".format(minion_mission_config['Srate']))
 
-# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / \
+# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['TLPsamp_hours']) / \
 #                minion_mission_config['Srate']
 
-TotalSamples = minion_mission_config['Dhours'] / minion_mission_config['Srate']
+TotalSamples = minion_mission_config['TLPsamp_hours'] / minion_mission_config['Srate']
 
 if samp_num >= TotalSamples:
     RemainSamples = 0

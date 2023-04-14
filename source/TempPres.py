@@ -60,7 +60,7 @@ scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
 
 Sf = 1/minion_mission_config['TLPsamp_minion_rate']
 
-TotalSamples = minion_mission_config['Stime'] * 60 * minion_mission_config['Srate']
+TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['Srate']
 
 # with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
 #     samp_time = pickle.load(firstp)

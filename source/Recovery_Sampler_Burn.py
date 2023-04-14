@@ -136,8 +136,8 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
 if any(x in os.popen(ps_test).read() for x in scriptNames):
     minion_tools.kill_sampling(scriptNames)
 
-# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['Dhours']) / minion_mission_config['Srate']
-TotalSamples = minion_mission_config['Dhours'] / minion_mission_config['Srate']
+# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['TLPsamp_hours']) / minion_mission_config['Srate']
+TotalSamples = minion_mission_config['TLPsamp_hours'] / minion_mission_config['Srate']
 
 print("A--> Srate: " + str(minion_mission_config['Srate']) + ", TotalCycles: " + str(TotalSamples) +
       ", samp_num: " + str(samp_num))

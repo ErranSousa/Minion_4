@@ -28,17 +28,17 @@ ser= serial.Serial(
     timeout=1
 )
 
-Stime = config['Time_Lapse_Samples']['Minion_sample_time']
+TLPsamp_burst_minutes = config['Time_Lapse_Samples']['Minion_sample_time']
 
 try :
     float(test_string)
-    Stime = float(Stime)
+    TLPsamp_burst_minutes = float(TLPsamp_burst_minutes)
 except :
-    Stime = float(.2)
+    TLPsamp_burst_minutes = float(.2)
 
 Srate = float(config['Time_Lapse_Samples']['Oxygen_sample_rate'])
 
-Sample_number = Stime*60*Srate
+Sample_number = TLPsamp_burst_minutes*60*Srate
 Sf = 1/Srate
 
 time.sleep(1)

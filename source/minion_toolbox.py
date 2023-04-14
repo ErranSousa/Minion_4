@@ -183,9 +183,9 @@ class MinionToolbox(object):
                 float FINsamp_camera_rate : Camera Sample Rate (Finall Mode)
                 float FINsamp_tempPres_rate : Temperature/Pressure Sample Rate (Final Mode)
                 float FINsamp_oxygen_rate : Oxygen Sample Rate (Final Mode)
-                int Dhours : Number of Deployment Hours
+                int TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
                 float Srate : Sleep Cycle
-                float Stime : Sample Time
+                float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
                 float TLPsamp_minion_rate : Minion Sample Rate (Time-Lapse Mode)
                 float TLPsamp_oxygen_rate : Oxygen Sample Rate (Time-Lapse Mode)
                 bool iniImg : Enable / Disable Image Capture
@@ -203,7 +203,7 @@ class MinionToolbox(object):
                 'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate',
                 'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
                 'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_minion_rate',
-                'TLPsamp_oxygen_rate', 'Dhours', 'Stime', 'Srate', 'iniImg',
+                'TLPsamp_oxygen_rate', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'Srate', 'iniImg',
                 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
                 ]
 
@@ -234,20 +234,20 @@ class MinionToolbox(object):
         mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['oxygen_sample_rate'])
 
         # mission_config['Ddays'] = int(config['Deployment_Time']['days'])
-        mission_config['Dhours'] = int(config['Time_Lapse_Samples']['hours'])
+        mission_config['TLPsamp_hours'] = int(config['Time_Lapse_Samples']['hours'])
 
         mission_config['Srate'] = float(config['Sleep_cycle']['minion_sleep_cycle'])
 
-        stime = config['Time_Lapse_Samples']['minion_sample_time']
+        tlp_samp_burst_minutes = config['Time_Lapse_Samples']['minion_sample_time']
         # Determine if the value entered into 'Minion_sample_time' is
         #    'Camera' or an actual number.
         # Note: Any text will work, not just 'Camera'
         try:
-            mission_config['Stime'] = float(stime)
+            mission_config['TLPsamp_burst_minutes'] = float(tlp_samp_burst_minutes)
         except:
-            # Since Stime cannot be cast as a float, there must be some text
+            # Since tlp_samp_burst_minutes cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
-            mission_config['Stime'] = float(.2)
+            mission_config['TLPsamp_burst_minutes'] = float(.2)
         mission_config['TLPsamp_minion_rate'] = float(config['Time_Lapse_Samples']['minion_sample_rate'])
         mission_config['TLPsamp_oxygen_rate'] = float(config['Time_Lapse_Samples']['oxygen_sample_rate'])
 
