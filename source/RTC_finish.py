@@ -20,7 +20,7 @@ os.system(
 os.system(
     "sudo sed -i '/# Print the IP/i# Choose one of the following Handlers\n' /etc/rc.local")
 os.system(
-    "sudo sed -i '/# Print the IP/isudo python /home/pi/Documents/Minion_scripts/Minion_DeploymentHandler.py &\n' /etc/rc.local")
+    "sudo sed -i '/# Print the IP/isudo python3 /home/pi/Documents/Minion_scripts/Minion_DeploymentHandler.py &\n' /etc/rc.local")
 os.system(
     "sudo sed -i '/# Print the IP/i#sudo python /home/pi/Documents/Minion_scripts/Gelcam_DeploymentHandler.py &\n' /etc/rc.local")
 
