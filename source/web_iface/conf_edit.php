@@ -60,6 +60,8 @@ echo '<form action="/action_page.php" method="post">
   <input type="text" id="THours" name="THours" value="'.$cfg_file['Time_Lapse_Samples']['hours'].'"><br>
   <label for="DS_Time">Sample Burst Duration (min):</label><br>
   <input type="text" id="DS_Time" name="DS_Time" value="'.$cfg_file['Time_Lapse_Samples']['sample_burst_duration'].'"><br>
+    <label for="DS_Interval">Sample Burst Interval (min):</label><br>
+  <input type="text" id="DS_Interval" name="DS_Interval" value="'.$cfg_file['Time_Lapse_Samples']['sample_interval_minutes'].'"><br>
   <label for="SensorFS">Temperature and Pressure Sample Rate (Hz):</label><br>
   <input type="text" id="SensorFS" name="SensorFS" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_rate'].'"><br>
   <label for="OxygenFS">Oxybase Sample Rate (Hz):</label><br>

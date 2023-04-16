@@ -37,9 +37,9 @@ Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["IOXYFS"]; ?><br>
 
 <fieldset>
 <legend>Time Lapse Sampling Mode:</legend>
-Days: <?php echo $_POST["TDays"]; ?><br>
 Hours: <?php echo $_POST["THours"]; ?><br>
-Data Sample Time (min): <?php echo $_POST["DS_Time"]; ?><br>
+Sample Burst Duration (min): <?php echo $_POST["DS_Time"]; ?><br>
+Sample Burst Interval (min): <?php echo $_POST["DS_Interval"]; ?><br>
 Sensor Sample Rate (Hz): <?php echo $_POST["SensorFS"]; ?><br>
 Oxybase Sample Rate (Hz): <?php echo $_POST["OxygenFS"]; ?><br>
 </fieldset>
@@ -86,6 +86,7 @@ fwrite($myfile, $Initial_Samples);
 $Data_Sample = "[Time_Lapse_Samples]\n"
   ."hours = ".$_POST["THours"]."\n"
   ."sample_burst_duration = ".$_POST["DS_Time"]."\n"
+  ."sample_interval_minutes = ".$_POST["DS_Interval"]."\n"
   ."temppres_sample_rate = ".$_POST["SensorFS"]."\n"
   ."oxygen_sample_rate = ".$_POST["OxygenFS"]."\n\n";
 
