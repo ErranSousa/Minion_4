@@ -125,7 +125,8 @@ minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion
                                     minion_mission_config['iniTmp'])
 
 # Spew readings
-while NumSamples <= TotalSamples:
+# while NumSamples <= TotalSamples:
+while NumSamples < TotalSamples:
 
     tic = time.perf_counter()
 

@@ -241,7 +241,7 @@ if __name__ == '__main__':
         #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
         # Display readings
-        while NumSamples <= TotalSamples and not min_depth_flag:
+        while NumSamples < TotalSamples and not min_depth_flag:
 
             tic = time.perf_counter()
             
