@@ -31,7 +31,7 @@ configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 # Initial Samples will be performed if pictures have not been performed during Time Lapse mode
 if len(os.listdir('{}/minion_pics'.format(data_config['Data_Dir']))) == 0:
 
-    Srate = minion_mission_config['FINsamp_camera_rate']
+    Srate = minion_mission_config['INIsamp_camera_rate']
     TotalSamples = minion_mission_config['INIsamp_hours']*(60/minion_mission_config['INIsamp_camera_rate'])
     # Srate = float(config['Initial_Samples']['Camera_sample_rate'])
     RECOVER = 0
