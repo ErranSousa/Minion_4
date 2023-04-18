@@ -151,7 +151,7 @@ if __name__ == '__main__':
     #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
     # Spew readings
-    while NumSamples <= TotalSamples:
+    while NumSamples < TotalSamples:
 
         tic = time.perf_counter()
 
