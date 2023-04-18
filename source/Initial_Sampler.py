@@ -134,7 +134,8 @@ if minion_mission_config['iniTmp']:
         exit(1)
 
 # Write a header to the data file
-minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion_mission_config['Srate'], minion_mission_config['iniP30'],
+minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
+                                    minion_mission_config['INIsamp_tempPres_rate'], minion_mission_config['iniP30'],
                                     minion_mission_config['iniP100'], minion_mission_config['iniTmp'])
 
 if __name__ == '__main__':
