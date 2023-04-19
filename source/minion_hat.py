@@ -66,6 +66,7 @@ class MinionHat(object):
 
     def shutdown(self, shutdown_secs):
         """Shutdown the RPi and Put the Minion Hat into Low Power Mode for shutdown_secs.
+            Warning!: cancels the burn wire and recovery strobe.
 
         Parameters
         ----------
