@@ -12,8 +12,8 @@ def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
     # Check for WiFi while any of the scripts in script_list are executing
     while any(x in os.popen(ps_test).read() for x in script_list):
-        ignore_wifi_status = minion_tools.ignore_wifi_check()
-        if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
+        ig_wifi_status = minion_tools.ignore_wifi_check()
+        if minion_tools.check_wifi(ig_wifi_status) == "Connected":
             minion_tools.kill_sampling(script_list)
             minion_tools.flash(2, 250, 250)
             GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
@@ -87,6 +87,9 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
 # Flag to indicate that the time-lapse mode should start immediately after the Initial Sampler completes
 start_time_lapse_scripts_flag = False
 
+# default value for shutdown seconds
+shdn_seconds = 60
+
 if __name__ == '__main__':
 
     # First, check for Wifi
@@ -122,7 +125,7 @@ if __name__ == '__main__':
     if start_time_lapse_scripts_flag:
         start_time_lapse_scripts()
         minion_tools.increment_samp_num()
-        # Calculate Shutdown time for Time-Lapse Mode
+        # Calculate (roughly) Shutdown time for Time-Lapse Mode
         shdn_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
                              minion_mission_config['TLPsamp_burst_minutes'])
 
