@@ -53,31 +53,18 @@ minion_mission_config = minion_tools.read_mission_config()
 # Create an instance of MinionHat()
 minion_hat = MinionHat()
 
-print("Minion Deployment Handler")
-print("Current Date/Time:  {}".format(samp_time))
-print("Time-Lapse Mode Duration: {} hours".format(minion_mission_config['TLPsamp_hours']))
-print("Time-Lapse Burst Sample Interval: {} minutes".format(minion_mission_config['TLPsamp_interval_minutes']))
-
 TotalSamples = (minion_mission_config['TLPsamp_hours'] * 60) / minion_mission_config['TLPsamp_interval_minutes']
-
 if samp_num >= TotalSamples:
     RemainSamples = 0
 else:
     RemainSamples = (TotalSamples - samp_num)
 
+print("Minion Deployment Handler")
+print("Current Date/Time:  {}".format(samp_time))
+print("Time-Lapse Mode Duration: {} hours".format(minion_mission_config['TLPsamp_hours']))
+print("Time-Lapse Burst Sample Interval: {} minutes".format(minion_mission_config['TLPsamp_interval_minutes']))
 print("Total Cycles ------- {}".format(TotalSamples))
-
 print("Cycles Remaining --- {}".format(RemainSamples))
-
-ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
-
-iwlist = 'sudo iwlist wlan0 scan | grep -e "Minion_Hub" -e "Master_Hub"'
-
-net_cfg = "ls /etc/ | grep dhcp"
-
-ping_hub = "ping 192.168.0.1 -c 1"
-
-ping_google = "ping google.com -c 1"
 
 ps_test = "pgrep -a python"
 
@@ -86,9 +73,8 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
 
 # Flag to indicate that the time-lapse mode should start immediately after the Initial Sampler completes
 start_time_lapse_scripts_flag = False
-
-# default value for shutdown seconds
-shdn_seconds = 60
+# Flag to indicate recovery mode
+recovery_mode_flag = False
 
 if __name__ == '__main__':
 
@@ -108,14 +94,12 @@ if __name__ == '__main__':
     # Recovery Sampling Mode
     elif samp_num > TotalSamples or minion_mission_config['Abort']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-        shdn_seconds = 60
+        # shdn_seconds = 60
+        recovery_mode_flag = True
 
     # Time-Lapse Sampling Mode
     else:
         start_time_lapse_scripts()
-        # Calculate Shutdown time for Time-Lapse Mode
-        shdn_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
-                             minion_mission_config['TLPsamp_burst_minutes'])
 
     # Increment the Sample Number
     minion_tools.increment_samp_num()
@@ -125,13 +109,23 @@ if __name__ == '__main__':
     if start_time_lapse_scripts_flag:
         start_time_lapse_scripts()
         minion_tools.increment_samp_num()
-        # Calculate (roughly) Shutdown time for Time-Lapse Mode
-        shdn_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
-                             minion_mission_config['TLPsamp_burst_minutes'])
 
     check_wifi_and_scripts(scriptNames)
 
     # Once we get here, there are none of the scripts in scriptNames are running.
     print('Goodbye')
 
-    minion_hat.shutdown(int(shdn_seconds))
+    # Between Time Lapse Mode Blocks, the system should enter the lowest power mode (shutdown).
+    # Shutdown will disable the recovery strobe and burn wire to conserve power.
+    # Once recovery mode is reached, the power down between cycles should preserve the
+    # burn wire and recovery strobe (sleep).
+    if not recovery_mode_flag:
+        # This is the mode between Time-Lapse Mode bursts
+        # Calculate (roughly) Shutdown time for Time-Lapse Mode
+        shutdown_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
+                                 minion_mission_config['TLPsamp_burst_minutes'])
+        minion_hat.shutdown(int(shutdown_seconds))
+    else:
+        # This is the mode between Recovery sampler shutdowns where the burn wire and recovery strobe are preserved.
+        sleep_seconds = 60
+        minion_hat.sleep(int(sleep_seconds))
