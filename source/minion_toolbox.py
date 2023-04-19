@@ -24,6 +24,7 @@ pin_defs_file = '/home/pi/Documents/Minion_tools/pin_defs.ini'
 data_xmt_status_pickle_file = '/home/pi/Documents/Minion_scripts/data_xmt_status.pickle'
 samp_num_pickle_file = '/home/pi/Documents/Minion_scripts/samp_num.pkl'
 time_stamp_pickle_file = '/home/pi/Documents/Minion_scripts/timesamp.pkl'
+mission_start_pickle_file = '/home/pi/Documents/Minion_scripts/mission_start_time.pkl'
 
 # Command Aliases for Wifi
 ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
@@ -700,6 +701,93 @@ class MinionToolbox(object):
         success = self._rtc_ext.set_time(date_str)
 
         return success
+
+    def read_mission_start_time(self):
+        """Read the mission start time from the mission start time pickle file.
+        Creates and initializes the pickle file if it does not exist.
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        datetime.datetime mission_start_time : Time that the mission was started
+
+        """
+
+        # If the pkl file exists, we can open and read the contents
+        try:
+            with open(mission_start_pickle_file, "rb") as pickle_file:
+                mission_start_time = pickle.load(pickle_file)
+
+        # This must be the first time through so the pickle file does not yet exist
+        except FileNotFoundError:
+            print("\n\rCould not find the mission start time pickle file.  Initializing... ")
+            mission_start_time = datetime.datetime.now()
+            with open(mission_start_pickle_file, "wb") as pickle_file:
+                pickle.dump(mission_start_time, pickle_file)
+            print("[OK] Created sample number pickle file.")
+
+        return mission_start_time
+
+    def delete_mission_start_time_pickle(self):
+        """Delete the Mission Start Time Pickle File
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        none
+
+        Example:
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.delete_mission_start_time_pickle()
+        """
+        if os.path.exists(mission_start_pickle_file):
+            os.remove(mission_start_pickle_file)
+            print('[OK] Mission Start Time Pickle File Removed.')
+        else:
+            print("[OK] Mission Start Time Pickle File Already Removed or Does Not Exist.")
+
+    def ignore_wifi_check(self):
+        """Checks if WIFI should be ignored
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        bool ignore_wifi_status : True if ignoring wifi, False looking for wifi
+
+        Example:
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            ignore_wifi_status = minion_tools.ignore_wifi_check()
+        """
+
+        # Read the mission configuration
+        mission_config = self.read_mission_config()
+
+        # Read the mission start time - creates the pickle if it does not exist
+        mission_start_time = self.read_mission_start_time()
+
+        # Calculate the until the wifi should no longer be ignored
+        ignore_wifi_until = mission_start_time + datetime.timedelta(hours=mission_config['IG_WIFI_H'])
+
+        # Check if we have reached the time to start detecting wifi
+        if datetime.datetime.now() >= ignore_wifi_until:
+            print("Looking for Wifi")
+            ignore_wifi_status = False
+        else:
+            print('Ignoring wifi')
+            ignore_wifi_status = True
+
+        return ignore_wifi_status
 
     def read_samp_num(self):
         """Read the sample number from the samp_num pickle file.
