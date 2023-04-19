@@ -28,6 +28,9 @@ minion_tools.delete_data_xmt_status_pickle()
 # Delete the Sample Number Pickle (samp_num.pkl) prior to mission start
 minion_tools.delete_samp_num_pickle()
 
+# Delete the Mission Start Time Pickle file
+minion_tools.delete_mission_start_time_pickle()
+
 # Reset the Burn Wire
 minion_hat.burn_wire(minion_hat.DISABLE)
 print('[OK] Disabled the Burn Wire')
