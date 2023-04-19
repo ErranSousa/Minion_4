@@ -12,7 +12,8 @@ def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
     # Check for WiFi while any of the scripts in script_list are executing
     while any(x in os.popen(ps_test).read() for x in script_list):
-        if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
+        ignore_wifi_status = minion_tools.ignore_wifi_check()
+        if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
             minion_tools.kill_sampling(script_list)
             minion_tools.flash(2, 250, 250)
             GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
@@ -52,23 +53,11 @@ minion_mission_config = minion_tools.read_mission_config()
 # Create an instance of MinionHat()
 minion_hat = MinionHat()
 
-# i = 0  # Not sure why this should be here.
-
-IG_WIFI_Samples = (((minion_mission_config['IG_WIFI_D']*24) +
-                    minion_mission_config['IG_WIFI_H'])/minion_mission_config['Srate']) - \
-                  (minion_mission_config['INIsamp_hours']/minion_mission_config['Srate'])
-
 print("Minion Deployment Handler")
 print("Current Date/Time:  {}".format(samp_time))
-# print("Days : {}".format(minion_mission_config['Ddays']))
 print("Time-Lapse Mode Duration: {} hours".format(minion_mission_config['TLPsamp_hours']))
-# print("Sample rate (hours) - {}".format(minion_mission_config['Srate']))
 print("Time-Lapse Burst Sample Interval: {} minutes".format(minion_mission_config['TLPsamp_interval_minutes']))
 
-# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['TLPsamp_hours']) / \
-#                minion_mission_config['Srate']
-
-# TotalSamples = minion_mission_config['TLPsamp_hours'] / minion_mission_config['Srate']
 TotalSamples = (minion_mission_config['TLPsamp_hours'] * 60) / minion_mission_config['TLPsamp_interval_minutes']
 
 if samp_num >= TotalSamples:
@@ -79,14 +68,6 @@ else:
 print("Total Cycles ------- {}".format(TotalSamples))
 
 print("Cycles Remaining --- {}".format(RemainSamples))
-
-if IG_WIFI_Samples >= samp_num:
-    IgnoreWIFI = True
-    print("Ignoring Wifi, in Mission")
-
-else:
-    IgnoreWIFI = False
-    print("Searching for WIFI...")
 
 ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
 
@@ -109,7 +90,8 @@ start_time_lapse_scripts_flag = False
 if __name__ == '__main__':
 
     # First, check for Wifi
-    if minion_tools.check_wifi(IgnoreWIFI) == "Connected":
+    ignore_wifi_status = minion_tools.ignore_wifi_check()
+    if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
         minion_tools.kill_sampling(scriptNames)
         minion_tools.flash(2, 250, 250)
         GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
@@ -121,7 +103,6 @@ if __name__ == '__main__':
         start_time_lapse_scripts_flag = True
 
     # Recovery Sampling Mode
-    # elif samp_num >= TotalSamples + 1 or minion_mission_config['Abort']:
     elif samp_num > TotalSamples or minion_mission_config['Abort']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
         shdn_seconds = 60
@@ -132,8 +113,6 @@ if __name__ == '__main__':
         # Calculate Shutdown time for Time-Lapse Mode
         shdn_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
                              minion_mission_config['TLPsamp_burst_minutes'])
-
-    # time.sleep(60)  # For testing only!!!
 
     # Increment the Sample Number
     minion_tools.increment_samp_num()
@@ -152,8 +131,4 @@ if __name__ == '__main__':
     # Once we get here, there are none of the scripts in scriptNames are running.
     print('Goodbye')
 
-    # Calculate the shutdown time
     minion_hat.shutdown(int(shdn_seconds))
-
-    # time.sleep(5)
-    # os.system('sudo shutdown now')
