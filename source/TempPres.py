@@ -60,7 +60,8 @@ scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
 
 Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
 
-TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['Srate']
+# TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['Srate']
+TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['TLPsamp_tempPress_rate']
 
 # with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
 #     samp_time = pickle.load(firstp)
@@ -76,7 +77,7 @@ samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time) #Add leading zer
 file_name = "{}_TEMPPRES.txt".format(samp_time)
 file_path_name = "{}/minion_data/".format(data_config['Data_Dir']) + file_name
 
-if minion_mission_config['iniP30'] == True:
+if minion_mission_config['iniP30']:
 
     Psensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
 
@@ -93,7 +94,7 @@ if minion_mission_config['iniP30'] == True:
     else:
         Pres_ini = "Broken"
 
-if minion_mission_config['iniP100'] == True:
+if minion_mission_config['iniP100']:
 
     Psensor = KellerLD()
 
@@ -110,7 +111,7 @@ if minion_mission_config['iniP100'] == True:
     else:
         Pres_ini = "Broken"
 
-if minion_mission_config['iniTmp'] == True:
+if minion_mission_config['iniTmp']:
 
     sensor_temp = tsys01.TSYS01()
 
@@ -120,8 +121,14 @@ if minion_mission_config['iniTmp'] == True:
         exit(1)
 
 
-minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion_mission_config['Srate'],
-                                    minion_mission_config['iniP30'], minion_mission_config['iniP100'],
+# minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name, minion_mission_config['Srate'],
+#                                     minion_mission_config['iniP30'], minion_mission_config['iniP100'],
+#                                     minion_mission_config['iniTmp'])
+
+minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
+                                    minion_mission_config['TLPsamp_tempPress_rate'],
+                                    minion_mission_config['iniP30'],
+                                    minion_mission_config['iniP100'],
                                     minion_mission_config['iniTmp'])
 
 # Spew readings
