@@ -16,7 +16,10 @@ while res not in {"y", "n"}:
     res = input("Confirm Shutdown? (Enter y/n)").lower()
 
 if res == 'y':
-    print('Shutting Down Now.')
+    print('========================================================================')
+    print('Permanent shutdown mode.\n  '
+          'To wake the device, press the reset button or restart with the magnet.')
+    print('========================================================================')
     # Turn on the LED controlled by the Minion Hat microcontroller.
     # Once this LED is turned off, the user can attach the magnet to keep the minion off.
     minion_hat.led(minion_hat.ON)
