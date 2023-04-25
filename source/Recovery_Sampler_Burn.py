@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-# import RPi.GPIO as GPIO
 import tsys01
 import ms5837
 from kellerLD import KellerLD
 import pickle
 import time
 import os
-# import math
 import configparser
 import sys
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
@@ -125,10 +123,6 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
 # True = Final Samples Performed, False = Final Samples Not Performed
 final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
 
-# scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-#                "ACC_100Hz.py", "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
-#                "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
-
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
                "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
@@ -136,15 +130,7 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
 if any(x in os.popen(ps_test).read() for x in scriptNames):
     minion_tools.kill_sampling(scriptNames)
 
-# TotalSamples = ((minion_mission_config['Ddays'] * 24) + minion_mission_config['TLPsamp_hours']) / minion_mission_config['Srate']
-TotalSamples = minion_mission_config['TLPsamp_hours'] / minion_mission_config['Srate']
-
-print("A--> Srate: " + str(minion_mission_config['Srate']) + ", TotalCycles: " + str(TotalSamples) +
-      ", samp_num: " + str(samp_num))
-
 print('Timestamp: {}'.format(samp_time))
-# with open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb") as firstp:
-#     samp_time = pickle.load(firstp)
 
 samp_num_leading_zeros = "%03d" % samp_num
 
@@ -236,9 +222,6 @@ if __name__ == '__main__':
 
         if minion_mission_config['iniO2']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
-
-        # if minion_mission_config['iniAcc']:
-        #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
 
         # Display readings
         while NumSamples < TotalSamples and not min_depth_flag:
