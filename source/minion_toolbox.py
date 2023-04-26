@@ -185,7 +185,6 @@ class MinionToolbox(object):
                 float FINsamp_tempPres_rate : Temperature/Pressure Sample Rate (Final Mode)
                 float FINsamp_oxygen_rate : Oxygen Sample Rate (Final Mode)
                 int TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
-                float Srate : Sleep Cycle
                 float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
                 int TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
                 float TLPsamp_tempPress_rate : Temperature / Pressure Sample Rate (Time-Lapse Mode)
@@ -206,7 +205,7 @@ class MinionToolbox(object):
                 'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
                 'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_tempPress_rate',
                 'TLPsamp_oxygen_rate', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'TLPsamp_interval_minutes',
-                'Srate', 'iniImg', 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
+                'iniImg', 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
                 ]
 
         mission_config = dict.fromkeys(keys)
@@ -238,8 +237,6 @@ class MinionToolbox(object):
         # mission_config['Ddays'] = int(config['Deployment_Time']['days'])
         mission_config['TLPsamp_hours'] = int(config['Time_Lapse_Samples']['hours'])
 
-        mission_config['Srate'] = float(config['Sleep_cycle']['minion_sleep_cycle'])
-
         tlp_samp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
         # Determine if the value entered into 'sample_burst_duration' is
         #    'Camera' or an actual number.
@@ -259,7 +256,6 @@ class MinionToolbox(object):
         mission_config['iniP100'] = self.str2bool(config['Sampling_scripts']['100ba-pres'])
         mission_config['iniTmp'] = self.str2bool(config['Sampling_scripts']['temperature'])
         mission_config['iniO2'] = self.str2bool(config['Sampling_scripts']['oxybase'])
-        # mission_config['iniAcc'] = self.str2bool(config['Sampling_scripts']['acc_100hz'])
 
         return mission_config
 
