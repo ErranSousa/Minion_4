@@ -25,7 +25,6 @@ if ($cfg_file['Sampling_scripts']['30Ba-pres'] == 1) { $BA30 = "checked";} else 
 if ($cfg_file['Sampling_scripts']['100Ba-pres'] == 1) { $BA100 = "checked";} else { $BA100 = "";}
 if ($cfg_file['Sampling_scripts']['temperature'] == 1) { $Temp = "checked";} else { $Temp = "";}
 if ($cfg_file['Sampling_scripts']['oxybase'] == 1) { $OXY = "checked";} else { $OXY = "";}
-# if ($cfg_file['Sampling_scripts']['acc_100Hz'] == 1) { $ACC = "checked";} else { $ACC = "";}
 
 echo '<form action="/action_page.php" method="post">
   <label for="DMAX">Maximum Depth (meters):</label>
@@ -77,11 +76,6 @@ echo '<form action="/action_page.php" method="post">
   <input type="text" id="FTPFS" name="FTPFS" value="'.$cfg_file['Final_Samples']['temppres_sample_rate'].'"><br>
   <label for="FOXYFS">Dissolved Oxygen Sample Rate (Hz):</label><br>
   <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['oxygen_sample_rate'].'"><br>
-  </fieldset>
-  <fieldset>
-  <legend>Sleep Cycle:</legend>
-  <label for="SCycle">Sleep Cycle programmed on micro controller in hours:</label><br>
-  <input type="text" id="SCycle" name="SCycle" value="'.$cfg_file['Sleep_cycle']['minion_sleep_cycle'].'"><br>
   </fieldset>
   <fieldset>
   <legend>Ignore WIFI Signal:</legend>

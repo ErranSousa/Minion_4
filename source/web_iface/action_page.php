@@ -52,11 +52,6 @@ Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
 Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["FOXYFS"]; ?><br>
 </fieldset>
 
-<fieldset>
-<legend>Sleep Cycle:</legend>
-<?php echo $_POST["SCycle"]; ?><br>
-</fieldset>
-
 <?php
 $myfile = fopen("newconfig.txt", "w") or die("Unable to open file!");
 
@@ -100,18 +95,11 @@ $Final_Samples = "[Final_Samples]\n"
 
 fwrite($myfile, $Final_Samples);
 
-$Sleep_cycle = "[Sleep_cycle]\n"
-  ."minion_sleep_cycle = ".$_POST["SCycle"]."\n\n";
-
-fwrite($myfile, $Sleep_cycle);
-
-
 if ($_POST["Image"]=="Image"){$bImage = "True";}else{$bImage = "False";}
 if ($_POST["30Bar_Pres"]=="30Bar_Pres"){$b30bar = "True";}else{$b30bar = "False";}
 if ($_POST["100Bar_Pres"]=="100Bar_Pres"){$b100bar = "True";}else{$b100bar = "False";}
 if ($_POST["Temp"]=="Temp"){$btemp = "True";}else{$btemp = "False";}
 if ($_POST["OXY"]=="OXY"){$boxy = "True";}else{$boxy = "False";}
-// if ($_POST["ACC"]=="ACC"){$bacc = "True";}else{$bacc = "False";}
 
 $Sampling_scripts = "[Sampling_scripts]\n"
   ."image = ".$bImage."\n"
@@ -119,7 +107,6 @@ $Sampling_scripts = "[Sampling_scripts]\n"
   ."100Ba-pres = ".$b100bar."\n"
   ."temperature = ".$btemp."\n"
   ."oxybase = ".$boxy."\n\n";
-  //."acc_100Hz = ".$bacc."\n\n";
 
 fwrite($myfile, $Sampling_scripts);
 
