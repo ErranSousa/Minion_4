@@ -59,12 +59,14 @@ if samp_num >= TotalSamples:
 else:
     RemainSamples = (TotalSamples - samp_num)
 
+print("="*50)
 print("Minion Deployment Handler")
 print("Current Date/Time:  {}".format(samp_time))
 print("Time-Lapse Mode Duration: {} hours".format(minion_mission_config['TLPsamp_hours']))
 print("Time-Lapse Burst Sample Interval: {} minutes".format(minion_mission_config['TLPsamp_interval_minutes']))
-print("Total Cycles ------- {}".format(TotalSamples))
-print("Cycles Remaining --- {}".format(RemainSamples))
+print("Total Sample Bursts ------- {}".format(TotalSamples))
+print("Sample Bursts Remaining --- {}".format(RemainSamples))
+print("="*50)
 
 ps_test = "pgrep -a python"
 
