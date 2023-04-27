@@ -1,160 +1,93 @@
 #!/usr/bin/env python3
 
-import RPi.GPIO as GPIO
 import time
 import os
-import math
-import configparser
 import sys
-import pickle
+sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
+from minion_toolbox import MinionToolbox
+from minion_hat import MinionHat
 
-def flash():
-        j = 0
-        while j <= 2:
-                GPIO.output(light, 1)
-                time.sleep(.25)
-                GPIO.output(light, 0)
-                time.sleep(.25)
-                j = j + 1
 
-def str2bool(v):
-    return v.lower() in ("yes", "true", "t", "1")
-
-def check_wifi():
-
-    if "Minion_Hub" in os.popen(iwlist).read():
-        status = "Connected"
-        net_status = os.popen(net_cfg).read()
-        if ".Minion" in net_status:
-            os.system(ifswitch)
+def check_wifi_and_scripts(script_list):
+    time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
+    # Check for WiFi while any of the scripts in script_list are executing
+    while any(x in os.popen(ps_test).read() for x in script_list):
+        ig_wifi_status = minion_tools.ignore_wifi_check()
+        if minion_tools.check_wifi(ig_wifi_status) == "Connected":
+            minion_tools.kill_sampling(script_list)
+            minion_tools.flash(2, 250, 250)
+            GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
+            GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+            exit(0)
         else:
-            print("You have Minions!")
+            print("Sampling")
+            time.sleep(5)
 
-    else:
-        print("No WIFI found.")
-        status = "Not Connected"
 
-    print(status)
-    return status
+# create an instance of MinionToolbox()
+minion_tools = MinionToolbox()
 
-def kill_sampling(scriptNames):
+# Configure the Raspberry Pi GPIOs & configure pins to their default states
+GPIO, pin_defs_dict = minion_tools.config_gpio(defaults=True)
 
-    for script in scriptNames:
-        os.system("sudo pkill -9 -f {}".format(script))
+# Get the current time stamp information
+samp_time = minion_tools.update_timestamp()  # Use when DS3231 is not enabled in config.txt
 
-def update_time():
-    try:
-        samp_time = os.popen("sudo hwclock -l -r").read()
-        samp_time = samp_time.split('.',1)[0]
-        samp_time = samp_time.replace("  ","_")
-        samp_time = samp_time.replace(" ","_")
-        samp_time = samp_time.replace(":","-")
+# Get the current sample number
+samp_num = minion_tools.read_samp_num()
 
-        firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","wb")
-        pickle.dump(samp_time, firstp)
-        firstp.close()
-    except:
-        print("update time failed")
+# Load the Minion Configuration
+minion_mission_config = minion_tools.read_mission_config()
 
-update_time()
+# Create an instance of MinionHat()
+minion_hat = MinionHat()
 
-i = 0
-wifi = 22
-light = 12
-IO328 = 29
+TotalSamples = (minion_mission_config['TLPsamp_hours'] * 60) / minion_mission_config['TLPsamp_interval_minutes']
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(light, GPIO.OUT)
-GPIO.setup(wifi, GPIO.OUT)
-GPIO.setup(IO328, GPIO.OUT)
-GPIO.output(IO328, 1)
-GPIO.output(wifi, 1)
+if samp_num >= TotalSamples:
+    RemainSamples = 0
+else:
+    RemainSamples = (TotalSamples - samp_num)
 
-data_config = configparser.ConfigParser()
-data_config.read('/home/pi/Documents/Minion_scripts/Data_config.ini')
-
-configDir = data_config['Data_Dir']['Directory']
-configLoc = '{}/Minion_config.ini'.format(configDir)
-config = configparser.ConfigParser()
-config.read(configLoc)
-
-# Ddays = int(config['Deployment_Time']['days'])
-# TLPsamp_hours = int(config['Deployment_Time']['hours'])
-TLPsamp_hours = int(config['Time_Lapse_Samples']['hours'])
-
-TLPsamp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
-
-try:
-    float(test_string)
-    TLPsamp_burst_minutes = float(TLPsamp_burst_minutes)
-except:
-    TLPsamp_burst_minutes = float(.2)
-
-Srate = float(config['Sleep_cycle']['Minion_sleep_cycle'])
-Abort = str2bool(config['Mission']['Abort'])
-iniImg = str2bool(config['Sampling_scripts']['Image'])
-iniP30 = str2bool(config['Sampling_scripts']['30Ba-Pres'])
-iniP100 = str2bool(config['Sampling_scripts']['100Ba-Pres'])
-iniTmp = str2bool(config['Sampling_scripts']['Temperature'])
-iniO2 = str2bool(config['Sampling_scripts']['Oxybase'])
-iniAcc = str2bool(config['Sampling_scripts']['ACC_100Hz'])
-
-# print("Days : {}".format(Ddays))
-print("Hours: {}".format(TLPsamp_hours))
-print("Sample rate (hours) - {}".format(Srate))
-
-# TotalSamples = (((Ddays*24)+TLPsamp_hours))/Srate
-TotalSamples = TLPsamp_hours/Srate
-
-print("Total Cycles ------- {}".format(TotalSamples))
-
-ifswitch = "sudo python /home/pi/Documents/Minion_tools/dhcp-switch.py"
-
-iwlist = 'sudo iwlist wlan0 scan | grep "Minion_Hub"'
-
-net_cfg = "ls /etc/ | grep dhcp"
-
-ping_hub = "ping 192.168.0.1 -c 1"
-
-ping_google = "ping google.com -c 1"
+print("="*50)
+print("Gelcam Deployment Handler")
+print("Current Date/Time:  {}".format(samp_time))
+print("Gelcam Mission Duration: {} hours".format(minion_mission_config['TLPsamp_hours']))
+print("Gelcam Burst Sample Interval: {} minutes".format(minion_mission_config['TLPsamp_interval_minutes']))
+print("Total Sample Bursts ------- {}".format(TotalSamples))
+print("Sample Bursts Remaining --- {}".format(RemainSamples))
+print("="*50)
 
 ps_test = "pgrep -a python"
 
-# scriptNames = ["TempPres.py", "Minion_image.py","Minion_image_IF.py","OXYBASE_RS232.py","ACC_100Hz.py","Initial_Sampler.py","TempPres_IF.py","OXYBASE_RS232_IF.py","ACC_100Hz_IF.py","Iridium_gps.py","Iridium_data.py"]
-scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-               "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py"]
+scriptNames = ["TempPres.py", "Minion_image.py", "OXYBASE_RS232.py"]
 
 if __name__ == '__main__':
 
-    if iniP30 == True or iniP100 == True:
+    # First, check for Wifi
+    ignore_wifi_status = minion_tools.ignore_wifi_check()
+    if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
+        minion_tools.kill_sampling(scriptNames)
+        minion_tools.flash(3, 250, 250)
+        GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+        exit(0)
+
+    if minion_mission_config['iniP30'] or minion_mission_config['iniP100'] or minion_mission_config['iniTmp']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
-    if iniImg == True:
+    if minion_mission_config['iniImg']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py &')
 
-    if iniO2 == True:
+    if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
 
-    # if iniAcc == True:
-    #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz.py &')
+    check_wifi_and_scripts(scriptNames)
 
-    time.sleep(5)
-
-    while(any(x in os.popen(ps_test).read() for x in scriptNames)) == True:
-
-    ## Check for wifi
-
-        if check_wifi() == "Connected":
-            kill_sampling(scriptNames)
-            flash()
-            exit(0)
-
-        else:
-            print("Sampling")
-            time.sleep(TLPsamp_burst_minutes*30)
-
+    # Once we get here, there are none of the scripts in scriptNames are running.
     print('Goodbye')
-    GPIO.output(wifi, 0)
-    time.sleep(5)
-    os.system('sudo shutdown now')
+
+    # This is the mode between Time-Lapse Mode bursts
+    # Calculate (roughly) Shutdown time for Time-Lapse Mode
+    shutdown_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
+                             minion_mission_config['TLPsamp_burst_minutes'])
+    minion_hat.shutdown(int(shutdown_seconds))
