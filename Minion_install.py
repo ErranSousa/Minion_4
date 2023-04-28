@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 This program was written to simplify configuration of a
@@ -19,7 +19,7 @@ def yes_no(answer):
     no = set(['no','n'])
 
     while True:
-        choice = raw_input(answer).lower()
+        choice = input(answer).lower()
         if choice in yes:
             return True
         elif choice in no:
@@ -29,7 +29,7 @@ def yes_no(answer):
 
 def USB_Conf():
 
-    drive = raw_input('Please insert USB storage device and press return:')
+    drive = input('Please insert USB storage device and press return:')
     # Below formats the Drive automatically but wow it's slow
     #os.system('sudo mkfs -t ntfs /dev/sda1')
 
@@ -60,6 +60,7 @@ def USB_Conf():
     return UUID
 
 # Configure the last 3 digits of IP 192.168.0.XXX
+
 
 IP_addr = input('What local IP extension would you like to use? 192.168.0.')
 
