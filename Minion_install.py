@@ -249,7 +249,7 @@ print("Appending to /boot/cmdline.txt")
 os.system("echo 'modules-load=dwc2,g_ether plymoth.ignore-serial-consoles' >> /boot/cmdline.txt")
 
 # Set pi to launch rest of script after reboot
-os.system("sudo sed -i '/# Print the IP/isudo python /home/pi/Documents/Minion_tools/RTC_finish.py\n\n' /etc/rc.local")
+os.system("sudo sed -i '/# Print the IP/isudo python3 /home/pi/Documents/Minion_tools/RTC_finish.py\n\n' /etc/rc.local")
 
 os.system("sudo chmod +x /etc/rc.local")
 
