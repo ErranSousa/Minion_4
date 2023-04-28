@@ -205,7 +205,15 @@ else:
 # Get updates
 #os.system('sudo apt-get update && sudo apt-get upgrade -y') 
 # Get needed packages
-os.system('sudo apt-get install -y build-essential python-smbus i2c-tools nmap nginx php-fpm php-zip')
+# os.system('sudo apt-get install -y build-essential python-smbus i2c-tools nmap nginx php-fpm php-zip')
+os.system('sudo apt-get install -y build-essential')
+os.system('sudo apt-get install -y python-smbus')
+os.system('sudo apt-get install -y i2c-tools')
+os.system('sudo apt-get install -y nmap')
+os.system('sudo apt-get install -y nginx')
+os.system('sudo apt-get install -y php-fpm')
+os.system('sudo apt-get install -y php-zip')
+
 # raspi-config
 #os.system('sudo raspi-config nonint do_change_locale en_IS.UTF-8')
 os.system('sudo raspi-config nonint do_boot_behaviour B2')
