@@ -4,18 +4,10 @@
 # Here we will ensure the Minion is using its local IP once it is connected to the Hub
 
 # import needed libraries for scanning and executing
-import glob, os
+import glob
+import os
 import time
 
-# Iterator
-i = 0
-
-# User defined loop for style points
-def plz_wait():
-	for i in range(0,3):
-		print "_____________________"
-		time.sleep(1)
-		i = i + 1
 
 # Filenames of interest
 Minion = "dhcpcd.Minion"
@@ -28,8 +20,8 @@ files = []
 for file in glob.glob("dhcpcd.*"):
 	files.append(file)
 
-#If you wanna see the output
-#print files
+# Display the list of file
+# print(files)
 
 # Decide what to do with this information
 
@@ -37,23 +29,21 @@ for file in glob.glob("dhcpcd.*"):
 
 if Minion in files:
 	os.system('sudo cp /etc/dhcpcd.conf /etc/dhcpcd.internet')
-	print "Copying .conf to .internet"
+	print("Copying .conf to .internet")
 	os.system('sudo cp /etc/dhcpcd.Minion /etc/dhcpcd.conf')
-	print "Copying .Minion to .conf"
+	print("Copying .Minion to .conf")
 	os.system('sudo rm -rf /etc/dhcpcd.Minion')
-	print "Now you have Minion_Hub!"
+	print("Now you have Minion_Hub!")
 
 elif internet in files:
-	print "You are alread on the Minion Network!"
+	print("You are alread on the Minion Network!")
 
-
-# Cheaky response when things are bad
+# Cheeky response when things are bad
 else:
-	print "Bro you messed it up..."
+	print("Bro you messed it up...")
 
+time.sleep(1)
 # Restart network interfaces for actions to take effect
 os.system('sudo service dhcpcd restart')
 
-print "Done!"
-
-# yay.
+print("Double plug good")
