@@ -207,7 +207,7 @@ else:
 # Get needed packages
 # os.system('sudo apt-get install -y build-essential python-smbus i2c-tools nmap nginx php-fpm php-zip')
 os.system('sudo apt-get install -y build-essential')
-os.system('sudo apt-get install -y python-smbus')
+os.system('sudo apt-get install -y python3-smbus')
 os.system('sudo apt-get install -y i2c-tools')
 os.system('sudo apt-get install -y nmap')
 os.system('sudo apt-get install -y nginx')
@@ -296,7 +296,11 @@ os.system('sudo chmod +x /var/www/html/*')
 
 os.system('sudo sed -i "$ a www-data ALL=(ALL) NOPASSWD:ALL" /etc/sudoers')
 
-os.system('sudo cp source/web_iface/php.ini /etc/php/7.3/cli/')
+# Get the PHP Config File Path
+php_config_file_path = os.popen('php -r "echo PHP_CONFIG_FILE_PATH;"')
+
+# os.system('sudo cp source/web_iface/php.ini /etc/php/7.3/cli/')
+os.system('sudo cp source/web_iface/php.ini php_config_file_path')
 
 # Reboot to finish kernel module config
 os.system('sudo shutdown now')
