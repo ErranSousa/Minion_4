@@ -16,23 +16,23 @@ DATA_TYPE = '$01'  # Initial Sampling Type Data
 samp_count = 1
 NumSamples = 0
 
-def abortMission(configLoc):
-    minion_tools.kill_sampling(scriptNames)
-
-    print("Max Depth Exceeded!")
-
-    abortConfig = configparser.ConfigParser()
-    abortConfig.read(configLoc)
-    abortConfig.set('Mission', 'Abort', '1')
-    with open(configLoc, 'wb') as abortFile:
-        abortConfig.write(abortFile)
-
-    GPIO.setup(29, GPIO.OUT)
-    GPIO.output(29, 0)
-    os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-
-    time.sleep(60)
-    exit(0)
+# def abortMission(configLoc):
+#     minion_tools.kill_sampling(scriptNames)
+#
+#     print("Max Depth Exceeded!")
+#
+#     abortConfig = configparser.ConfigParser()
+#     abortConfig.read(configLoc)
+#     abortConfig.set('Mission', 'Abort', '1')
+#     with open(configLoc, 'wb') as abortFile:
+#         abortConfig.write(abortFile)
+#
+#     GPIO.setup(29, GPIO.OUT)
+#     GPIO.output(29, 0)
+#     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
+#
+#     time.sleep(60)
+#     exit(0)
 
 
 # Create an instance of MinionToolbox()
@@ -53,8 +53,8 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
-# scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "ACC_100Hz.py",
-#                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "ACC_100Hz_IF.py", "Iridium_gps.py", "Iridium_data.py"]
+# The name of this script, used for abort_mission
+current_script_name = os.path.basename(__file__)
 
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "Iridium_gps.py", "Iridium_data.py"]
@@ -62,13 +62,7 @@ scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_
 print('Timestamp: {}'.format(samp_time))
 
 if minion_mission_config['Abort']:
-    # GPIO.setup(29, GPIO.OUT)
-    # GPIO.output(29, 0)
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-
-# firstp = open("/home/pi/Documents/Minion_scripts/timesamp.pkl","rb")
-# with open("/home/pi/Documents/Minion_scripts/timesamp.pkl", "rb") as firstp:
-#     samp_time = pickle.load(firstp)
 
 for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
     if dataNum.endswith('_TEMPPRES-INI.txt'):
@@ -175,18 +169,19 @@ if __name__ == '__main__':
                 sensor_string = "{}{}".format(sensor_string, Pres_data)
 
             else:
-                print('Pressure Sensor not responding.')
+                message = 'Pressure Sensor Not Responding.'
                 with open(file_path_name, "a") as file:
-                    file.write('Pressure Sensor reading failure.')
-                abortMission(configLoc)
+                    file.write(message)
+                minion_tools.abort_mission(message, scriptNames, current_script_name)
 
             print("Depth: " + str(int(Ppressure) / 1000))  # TESTING ONLY
 
             # if Ppressure >= MAX_Depth:
             if int(Ppressure) / 1000 >= minion_mission_config['MAX_Depth']:
+                message = 'Exceeded Depth Maximum!'
                 with open(file_path_name, "a") as file:
-                    file.write("Minion Exceeded Depth Maximum!")
-                abortMission(configLoc)
+                    file.write(message)
+                minion_tools.abort_mission(message, scriptNames, current_script_name)
 
         if minion_mission_config['iniTmp']:
 

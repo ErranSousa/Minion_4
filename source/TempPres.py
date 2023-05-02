@@ -15,15 +15,6 @@ NumSamples = 0
 
 samp_count = 1
 
-
-def abort_mission():
-    #  kill_sampling(scriptNames)
-    print("Max Depth Exceeded!")
-    minion_tools.write_mission_config_option('Mission', 'Abort', '1')
-    os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-    exit(0)
-
-
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
 
@@ -38,6 +29,9 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
+
+# The name of this script, used for abort_mission
+current_script_name = os.path.basename(__file__)
 
 scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py"]
@@ -130,15 +124,16 @@ while NumSamples < TotalSamples:
             sensor_string = "{}{}".format(sensor_string, Pres_data)
 
         else:
-            print('Pressure Sensor ded')
+            message = 'Pressure Sensor Not Responding.'
             with open(file_path_name, "a") as file:
-                file.write('Pressure Sensor fail')
-            abort_mission()
+                file.write(message)
+            minion_tools.abort_mission(message, scriptNames, current_script_name)
 
         if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
+            message = 'Exceeded Depth Maximum!'
             with open(file_path_name, "a") as file:
-                file.write("Minion Exceeded Depth Maximum!")
-            abort_mission()
+                file.write(message)
+            minion_tools.abort_mission(message, scriptNames, current_script_name)
 
     if minion_mission_config['iniTmp']:
 

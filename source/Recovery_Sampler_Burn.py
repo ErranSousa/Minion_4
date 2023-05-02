@@ -50,6 +50,9 @@ data_config = minion_tools.read_data_config()
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
+# The name of this script, used for abort_mission
+current_script_name = os.path.basename(__file__)
+
 # Get the current sample number
 samp_num = minion_tools.read_samp_num()
 
@@ -67,14 +70,6 @@ GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
 
 # Temporary Setting for Testing Only
 minion_hat.strobe_timing(500, 500)  # On for .5 Seconds / Off for .5 seconds
-
-def abortMission(configLoc):
-
-    abortConfig = configparser.ConfigParser()
-    abortConfig.read(configLoc)
-    abortConfig.set('Mission', 'Abort', '1')
-    with open(config, 'wb') as abortFile:
-        abortConfig.write(abortFile)
 
 
 def write_pickle_file(fname_pickle, data):
@@ -202,9 +197,12 @@ if __name__ == '__main__':
     print("C--> samp_num: " + str(samp_num) + ", TotalSamples + 1: " + str(TotalSamples + 1))
     
     if Pres_ini == "Broken":
-        print("Pressure Sensor Not Working...")
-        abortMission(configLoc)
-        os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
+        message = 'Pressure Sensor Not Responding.'
+        print(message)
+        minion_tools.abort_mission(message, scriptNames, current_script_name)
+        # print("Pressure Sensor Not Working...")
+        # abortMission(configLoc)
+        # os.system('sudo python /home/pi/Documents/Minion_scripts/Iridium_gps.py')
 
     if not final_samp_status_flag:
         minion_hat.burn_wire(minion_hat.ENABLE)
@@ -248,15 +246,16 @@ if __name__ == '__main__':
                     sensor_string = "{}{}".format(sensor_string, Pres_data)
 
                 else:
-                    print('Pressure Sensor ded')
+                    message = 'Pressure Sensor Not Responding.'
                     with open(file_path_name, "a") as file:
-                        file.write('Pressure Sensor fail')
-                    abortMission(configLoc)
+                        file.write(message)
+                    minion_tools.abort_mission(message, scriptNames, current_script_name)
 
                 if int(Ppressure)/1000 >= minion_mission_config['MAX_Depth']:
+                    message = 'Exceeded Depth Maximum!'
                     with open(file_path_name, "a") as file:
-                        file.write("Minion Exceeded Depth Maximum!")
-                    abortMission(configLoc)
+                        file.write(message)
+                    minion_tools.abort_mission(message, scriptNames, current_script_name)
 
             if minion_mission_config['iniTmp']:
 

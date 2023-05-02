@@ -44,29 +44,22 @@ class MinionToolbox(object):
         """Convert a string to a boolean"""
         return v.lower() in ("Y", "y", "yes", "true", "t", "1")
 
-    def abort_mission(self):
+    def abort_mission(self, error_message, script_names_to_kill, current_script_name):
 
-        # Read the Minion Config File Location
-        data_config = self.read_data_config()
-        config_file = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
+        # Display the error message
+        print(error_message)
 
-        # Read / Load the Minion Config File
-        config = configparser.ConfigParser()
-        config.read(config_file)
+        # Stop the currently running scripts
+        self.kill_sampling(script_names_to_kill)
 
-        # Set the Abort field in Minion Config
-        config.set('Mission', 'Abort', '1')
+        # Set the abort mission flag in the mission config file
+        self.write_mission_config_option('Mission', 'Abort', '1')
 
-        # Save the changes to the Minion Config File
-        with open(config_file, 'wb') as configFile:
-            config.write(configFile)
-
-        # What is all of this doing???
-        GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(29, GPIO.OUT)
-        GPIO.output(29, 0)
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-        exit(0)
+        # Start the recovery script & exit the currently running script
+        if not current_script_name == 'Recovery_Sampler_Burn.py':
+            # Start the recovery mode
+            os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
+            exit(0)
 
     def ans2bool(self, ans2convert):
         """Convert a yes/no or true/false answer to a boolean
