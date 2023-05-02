@@ -20,14 +20,6 @@ def abort_mission():
     #  kill_sampling(scriptNames)
     print("Max Depth Exceeded!")
     minion_tools.write_mission_config_option('Mission', 'Abort', '1')
-    # abortConfig = configparser.ConfigParser()
-    # abortConfig.read(configLoc)
-    # abortConfig.set('Mission', 'Abort', '1')
-    # with open(configLoc, 'wb') as abortFile:
-    #     abortConfig.write(abortFile)
-    # GPIO.setmode(GPIO.BOARD)
-    # GPIO.setup(29, GPIO.OUT)
-    # GPIO.output(29, 0)
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
     exit(0)
 
