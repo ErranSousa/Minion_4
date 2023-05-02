@@ -3,7 +3,6 @@
 import tsys01
 import ms5837
 from kellerLD import KellerLD
-import pickle
 import time
 import os
 import configparser
