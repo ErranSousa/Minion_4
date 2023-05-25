@@ -8,15 +8,12 @@ import configparser
 import os
 import sys
 import pickle
-# import RPi.GPIO as GPIO
 import RPi.GPIO
 import time
 import datetime
 from ds3231 import DS3231
 
-# Pin Definitions
-light = 12
-
+# Instance of RPi-GPIO
 GPIO = RPi.GPIO
 
 data_config_file = '/home/pi/Documents/Minion_scripts/Data_config.ini'
@@ -33,6 +30,10 @@ net_cfg = "ls /etc/ | grep dhcp"
 
 
 class MinionToolbox(object):
+
+    # defines
+    ON = True
+    OFF = False
 
     def __init__(self):
         self._py_ver_major = sys.version_info.major
@@ -96,7 +97,6 @@ class MinionToolbox(object):
         --------
         string status : Connection Status - "Connected" or "Not Connected"
 
-           
         """
 
         # Prerequisites:  ifswitch, iwlist, net_cfg are defined
@@ -427,6 +427,40 @@ class MinionToolbox(object):
             print('[OK] Data Transmit Status Pickle File Removed.')
         else:
             print("[OK] Data Transmit Status Pickle File Already Removed or Does Not Exist.")
+
+    def sample_led_ring(self, new_state):
+        """Enable or Disable the sampling LED Ring
+
+        Parameters
+        ----------
+        new_state : On or Off
+
+        Returns:
+        --------
+        none
+
+        Example: Turn on the sample led ring
+
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.sample_led_ring(minion_tools.ON)
+
+        xample: Turn off the sample led ring
+
+            from minion_toolbox import MinionToolbox
+            minion_tools = MinionToolbox()
+            minion_tools.sample_led_ring(minion_tools.OFF)
+        """
+
+        gpio_pins, pin_defs_dict = self.config_gpio()
+
+        if new_state:
+            gpio_pins.output(pin_defs_dict['LED_RING_CTRL'], GPIO.HIGH)
+        elif not new_state:
+            gpio_pins.output(pin_defs_dict['LED_RING_CTRL'], GPIO.LOW)
+        else:
+            # Not a valid input so do not make any changes
+            pass
 
     def flash(self, num_flashes, ton, toff):
         """Flash the sampling LED Ring
