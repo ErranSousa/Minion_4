@@ -18,7 +18,7 @@
 <h1> Test sampling functions on Minion XXX! </h1>
 <br>
 <fieldset>
-<h3> Take a test image:</h3>
+<h3> Image Test</h3>
 <br>
 <form method='post' action=''>
 <input type='submit' name='capture' value='Capture!' />
@@ -26,9 +26,10 @@
 </form>
 </fieldset>
 <fieldset>
+<h3> Pressure Sensor Test</h3>
 <br>
 <form method='post' action=''>
-<input type='submit' name='pressure' value='Test connected pressure sensor' />
+<input type='submit' name='pressure' value='PRESSURE' />
 </form>
 <br>
 
@@ -44,9 +45,10 @@ echo "Pressure reading: " . $output_pres . " dbar";
 <br>
 </fieldset>
 <fieldset>
+<h3> Temperature Sensor Test</h3>
 <br>
 <form method='post' action=''>
-<input type='submit' name='temperature' value='Test connected temperature sensor' />
+<input type='submit' name='temperature' value='TEMPERATURE' />
 </form>
 <br>
 <?php
@@ -61,18 +63,32 @@ echo "Temperature reading: " . $output_temp . " C";
 <br>
 </fieldset>
 <fieldset>
+<h3> Burn Wire Test</h3>
 <br>
 <form method='post' action=''>
-<input type='submit' name='GPS' value='Test connected Iridium GPS modem' />
+<input type='submit' name='BURN' value='BURN WIRE' />
 </form>
 <br>
 <?php
-if(isset($_POST['GPS'])){
+if(isset($_POST['BURN'])){
 
-$command = escapeshellcmd('sudo python /home/pi/Documents/Minion_scripts/Iridium_test.py');
-$output_GPS = shell_exec($command);
-echo $output_GPS;
+$command = escapeshellcmd('sudo python3 /var/www/html/test_burnwire.py');
+//$output_BURN = shell_exec($command);
+// echo $output_BURN;
+// echo '<pre>';
+// passthru($command);
+// echo '</pre>';
+header('X-Accel-Buffering: no');
+while (@ ob_end_flush()); // end all output buffers if any
 
+$proc = popen($command, 'r');
+echo '<pre>';
+while (!feof($proc))
+{
+    echo fread($proc, 4096);
+    @ flush();
+}
+echo '</pre>';
 }
 ?>
 <br>
@@ -90,7 +106,7 @@ echo $output_GPS;
 <?php
 if(isset($_POST['download'])){
 
-$command = escapeshellcmd('sudo python /var/www/html/Image_test.py');
+$command = escapeshellcmd('sudo python3 /var/www/html/Image_test.py');
 $output = shell_exec($command);
 
 $file = '/home/pi/testimage.jpg';
@@ -115,7 +131,7 @@ readfile($file);
 <?php
 if(isset($_POST['capture'])){
 
-$command = escapeshellcmd('sudo python /var/www/html/Image_test.py');
+$command = escapeshellcmd('sudo python3 /var/www/html/Image_test.py');
 $output = shell_exec($command);
 echo $output;
 
