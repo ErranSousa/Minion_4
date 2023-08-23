@@ -93,6 +93,58 @@ echo '</pre>';
 ?>
 <br>
 </fieldset>
+<fieldset>
+<h3> LED Ring Test</h3>
+<br>
+<form method='post' action=''>
+<input type='submit' name='LED_RING' value='LED Ring' />
+</form>
+<br>
+<?php
+if(isset($_POST['LED_RING'])){
+
+$command = escapeshellcmd('sudo python3 /var/www/html/test_LED_Ring.py');
+header('X-Accel-Buffering: no');
+while (@ ob_end_flush()); // end all output buffers if any
+$proc = popen($command, 'r');
+echo '<pre>';
+while (!feof($proc))
+{
+    echo fread($proc, 4096);
+    @ flush();
+}
+echo '</pre>';
+}
+?>
+<br>
+</fieldset>
+
+<fieldset>
+<h3> Recovery Strobe Test</h3>
+<br>
+<form method='post' action=''>
+<input type='submit' name='STROBE' value='Recovery Strobe' />
+</form>
+<br>
+<?php
+if(isset($_POST['STROBE'])){
+
+$command = escapeshellcmd('sudo python3 /var/www/html/test_recovery_strobe.py');
+header('X-Accel-Buffering: no');
+while (@ ob_end_flush()); // end all output buffers if any
+$proc = popen($command, 'r');
+echo '<pre>';
+while (!feof($proc))
+{
+    echo fread($proc, 4096);
+    @ flush();
+}
+echo '</pre>';
+}
+?>
+<br>
+</fieldset>
+
 <br>
 <form action="/index.php" method="post">
 <input type="submit" value="Return">
