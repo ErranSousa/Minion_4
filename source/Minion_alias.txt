@@ -19,4 +19,5 @@ alias shutdown_minion='sudo python3 /home/pi/Documents/Minion_tools/Shutdown.py'
 alias preview_minion='sudo raspivid -t 0'
 
 alias set_ext_rtc='sudo python3 /home/pi/Documents/Minion_tools/EXT_RTC_set_time.py'
--
+
+alias new_mission='sudo python3 /var/www/html/new_mission.py'
