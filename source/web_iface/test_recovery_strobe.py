@@ -8,11 +8,11 @@ import time
 minion_hat = MinionHat()
 
 # Active Time in seconds
-active_time_secs = 10
+active_time_secs = 5
 
 sys.stdout.write("Recovery Strobe Enabled")
 sys.stdout.flush()
-# minion_hat.strobe_timing(125, 1875)  # 125ms on, 1875ms off
+minion_hat.strobe_timing(500, 500)  # 125ms on, 1875ms off
 minion_hat.strobe(minion_hat.ENABLE)
 
 for idx in range(active_time_secs):
