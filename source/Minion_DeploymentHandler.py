@@ -7,6 +7,9 @@ sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 from minion_hat import MinionHat
 
+# Constants
+shutdown_delay_secs = 20  # The shutdown delay is programmable through the minion_hat
+rpi_boot_time_secs = 38  # This needs to be refined, placeholder.  TODO: calculate rpi_boot_time on the fly
 
 def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
@@ -34,6 +37,9 @@ def start_time_lapse_scripts():
     if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
 
+
+# Start by grabbing the first time mark.  Used in calculating the total time of sampling, including any setup.
+tic = time.perf_counter()
 
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
@@ -108,7 +114,9 @@ if __name__ == '__main__':
     
     check_wifi_and_scripts(scriptNames)
 
+    # Start the Time-Lapse Mode Samples immediately after the Initial Samples - no shutdown
     if start_time_lapse_scripts_flag:
+        tic = time.perf_counter()  # Need to re-tic here so the Initial Sample Time is not included in the calculation.
         start_time_lapse_scripts()
         minion_tools.increment_samp_num()
 
@@ -124,8 +132,12 @@ if __name__ == '__main__':
     if not recovery_mode_flag:
         # This is the mode between Time-Lapse Mode bursts
         # Calculate (roughly) Shutdown time for Time-Lapse Mode
-        shutdown_seconds = 60 * (minion_mission_config['TLPsamp_interval_minutes'] -
-                                 minion_mission_config['TLPsamp_burst_minutes'])
+        toc = time.perf_counter()  # Capture the counter again
+        total_sample_burst_secs = toc - tic
+        shutdown_seconds = (minion_mission_config['TLPsamp_interval_minutes'] * 60 -
+                            total_sample_burst_secs -
+                            shutdown_delay_secs -
+                            rpi_boot_time_secs)
         minion_hat.shutdown(int(shutdown_seconds))
     else:
         # This is the mode between Recovery sampler shutdowns where the burn wire and recovery strobe are preserved.
