@@ -11,8 +11,10 @@ from minion_hat import MinionHat
 shutdown_delay_secs = 20  # The shutdown delay is programmable through the minion_hat
 rpi_boot_time_secs = 38  # This needs to be refined, placeholder.  TODO: calculate rpi_boot_time on the fly
 
+
 def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
+    tic_3 = 0
     # Check for WiFi while any of the scripts in script_list are executing
     while any(x in os.popen(ps_test).read() for x in script_list):
         ig_wifi_status = minion_tools.ignore_wifi_check()
@@ -24,7 +26,11 @@ def check_wifi_and_scripts(script_list):
             exit(0)
         else:
             print("Sampling")
+            # Need to capture a tic here to account for the 5 sec when going into time-lapse
+            # directly from Initial Mode
+            tic_3 = time.perf_counter()
             time.sleep(5)
+    return tic_3
 
 
 def start_time_lapse_scripts():
@@ -102,7 +108,6 @@ if __name__ == '__main__':
     # Recovery Sampling Mode
     elif samp_num > TotalSamples or minion_mission_config['Abort']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-        # shdn_seconds = 60
         recovery_mode_flag = True
 
     # Time-Lapse Sampling Mode
@@ -111,12 +116,12 @@ if __name__ == '__main__':
 
     # Increment the Sample Number
     minion_tools.increment_samp_num()
-    
-    check_wifi_and_scripts(scriptNames)
+
+    tic_2 = check_wifi_and_scripts(scriptNames)
 
     # Start the Time-Lapse Mode Samples immediately after the Initial Samples - no shutdown
     if start_time_lapse_scripts_flag:
-        tic = time.perf_counter()  # Need to re-tic here so the Initial Sample Time is not included in the calculation.
+        tic = tic_2  # Need to reset the tic for accurate timing
         start_time_lapse_scripts()
         minion_tools.increment_samp_num()
 
