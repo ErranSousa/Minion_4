@@ -1,4 +1,4 @@
-import minsat
+
 from minsat import MinSat
 
 ex_msg = "Example 4 - Acquiring a GPS Position with enhanced verbosity"
@@ -12,7 +12,8 @@ gps_baud = 9600
 modem_port = "/dev/ttySC1"
 modem_baud = 19200
 
-m1 = MinSat(gps_port,gps_baud,modem_port,modem_baud)
+m1 = MinSat(gps_port, gps_baud, modem_port, modem_baud)
+
 
 def display_gps_resp_struct(ret_info):
     print("="*50)
@@ -31,6 +32,6 @@ def display_gps_resp_struct(ret_info):
     print("="*50)
 
 
-ret_data = m1.gps_get_position(verbose=True)
+status, ret_data = m1.gps_get_position(verbose=True)
 display_gps_resp_struct(ret_data)
 
