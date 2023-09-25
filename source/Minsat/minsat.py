@@ -7,7 +7,7 @@ import math
 import random
 import configparser
 #Load the shared object file for GPIO Drivers
-gpio =  CDLL('/home/pi/Documents/Minion_scripts/SC16IS752GPIO.so')
+gpio = CDLL('/home/pi/Documents/Minion_scripts/SC16IS752GPIO.so')
 
 DEV_ID = str('$04')
 
@@ -346,6 +346,16 @@ class MinSat():
             self.xmt_num_sbd_req = 0 #number of sbd sessions required
             self.curr_file_loc = 0
             self.start_file_loc = 0
+
+    def config_modem(self):
+        self.modem_pwr(self.dev_on)
+        print("Iridium Power On.")
+        rb = rockBlock(self.modem_com_port, self.modem_baud, self)
+        rb.setup()
+        self.modem_pwr(self.dev_off)
+        print("Iridium Power Off.")
+
+
 
     def sbd_send_message(self,msg,**kwargs):
         """Send a 340 byte limited message via the Iridium Modem.
