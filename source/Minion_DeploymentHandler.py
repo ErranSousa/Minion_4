@@ -146,5 +146,15 @@ if __name__ == '__main__':
         minion_hat.shutdown(int(shutdown_seconds))
     else:
         # This is the mode between Recovery sampler shutdowns where the burn wire and recovery strobe are preserved.
-        sleep_seconds = 60
+        toc = time.perf_counter()  # Capture the counter again
+        total_final_mode_secs = toc - tic
+        sleep_seconds = (minion_mission_config['gps_transmission_interval'] * 60 -
+                         total_final_mode_secs -
+                         shutdown_delay_secs -
+                         rpi_boot_time_secs)
+
+        # The intent here is to ensure that we get the gps_transmission_interval sleep time after sending data
+        if sleep_seconds < 0:
+            sleep_seconds = minion_mission_config['gps_transmission_interval'] * 60
+
         minion_hat.sleep(int(sleep_seconds))
