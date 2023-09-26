@@ -78,6 +78,13 @@ echo '<form action="/action_page.php" method="post">
   <input type="text" id="FOXYFS" name="FOXYFS" value="'.$cfg_file['Final_Samples']['oxygen_sample_rate'].'"><br>
   </fieldset>
   <fieldset>
+  <legend>GPS Transmission Window Settings:</legend>
+  <label for="gps_dur_hrs">GPS Transmission Window Duration (hours):</label><br>
+  <input type="text" id="gps_dur_hrs" name="gps_dur_hrs" value="'.$cfg_file['GPS']['gps_transmission_window'].'"><br>
+  <label for="gps_interval_min">GPS Position Interval (minutes):</label><br>
+  <input type="text" id="gps_interval_min" name="gps_interval_min" value="'.$cfg_file['GPS']['gps_transmission_interval'].'"><br>
+  </fieldset>
+  <fieldset>
   <legend>Ignore WIFI Signal:</legend>
   <br>
   <label for="IG_WIFI-days">Days:</label>

@@ -52,6 +52,12 @@ Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
 Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["FOXYFS"]; ?><br>
 </fieldset>
 
+<fieldset>
+<legend>GPS Transmission Window Settings:</legend>
+GPS Transmission Window Duration (hours): <?php echo $_POST["gps_dur_hrs"]; ?><br>
+GPS Position Interval (minutes): <?php echo $_POST["gps_interval_min"]; ?><br>
+</fieldset>
+
 <?php
 $myfile = fopen("newconfig.txt", "w") or die("Unable to open file!");
 
@@ -94,6 +100,12 @@ $Final_Samples = "[Final_Samples]\n"
   ."oxygen_sample_rate = ".$_POST["FOXYFS"]."\n\n";
 
 fwrite($myfile, $Final_Samples);
+
+$GPS_Schedule = "[GPS]\n"
+  ."gps_transmission_window = ".$_POST["gps_dur_hrs"]."\n"
+  ."gps_transmission_interval = ".$_POST["gps_interval_min"]."\n\n";
+
+fwrite($myfile, $GPS_Schedule);
 
 if ($_POST["Image"]=="Image"){$bImage = "True";}else{$bImage = "False";}
 if ($_POST["30Bar_Pres"]=="30Bar_Pres"){$b30bar = "True";}else{$b30bar = "False";}
