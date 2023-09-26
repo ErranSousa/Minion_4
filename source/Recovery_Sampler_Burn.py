@@ -62,14 +62,8 @@ samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in c
 # Enable the burn wire
 minion_hat.burn_wire(minion_hat.ENABLE)
 
-# Enable the Recovery Strobe
-minion_hat.strobe(minion_hat.ENABLE)
-
 # Indicate that data is being collected
 GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
-
-# Temporary Setting for Testing Only
-minion_hat.strobe_timing(500, 500)  # On for .5 Seconds / Off for .5 seconds
 
 
 def write_pickle_file(fname_pickle, data):
@@ -138,7 +132,7 @@ Sf = 1/minion_mission_config['FINsamp_tempPres_rate']
 
 TotalSamples = minion_mission_config['FINsamp_hours']*60*60*minion_mission_config['FINsamp_tempPres_rate']
 
-#print for testing only!
+# print for testing only!
 print("B--> Final Samples Press/Temp rate: " + str(minion_mission_config['FINsamp_tempPres_rate']) + ", Final Sample Hours: " +
       str(minion_mission_config['FINsamp_hours']) + ", TotalSamples: " + str(TotalSamples))
 
@@ -316,6 +310,8 @@ if __name__ == '__main__':
     else:
         print("Final Sampling Stage is complete.")
         minion_hat.burn_wire(minion_hat.ENABLE)
+        minion_hat.strobe_timing(100, 4900)  # On for 100ms / Off for 4900ms
+        minion_hat.strobe(minion_hat.ENABLE)
         os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
     time.sleep(10)
