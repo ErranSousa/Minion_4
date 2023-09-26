@@ -182,6 +182,8 @@ class MinionToolbox(object):
                 int TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
                 float TLPsamp_tempPress_rate : Temperature / Pressure Sample Rate (Time-Lapse Mode)
                 float TLPsamp_oxygen_rate : Oxygen Sample Rate (Time-Lapse Mode)
+                int gps_transmission_window : Number of hours to transmit GPS positions before data transmission
+                int gps_transmission_interval : Number of minutes between GPS position transmissions
                 bool iniImg : Enable / Disable Image Capture
                 bool iniP30 : Enable / Disable 30 Bar Pressure Sensor
                 bool iniP100 : Enable / Disable 100 Bar Pressure Sensor
@@ -198,6 +200,7 @@ class MinionToolbox(object):
                 'INIsamp_oxygen_rate', 'FINsamp_hours', 'FINsamp_camera_rate',
                 'FINsamp_tempPres_rate', 'FINsamp_oxygen_rate', 'TLPsamp_tempPress_rate',
                 'TLPsamp_oxygen_rate', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'TLPsamp_interval_minutes',
+                'gps_transmission_window', 'gps_transmission_interval',
                 'iniImg', 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
                 ]
 
@@ -226,6 +229,9 @@ class MinionToolbox(object):
         mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['camera_sample_rate'])
         mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['temppres_sample_rate'])
         mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['oxygen_sample_rate'])
+
+        mission_config['gps_transmission_window'] = int(config['GPS']['gps_transmission_window'])
+        mission_config['gps_transmission_interval'] = int(config['GPS']['gps_transmission_interval'])
 
         # mission_config['Ddays'] = int(config['Deployment_Time']['days'])
         mission_config['TLPsamp_hours'] = int(config['Time_Lapse_Samples']['hours'])
