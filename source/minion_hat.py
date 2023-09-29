@@ -42,6 +42,37 @@ class MinionHat(object):
             if os.uname()[1] == 'raspberrypi':
                 print("Enable the i2c interface using raspi-config!")
 
+    def _write_block_data(self, device_addr, device_reg, data):
+        """Write I2C Block Data to an external device
+
+        Parameters
+        ----------
+        device_addr : I2C device address
+        device_reg  : I2C device register address
+        data        : Data to transmit
+
+        Returns:
+        --------
+        success     : True (Data written successfully) or False
+
+        """
+
+        try_counter = 10  # Try at most 10 time to write the data
+        success = False
+
+        while try_counter:
+            try_counter -= 1
+            try:
+                self._bus.write_i2c_block_data(device_addr, device_reg, data)
+                success = True
+                break
+            except:
+                print('[ Error ] I2C Bus Error ' + 'try #' + str(try_counter))
+                pass
+
+        time.sleep(.1)  # Delay for PIC16LF1847 to process command
+        return success
+
     def led(self, new_state):
         """Status LED Control
 
@@ -61,8 +92,9 @@ class MinionHat(object):
         min_hat.led(min_hat.OFF)  # Turn off the LED
 
         """
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._LED, new_state)
-        time.sleep(.1)
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._LED, new_state)
+        status = self._write_block_data(self._DEV_ADDR, self._LED, new_state)  # TODO: Implement Status usage
+        # time.sleep(.1)
 
     def shutdown(self, shutdown_secs):
         """Shutdown the RPi and Put the Minion Hat into Low Power Mode for shutdown_secs.
@@ -88,7 +120,8 @@ class MinionHat(object):
         self.sleep_time(shutdown_secs)
 
         # Transmit the Shutdown Command
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._SHDN, self.ENABLE)
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SHDN, self.ENABLE)
+        status = self._write_block_data(self._DEV_ADDR, self._SHDN, self.ENABLE)  # TODO: Implement Status usage
         print("Entering Lowest Power Shutdown Mode...")
         time.sleep(1)
         os.system("sudo shutdown now")
@@ -116,7 +149,8 @@ class MinionHat(object):
         self.sleep_time(sleep_secs)
 
         # Transmit the Sleep Command
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLP, self.ENABLE)
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLP, self.ENABLE)
+        status = self._write_block_data(self._DEV_ADDR, self._SLP, self.ENABLE)  # TODO: Implement Status usage
         print("Entering Low Power Sleep Mode...")
         time.sleep(1)
         os.system("sudo shutdown now")
@@ -140,8 +174,9 @@ class MinionHat(object):
 
         """
 
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._SHDNDLY, [delay_secs])
-        time.sleep(.1)
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SHDNDLY, [delay_secs])
+        status = self._write_block_data(self._DEV_ADDR, self._SHDNDLY, [delay_secs])  # TODO: Implement Status usage
+        # time.sleep(.1)
 
     def sleep_time(self, sleep_secs):
         """Configure the sleep time.
@@ -173,15 +208,21 @@ class MinionHat(object):
             # Split sleep_secs into four bytes
             _slptm_byte_3, _slptm_byte_2, _slptm_byte_1, _slptm_byte_0 = (sleep_secs & 0xFFFFFFFF).to_bytes(4, "big")
 
+            # # Send all four bytes to their respective registers on the PIC Controller
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB0, [_slptm_byte_0])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB1, [_slptm_byte_1])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB2, [_slptm_byte_2])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB3, [_slptm_byte_3])
+            # time.sleep(.1)
+
             # Send all four bytes to their respective registers on the PIC Controller
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB0, [_slptm_byte_0])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB1, [_slptm_byte_1])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB2, [_slptm_byte_2])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._SLPB3, [_slptm_byte_3])
-            time.sleep(.1)
+            status = self._write_block_data(self._DEV_ADDR, self._SLPB0, [_slptm_byte_0])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._SLPB1, [_slptm_byte_1])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._SLPB2, [_slptm_byte_2])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._SLPB3, [_slptm_byte_3])  # TODO: Implement Status usage
 
         return error_flag
 
@@ -204,7 +245,8 @@ class MinionHat(object):
         min_hat.strobe(min_hat.DISABLE)
 
         """
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBEN, new_state)
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBEN, new_state)
+        status = self._write_block_data(self._DEV_ADDR, self._STRBEN, new_state)  # TODO: Implement Status usage
         time.sleep(.1)
 
     def strobe_timing(self, t_on, t_off):
@@ -245,14 +287,19 @@ class MinionHat(object):
             _on_hi_byte, _on_lo_byte = (t_on & 0xFFFF).to_bytes(2, "big")
             _off_hi_byte, _off_lo_byte = (t_off & 0xFFFF).to_bytes(2, "big")
 
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBONH, [_on_hi_byte])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBONL, [_on_lo_byte])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBOFFH, [_off_hi_byte])
-            time.sleep(.1)
-            self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBOFFL, [_off_lo_byte])
-            time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBONH, [_on_hi_byte])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBONL, [_on_lo_byte])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBOFFH, [_off_hi_byte])
+            # time.sleep(.1)
+            # self._bus.write_i2c_block_data(self._DEV_ADDR, self._STRBOFFL, [_off_lo_byte])
+            # time.sleep(.1)
+
+            status = self._write_block_data(self._DEV_ADDR, self._STRBONH, [_on_hi_byte])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._STRBONL, [_on_lo_byte])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._STRBOFFH, [_off_hi_byte])  # TODO: Implement Status usage
+            status = self._write_block_data(self._DEV_ADDR, self._STRBOFFL, [_off_lo_byte])  # TODO: Implement Status usage
 
         return error_flag
 
@@ -275,6 +322,6 @@ class MinionHat(object):
         min_hat.burn_wire(min_hat.OFF)  # Deactivate the burn wire
 
         """
-        self._bus.write_i2c_block_data(self._DEV_ADDR, self._BRNWIRE, new_state)
-        time.sleep(.1)
-
+        # self._bus.write_i2c_block_data(self._DEV_ADDR, self._BRNWIRE, new_state)
+        status = self._write_block_data(self._DEV_ADDR, self._BRNWIRE, new_state)  # TODO: Implement Status usage
+        # time.sleep(.1)
