@@ -193,8 +193,13 @@ start_time = data_xmt_status_dict['first_gps_time_dict']
 # And convert it into datetime format as well
 start_time_datetime = datetime(int(start_time['YYYY']), int(start_time['MM']), int(start_time['DD']),
                                int(start_time['hh']), int(start_time['mm']), int(start_time['ss']))
-print(start_time_datetime)
-print(now_time_datetime)
+
+print("Initial Timestamp   : " + str(start_time_datetime))
+print("Current Time        : " + str(now_time_datetime))
+end_time = start_time_datetime + timedelta(hours=minion_mission_config['gps_transmission_window'])
+print("Send GPS Until Time : " + str(end_time))
+gps_time_remain = end_time - now_time_datetime
+print('GPS Transmission Window Remaining: ' + str(gps_time_remain))
 
 # if now_time_datetime < start_time_datetime + timedelta(hours=minion_mission_config['gps_transmission_window']) or \
 #         data_xmt_status_dict['all_files_transmitted'] or \
