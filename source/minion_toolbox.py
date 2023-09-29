@@ -103,14 +103,14 @@ class MinionToolbox(object):
         networks = os.popen(iwlist).read()
 
         if "Master_Hub" in networks:
-            print("Bypassing WIFI Lock")
+            print("[ Bypassing WIFI Lock ]")
             status = "Connected"
 
         elif "Minion_Hub" in networks and IgnoreStatus == False:
             status = "Connected"
 
         else:
-            print("No WIFI found.")
+            print("[ No WIFI found. ]")
             status = "Not Connected"
 
         if status == "Connected":
@@ -121,7 +121,9 @@ class MinionToolbox(object):
                 # print("You have Minions!")
                 pass
 
-        print(status)
+        # print("[ " + status + " ]")
+        print('[ ' + '\33[92m' + status + '\33[0m' + ' ]')
+
         return status
 
     def read_data_config(self):
@@ -177,13 +179,13 @@ class MinionToolbox(object):
                 float FINsamp_camera_rate : Camera Sample Rate (Finall Mode)
                 float FINsamp_tempPres_rate : Temperature/Pressure Sample Rate (Final Mode)
                 float FINsamp_oxygen_rate : Oxygen Sample Rate (Final Mode)
-                int TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
+                float TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
                 float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
-                int TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
+                float TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
                 float TLPsamp_tempPress_rate : Temperature / Pressure Sample Rate (Time-Lapse Mode)
                 float TLPsamp_oxygen_rate : Oxygen Sample Rate (Time-Lapse Mode)
-                int gps_transmission_window : Number of hours to transmit GPS positions before data transmission
-                int gps_transmission_interval : Number of minutes between GPS position transmissions
+                float gps_transmission_window : Number of hours to transmit GPS positions before data transmission
+                float gps_transmission_interval : Number of minutes between GPS position transmissions
                 bool iniImg : Enable / Disable Image Capture
                 bool iniP30 : Enable / Disable 30 Bar Pressure Sensor
                 bool iniP100 : Enable / Disable 100 Bar Pressure Sensor
@@ -230,11 +232,10 @@ class MinionToolbox(object):
         mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['temppres_sample_rate'])
         mission_config['FINsamp_oxygen_rate'] = float(config['Final_Samples']['oxygen_sample_rate'])
 
-        mission_config['gps_transmission_window'] = int(config['GPS']['gps_transmission_window'])
-        mission_config['gps_transmission_interval'] = int(config['GPS']['gps_transmission_interval'])
+        mission_config['gps_transmission_window'] = float(config['GPS']['gps_transmission_window'])
+        mission_config['gps_transmission_interval'] = float(config['GPS']['gps_transmission_interval'])
 
-        # mission_config['Ddays'] = int(config['Deployment_Time']['days'])
-        mission_config['TLPsamp_hours'] = int(config['Time_Lapse_Samples']['hours'])
+        mission_config['TLPsamp_hours'] = float(config['Time_Lapse_Samples']['hours'])
 
         tlp_samp_burst_minutes = config['Time_Lapse_Samples']['sample_burst_duration']
         # Determine if the value entered into 'sample_burst_duration' is
@@ -248,7 +249,7 @@ class MinionToolbox(object):
             mission_config['TLPsamp_burst_minutes'] = float(.2)
         mission_config['TLPsamp_tempPress_rate'] = float(config['Time_Lapse_Samples']['temppres_sample_rate'])
         mission_config['TLPsamp_oxygen_rate'] = float(config['Time_Lapse_Samples']['oxygen_sample_rate'])
-        mission_config['TLPsamp_interval_minutes'] = int(config['Time_Lapse_Samples']['sample_interval_minutes'])
+        mission_config['TLPsamp_interval_minutes'] = float(config['Time_Lapse_Samples']['sample_interval_minutes'])
 
         mission_config['iniImg'] = self.str2bool(config['Sampling_scripts']['image'])
         mission_config['iniP30'] = self.str2bool(config['Sampling_scripts']['30ba-pres'])
@@ -287,7 +288,6 @@ class MinionToolbox(object):
         # Write the mission to the file
         with open(config_file, 'w') as configFile:
             mission_config.write(configFile)
-
 
     def config_gpio(self, **kwargs):
         """Reads the pin_config.ini file, configures pin directions and default states.
@@ -810,10 +810,12 @@ class MinionToolbox(object):
 
         # Check if we have reached the time to start detecting wifi
         if datetime.datetime.now() >= ignore_wifi_until:
-            print("Looking for Wifi")
+            # print("[ Looking for Wifi ]")
+            print('[ ' + '\33[93mSearching for Wifi\33[0m' + ' ]')
             ignore_wifi_status = False
         else:
-            print('Ignoring wifi')
+            # print('[ Ignoring wifi ]')
+            print('[ ' + '\33[93mIgnoring wifi\33[0m' + ' ]')
             ignore_wifi_status = True
 
         return ignore_wifi_status
