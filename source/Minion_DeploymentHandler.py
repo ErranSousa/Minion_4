@@ -25,7 +25,7 @@ def check_wifi_and_scripts(script_list):
             GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
             exit(0)
         else:
-            print("Sampling")
+            print('[ ' + '\33[92mSampling\33[0m' + ' ]')
             # Need to capture a tic here to account for the 5 sec when going into time-lapse
             # directly from Initial Mode
             tic_3 = time.perf_counter()
