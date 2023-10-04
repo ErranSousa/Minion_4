@@ -6,6 +6,24 @@ import sys
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
+
+def test_sensor():
+    GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.HIGH)  # Power ON
+    time.sleep(4)  # 4 second warm-up
+    ser.flushInput()  # Flush  I/O buffers
+    ser.flushOutput()
+    ser.write(b'mode0001\r')  # Send Mode Command
+    time.sleep(1)
+    ser.flushInput()  # Flush  I/O buffers
+    ser.flushOutput()
+    ser.write(b'data\r')
+    data = ser.read_until('\r')
+    print(data.decode('utf-8'))
+    time.sleep(1)
+    ser.write(b'mode0000\r')
+    GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
+
+
 # Create an instance of MinionToolbox()
 minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
 
@@ -20,6 +38,9 @@ data_config = minion_tools.read_data_config()
 
 # Get the current time stamp information
 samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+
+# Get the current sample number
+samp_num = minion_tools.read_samp_num()
 
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
@@ -52,15 +73,19 @@ ser = serial.Serial(
 )
 
 # Set up sampling and data logging based on sampling mode
-if args.mode == 'INI':
+if args.mode.upper() == 'TEST':
+    test_sensor()
+    exit(0)
+
+elif args.mode.upper() == 'INI':
     print('[ OXY ] Initial Sampling Mode')
     DATA_TYPE = data_type_dict['INI_Oxy']  # Initial Sampling Type Data for Oxygen
     total_samples = minion_mission_config['INIsamp_hours'] * minion_mission_config['INIsamp_oxygen_rate'] * 3600
     sample_rate = minion_mission_config['INIsamp_oxygen_rate']
 
-    for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
-        if dataNum.endswith('_OXY-INI.txt'):
-            samp_count = samp_count + 1
+    # for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
+    #     if dataNum.endswith('_OXY-INI.txt'):
+    #         samp_count = samp_count + 1
 
     samp_count_leading_zeros = "%03d" % samp_count
 
@@ -70,15 +95,15 @@ if args.mode == 'INI':
 
     file_path_name = "{}/minion_data/INI/".format(data_config['Data_Dir']) + file_name
 
-elif args.mode == 'TLP':
+elif args.mode.upper() == 'TLP':
     print('[ OXY ] Time Lapse Sampling Mode')
     DATA_TYPE = data_type_dict['TLP_Oxy']  # Time Lapse Sampling Type Data for Oxygen
     total_samples = minion_mission_config['TLPsamp_burst_minutes'] * minion_mission_config['TLPsamp_oxygen_rate'] * 60
     sample_rate = minion_mission_config['TLPsamp_oxygen_rate']
 
-    for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
-        if dataNum.endswith('_OXY-TLP.txt'):
-            samp_count = samp_count + 1
+    # for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
+    #     if dataNum.endswith('_OXY-TLP.txt'):
+    #         samp_count = samp_count + 1
 
     samp_count_leading_zeros = "%03d" % samp_count
 
@@ -88,15 +113,15 @@ elif args.mode == 'TLP':
 
     file_path_name = "{}/minion_data/".format(data_config['Data_Dir']) + file_name
 
-elif args.mode == 'FIN':
+elif args.mode.upper() == 'FIN':
     print('[ OXY ] Final Sampling Mode')
     DATA_TYPE = data_type_dict['FIN_Oxy']  # Final Sampling Type Data for Oxygen
     total_samples = minion_mission_config['FINsamp_hours'] * minion_mission_config['FINsamp_oxygen_rate'] * 3600
     sample_rate = minion_mission_config['FINsamp_oxygen_rate']
 
-    for dataNum in os.listdir('{}/minion_data/FIN/'.format(data_config['Data_Dir'])):
-        if dataNum.endswith('_OXY-FIN.txt'):
-            samp_count = samp_count + 1
+    # for dataNum in os.listdir('{}/minion_data/FIN/'.format(data_config['Data_Dir'])):
+    #     if dataNum.endswith('_OXY-FIN.txt'):
+    #         samp_count = samp_count + 1
 
     samp_count_leading_zeros = "%03d" % samp_count
 
