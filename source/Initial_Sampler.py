@@ -139,7 +139,7 @@ if __name__ == '__main__':
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
     if minion_mission_config['iniO2']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode INI &')
 
     # if minion_mission_config['iniAcc']:
     #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')

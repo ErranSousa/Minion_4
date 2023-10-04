@@ -41,7 +41,7 @@ def start_time_lapse_scripts():
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
     if minion_mission_config['iniO2']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode TLP &')
 
 
 # Start by grabbing the first time mark.  Used in calculating the total time of sampling, including any setup.
