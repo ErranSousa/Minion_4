@@ -27,6 +27,9 @@ data_config = minion_tools.read_data_config()
 # Get the current time stamp information
 samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
 
+# Get the current sample number
+samp_num = minion_tools.read_samp_num()
+
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 
@@ -40,9 +43,9 @@ Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
 
 TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['TLPsamp_tempPress_rate']
 
-for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
-    if dataNum.endswith('_TEMPPRES.txt'):
-        samp_count = samp_count + 1
+# for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
+#     if dataNum.endswith('_TEMPPRES.txt'):
+#         samp_count = samp_count + 1
 
 samp_count_leading_zeros = "%03d" % samp_count
 
