@@ -289,6 +289,40 @@ class MinionToolbox(object):
         with open(config_file, 'w') as configFile:
             mission_config.write(configFile)
 
+    def data_type_dict(self):
+        """Data Type Format String Dictionary for writing file headers
+
+        Parameters
+        ----------
+        none
+
+        Returns:
+        --------
+        dict data_type_dict : Dictionary of data types
+            keys:
+                str INI_TempPress : Initial Temperature & Pressure File Format
+                str TLP_TempPress : Time Lapse Temperature & Pressure File Format
+                str FIN_TempPress : Final Temperature & Pressure File Format
+                str GPS_Record : GPS Record File Format
+                str INI_Oxy : Initial Dissolved Oxygen File Format
+                str TLP_Oxy : Time Lapse Dissolved Oxygen File Format
+                str FIN_Oxy : FIN Dissolved Oxygen File Format
+        """
+
+        keys = 'INI_TempPress', 'TLP_TempPress', 'FIN_TempPress', 'GPS_Record', 'INI_Oxy', 'TLP_Oxy', 'FIN_Oxy'
+
+        data_type_dict = dict.fromkeys(keys)
+
+        data_type_dict['INI_TempPress'] = '$01'
+        data_type_dict['TLP_TempPress'] = '$02'
+        data_type_dict['FIN_TempPress'] = '$03'
+        data_type_dict['GPS_Record'] = '$04'
+        data_type_dict['INI_Oxy'] = '$05'
+        data_type_dict['TLP_Oxy'] = '$06'
+        data_type_dict['FIN_Oxy'] = '$07'
+
+        return data_type_dict
+
     def config_gpio(self, **kwargs):
         """Reads the pin_config.ini file, configures pin directions and default states.
         Returns a dictionary with pin names & assignments
