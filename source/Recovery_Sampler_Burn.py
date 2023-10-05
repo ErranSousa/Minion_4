@@ -57,7 +57,8 @@ current_script_name = os.path.basename(__file__)
 samp_num = minion_tools.read_samp_num()
 
 # Get the current time stamp information
-samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+# samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+samp_time = minion_tools.update_timestamp()
 
 # Enable the burn wire
 minion_hat.burn_wire(minion_hat.ENABLE)

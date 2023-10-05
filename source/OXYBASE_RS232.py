@@ -37,7 +37,7 @@ minion_mission_config = minion_tools.read_mission_config()
 data_config = minion_tools.read_data_config()
 
 # Get the current time stamp information
-samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+samp_time = minion_tools.update_timestamp()
 
 # Get the current sample number
 samp_num = minion_tools.read_samp_num()
@@ -87,9 +87,9 @@ elif args.mode.upper() == 'INI':
     #     if dataNum.endswith('_OXY-INI.txt'):
     #         samp_count = samp_count + 1
 
-    samp_count_leading_zeros = "%03d" % samp_count
+    samp_num_leading_zeros = "%03d" % samp_num
 
-    samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time)  # Add leading zeros to sample count
+    samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
     file_name = "{}_OXY-INI.txt".format(samp_time)
 
@@ -105,9 +105,9 @@ elif args.mode.upper() == 'TLP':
     #     if dataNum.endswith('_OXY-TLP.txt'):
     #         samp_count = samp_count + 1
 
-    samp_count_leading_zeros = "%03d" % samp_count
+    samp_num_leading_zeros = "%03d" % samp_count
 
-    samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time)  # Add leading zeros to sample count
+    samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
     file_name = "{}_OXY-TLP.txt".format(samp_time)
 
@@ -123,9 +123,9 @@ elif args.mode.upper() == 'FIN':
     #     if dataNum.endswith('_OXY-FIN.txt'):
     #         samp_count = samp_count + 1
 
-    samp_count_leading_zeros = "%03d" % samp_count
+    samp_num_leading_zeros = "%03d" % samp_count
 
-    samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time)  # Add leading zeros to sample count
+    samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
     file_name = "{}_OXY-FIN.txt".format(samp_time)
 
