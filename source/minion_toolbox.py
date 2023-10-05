@@ -875,7 +875,7 @@ class MinionToolbox(object):
         # This must be the first time through so the pickle file does not yet exist
         except:
             print("\n\rCould not find the samp_num pickle file.  Creating... ")
-            samp_num = 0
+            samp_num = 1
             with open(samp_num_pickle_file, "wb") as pickle_file:
                 pickle.dump(samp_num, pickle_file)
             print("[OK] Created sample number pickle file.")
