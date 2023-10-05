@@ -59,8 +59,8 @@ args = parser.parse_args()
 
 # Initializations:
 reply = ''
-sample_num = 0
-samp_count = 1
+# sample_num = 0
+# samp_count = 1
 
 # Set up the serial port
 ser = serial.Serial(
@@ -105,7 +105,7 @@ elif args.mode.upper() == 'TLP':
     #     if dataNum.endswith('_OXY-TLP.txt'):
     #         samp_count = samp_count + 1
 
-    samp_num_leading_zeros = "%03d" % samp_count
+    samp_num_leading_zeros = "%03d" % samp_num
 
     samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
@@ -123,7 +123,7 @@ elif args.mode.upper() == 'FIN':
     #     if dataNum.endswith('_OXY-FIN.txt'):
     #         samp_count = samp_count + 1
 
-    samp_num_leading_zeros = "%03d" % samp_count
+    samp_num_leading_zeros = "%03d" % samp_num
 
     samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
