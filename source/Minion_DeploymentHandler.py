@@ -101,12 +101,12 @@ if __name__ == '__main__':
         exit(0)
 
     # Initial Sampling Mode
-    if samp_num == 0:
+    if samp_num == 1:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
         start_time_lapse_scripts_flag = True
 
     # Recovery Sampling Mode
-    elif samp_num > TotalSamples or minion_mission_config['Abort']:
+    elif samp_num > TotalSamples + 1 or minion_mission_config['Abort']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
         recovery_mode_flag = True
 
