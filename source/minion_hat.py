@@ -183,7 +183,7 @@ class MinionHat(object):
 
         Parameters
         ----------
-        sleep_secs : sleep time in seconds   (range: 0-2^32)
+        sleep_secs : sleep time in seconds   (range: 1-2^32)
 
         Returns:
         --------
@@ -200,8 +200,8 @@ class MinionHat(object):
         error_flag = False
 
         # Range Check
-        if sleep_secs < 0 or sleep_secs > pow(2, 32)-1:
-            print("Error: sleep_secs out of range")
+        if sleep_secs < 1 or sleep_secs > pow(2, 32)-1:
+            print("[ Error ]: " + str(sleep_secs) + "sleep_secs out of range")
             error_flag = True
 
         if not error_flag:

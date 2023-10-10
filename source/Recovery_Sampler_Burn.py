@@ -57,7 +57,8 @@ current_script_name = os.path.basename(__file__)
 samp_num = minion_tools.read_samp_num()
 
 # Get the current time stamp information
-samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+# samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+samp_time = minion_tools.update_timestamp()
 
 # Enable the burn wire
 minion_hat.burn_wire(minion_hat.ENABLE)
@@ -213,7 +214,7 @@ if __name__ == '__main__':
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
         if minion_mission_config['iniO2']:
-            os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
+            os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode FIN &')
 
         # Display readings
         while NumSamples < TotalSamples and not min_depth_flag:

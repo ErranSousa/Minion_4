@@ -59,9 +59,29 @@ $output_temp = shell_exec($command);
 echo "Temperature reading: " . $output_temp . " C";
 
 }
+
 ?>
 <br>
 </fieldset>
+<fieldset>
+<h3> Oxygen Sensor Test</h3>
+<br>
+<form method='post' action=''>
+<input type='submit' name='oxygen' value='OXYGEN' />
+</form>
+<p>Note: requires ~5 seconds to complete.</p>
+<br>
+<?php
+if(isset($_POST['oxygen'])){
+    $command = escapeshellcmd('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode test');
+    $output_oxygen = shell_exec($command);
+    echo "Oxygen reading: " . $output_oxygen;
+}
+
+?>
+<br>
+</fieldset>
+
 <fieldset>
 <h3> Burn Wire Test</h3>
 <br>
@@ -73,14 +93,8 @@ echo "Temperature reading: " . $output_temp . " C";
 if(isset($_POST['BURN'])){
 
 $command = escapeshellcmd('sudo python3 /var/www/html/test_burnwire.py');
-//$output_BURN = shell_exec($command);
-// echo $output_BURN;
-// echo '<pre>';
-// passthru($command);
-// echo '</pre>';
 header('X-Accel-Buffering: no');
 while (@ ob_end_flush()); // end all output buffers if any
-
 $proc = popen($command, 'r');
 echo '<pre>';
 while (!feof($proc))
@@ -93,6 +107,7 @@ echo '</pre>';
 ?>
 <br>
 </fieldset>
+
 <fieldset>
 <h3> LED Ring Test</h3>
 <br>

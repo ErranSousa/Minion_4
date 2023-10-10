@@ -48,7 +48,10 @@ minion_mission_config = minion_tools.read_mission_config()
 data_config = minion_tools.read_data_config()
 
 # Get the current time stamp information
-samp_time = minion_tools.read_timestamp()  # Use when DS3231 is not enabled in config.txt
+samp_time = minion_tools.update_timestamp()
+
+# Get the current sample number
+samp_num = minion_tools.read_samp_num()
 
 # Minion Mission Configuration file
 configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
@@ -64,13 +67,9 @@ print('Timestamp: {}'.format(samp_time))
 if minion_mission_config['Abort']:
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
 
-for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
-    if dataNum.endswith('_TEMPPRES-INI.txt'):
-        samp_count = samp_count + 1
+samp_num_leading_zeros = "%03d" % samp_num
 
-samp_count_leading_zeros = "%03d" % samp_count
-
-samp_time = "{}-{}".format(samp_count_leading_zeros, samp_time)  # Add leading zeros to sample count
+samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zeros to sample count
 
 file_name = "{}_TEMPPRES-INI.txt".format(samp_time)
 file_path_name = "{}/minion_data/INI/".format(data_config['Data_Dir']) + file_name
@@ -139,7 +138,7 @@ if __name__ == '__main__':
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
 
     if minion_mission_config['iniO2']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232_IF.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode INI &')
 
     # if minion_mission_config['iniAcc']:
     #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')

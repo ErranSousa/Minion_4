@@ -14,7 +14,7 @@ rpi_boot_time_secs = 38  # This needs to be refined, placeholder.  TODO: calcula
 
 def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
-    tic_3 = 0
+    # tic_3 = 0
     # Check for WiFi while any of the scripts in script_list are executing
     while any(x in os.popen(ps_test).read() for x in script_list):
         ig_wifi_status = minion_tools.ignore_wifi_check()
@@ -28,9 +28,9 @@ def check_wifi_and_scripts(script_list):
             print('[ ' + '\33[92mSampling\33[0m' + ' ]')
             # Need to capture a tic here to account for the 5 sec when going into time-lapse
             # directly from Initial Mode
-            tic_3 = time.perf_counter()
+            # tic_3 = time.perf_counter()
             time.sleep(5)
-    return tic_3
+    return time.perf_counter()
 
 
 def start_time_lapse_scripts():
@@ -41,7 +41,7 @@ def start_time_lapse_scripts():
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
     if minion_mission_config['iniO2']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode TLP &')
 
 
 # Start by grabbing the first time mark.  Used in calculating the total time of sampling, including any setup.
@@ -101,12 +101,12 @@ if __name__ == '__main__':
         exit(0)
 
     # Initial Sampling Mode
-    if samp_num == 0:
+    if samp_num == 1:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
         start_time_lapse_scripts_flag = True
 
     # Recovery Sampling Mode
-    elif samp_num > TotalSamples or minion_mission_config['Abort']:
+    elif samp_num > TotalSamples + 1 or minion_mission_config['Abort']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
         recovery_mode_flag = True
 
@@ -114,18 +114,21 @@ if __name__ == '__main__':
     else:
         start_time_lapse_scripts()
 
-    # Increment the Sample Number
-    minion_tools.increment_samp_num()
-
     tic_2 = check_wifi_and_scripts(scriptNames)
+
+    # Increment the Sample Number after scripts have completed
+    minion_tools.increment_samp_num()
 
     # Start the Time-Lapse Mode Samples immediately after the Initial Samples - no shutdown
     if start_time_lapse_scripts_flag:
         tic = tic_2  # Need to reset the tic for accurate timing
         start_time_lapse_scripts()
-        minion_tools.increment_samp_num()
 
     check_wifi_and_scripts(scriptNames)
+
+    # If the first Time-Lapse mode burst was performed, the sample number needs to be incremented
+    if start_time_lapse_scripts_flag:
+        minion_tools.increment_samp_num()
 
     # Once we get here, there are none of the scripts in scriptNames are running.
     print('Goodbye')
