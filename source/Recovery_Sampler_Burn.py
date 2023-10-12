@@ -18,6 +18,8 @@ MIN_DEPTH = 5  # Minimum Depth in dBar
 MIN_DEPTH_CNTR_THRESHOLD = 5  # Number of minimum pressure measurements before triggering a minimum depth condition
 ENABLE_MIN_DEPTH_CUTOUT = False  # Enables the Minimum Depth Cutout Feature
 ENABLE_MIN_DEPTH_CUTOUT_TEST = False  # TEST MODE ONLY!!!  DO NOT DEPLOY SET TO TRUE!!!
+_STROBE_ON = 100    # Strobe on time in milliseconds
+_STROBE_OFF = 4900  # Strobe off time in milliseconds
 
 # Initializations
 samp_num = 1
@@ -308,10 +310,17 @@ if __name__ == '__main__':
         write_pickle_file(fname_final_status_pickle, True)
         GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)  # Turn off the DATA ACQ LED Inidicator
 
+        # Transmit the first GPS Position and enable the strobe as soon as the sampling is complete
+        minion_hat.burn_wire(minion_hat.ENABLE)
+        minion_hat.strobe_timing(_STROBE_ON, _STROBE_OFF)
+        minion_hat.strobe(minion_hat.ENABLE)
+        os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
+
+
     else:
         print("Final Sampling Stage is complete.")
         minion_hat.burn_wire(minion_hat.ENABLE)
-        minion_hat.strobe_timing(100, 4900)  # On for 100ms / Off for 4900ms
+        minion_hat.strobe_timing(_STROBE_ON, _STROBE_OFF)
         minion_hat.strobe(minion_hat.ENABLE)
         os.system('sudo python /home/pi/Documents/Minion_scripts/xmt_minion_data.py &')
 
