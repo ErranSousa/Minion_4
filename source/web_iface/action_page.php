@@ -16,7 +16,6 @@
 <h1>Minion <?php echo $_POST["MNumber"]; ?>!</h1>
 <fieldset>
 MAX Depth: <?php echo $_POST["DMAX"]; ?><br>
-Ignore_WIFI-days: <?php echo $_POST["IG_WIFI-days"]; ?><br>
 Ignore_WIFI-hours: <?php echo $_POST["IG_WIFI-hours"]; ?><br>
 </fieldset>
 <fieldset>
@@ -31,7 +30,7 @@ Oxybase O2 Sensor: <?php if ($_POST["OXY"]=="OXY"){echo "True";}else{echo "False
 <legend>Initial Sampling Mode:</legend>
 Initial Sample Time (hours): <?php echo $_POST["IHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["ICamFS"]; ?><br>
-Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["ITPFS"]; ?><br>
+Temperature and Pressure Sample Period (seconds): <?php echo $_POST["ITPFS"]; ?><br>
 Dissolved Oxygen Sample Period (seconds): <?php echo $_POST["IOXYFS"]; ?><br>
 </fieldset>
 
@@ -40,16 +39,16 @@ Dissolved Oxygen Sample Period (seconds): <?php echo $_POST["IOXYFS"]; ?><br>
 Hours: <?php echo $_POST["THours"]; ?><br>
 Sample Burst Duration (min): <?php echo $_POST["DS_Time"]; ?><br>
 Sample Burst Interval (min): <?php echo $_POST["DS_Interval"]; ?><br>
-Sensor Sample Rate (Hz): <?php echo $_POST["SensorFS"]; ?><br>
-Oxybase Sample Rate (Hz): <?php echo $_POST["OxygenFS"]; ?><br>
+Temperature and Pressure Sample Period (seconds): <?php echo $_POST["SensorFS"]; ?><br>
+Oxybase Sample Period (seconds): <?php echo $_POST["OxygenFS"]; ?><br>
 </fieldset>
 
 <fieldset>
 <legend>Final Sampling Mode:</legend>
 Final Sample Time (hours): <?php echo $_POST["FHours"]; ?><br>
 Camera Sample Rate (minutes): <?php echo $_POST["FCamFS"]; ?><br>
-Temperature and Pressure Sample Rate (Hz): <?php echo $_POST["FTPFS"]; ?><br>
-Dissolved Oxygen Sample Rate (Hz): <?php echo $_POST["FOXYFS"]; ?><br>
+Temperature and Pressure Sample Period (seconds): <?php echo $_POST["FTPFS"]; ?><br>
+Dissolved Oxygen Sample Period (seconds): <?php echo $_POST["FOXYFS"]; ?><br>
 </fieldset>
 
 <fieldset>
@@ -72,14 +71,13 @@ fwrite($myfile, $Minion);
 $Mission = "[Mission]\n"
   ."abort = 0"."\n"
   ."max_depth = ".$_POST["DMAX"]."\n"
-  ."ignore_wifi-days = ".$_POST["IG_WIFI-days"]."\n"
   ."ignore_wifi-hours = ".$_POST["IG_WIFI-hours"]."\n\n";
 fwrite($myfile, $Mission);
 
 $Initial_Samples = "[Initial_Samples]\n"
   ."hours = ".$_POST["IHours"]."\n"
   ."camera_sample_rate = ".$_POST["ICamFS"]."\n"
-  ."temppres_sample_rate = ".$_POST["ITPFS"]."\n"
+  ."temppres_sample_period = ".$_POST["ITPFS"]."\n"
   ."oxygen_sample_period = ".$_POST["IOXYFS"]."\n\n";
 
 fwrite($myfile, $Initial_Samples);
@@ -88,7 +86,7 @@ $Data_Sample = "[Time_Lapse_Samples]\n"
   ."hours = ".$_POST["THours"]."\n"
   ."sample_burst_duration = ".$_POST["DS_Time"]."\n"
   ."sample_interval_minutes = ".$_POST["DS_Interval"]."\n"
-  ."temppres_sample_rate = ".$_POST["SensorFS"]."\n"
+  ."temppres_sample_period = ".$_POST["SensorFS"]."\n"
   ."oxygen_sample_period = ".$_POST["OxygenFS"]."\n\n";
 
 fwrite($myfile, $Data_Sample);
@@ -96,7 +94,7 @@ fwrite($myfile, $Data_Sample);
 $Final_Samples = "[Final_Samples]\n"
   ."hours = ".$_POST["FHours"]."\n"
   ."camera_sample_rate = ".$_POST["FCamFS"]."\n"
-  ."temppres_sample_rate = ".$_POST["FTPFS"]."\n"
+  ."temppres_sample_period = ".$_POST["FTPFS"]."\n"
   ."oxygen_sample_period = ".$_POST["FOXYFS"]."\n\n";
 
 fwrite($myfile, $Final_Samples);

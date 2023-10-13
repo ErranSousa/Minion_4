@@ -54,8 +54,8 @@ echo '<form action="/action_page.php" method="post">
   <label for="ICamFS">Image Capture Period:</label><br>
   <input type="text" id="ICamFS" name="ICamFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['camera_sample_rate'].'"> minutes<br>
   <br>
-  <label for="ITPFS">Temperature and Pressure Sample Rate:</label><br>
-  <input type="text" id="ITPFS" name="ITPFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['temppres_sample_rate'].'"> Hz<br>
+  <label for="ITPFS">Temperature and Pressure Sample Period:</label><br>
+  <input type="text" id="ITPFS" name="ITPFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['temppres_sample_period'].'"> seconds<br>
   <br>
   <label for="IOXYFS">OxyBase Sample Period:</label><br>
   <input type="text" id="IOXYFS" name="IOXYFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['oxygen_sample_period'].'"> seconds<br>
@@ -74,8 +74,8 @@ echo '<form action="/action_page.php" method="post">
   <label for="DS_Interval">Sample Burst Interval:</label><br>
   <input type="text" id="DS_Interval" name="DS_Interval" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['sample_interval_minutes'].'"> minutes<br>
   <br>
-  <label for="SensorFS">Temperature and Pressure Sample Rate:</label><br>
-  <input type="text" id="SensorFS" name="SensorFS" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_rate'].'"> Hz<br>
+  <label for="SensorFS">Temperature and Pressure Sample Period:</label><br>
+  <input type="text" id="SensorFS" name="SensorFS" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_period'].'"> seconds<br>
   <br>
   <label for="OxygenFS">OxyBase Sample Period:</label><br>
   <input type="text" id="OxygenFS" name="OxygenFS" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['oxygen_sample_period'].'"> seconds<br>
@@ -91,8 +91,8 @@ echo '<form action="/action_page.php" method="post">
   <label for="FCamFS">Image Capture Period:</label><br>
   <input type="text" id="FCamFS" name="FCamFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['camera_sample_rate'].'"> minutes<br>
   <br>
-  <label for="FTPFS">Temperature and Pressure Sample Rate:</label><br>
-  <input type="text" id="FTPFS" name="FTPFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['temppres_sample_rate'].'"> Hz<br>
+  <label for="FTPFS">Temperature and Pressure Sample Period:</label><br>
+  <input type="text" id="FTPFS" name="FTPFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['temppres_sample_period'].'"> seconds<br>
   <br>
   <label for="FOXYFS">OxyBase Sample Period:</label><br>
   <input type="text" id="FOXYFS" name="FOXYFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['oxygen_sample_period'].'"> seconds<br>

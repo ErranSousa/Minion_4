@@ -169,20 +169,19 @@ class MinionToolbox(object):
                 str Minion_ID : Minion Serial Number
                 bool Abort : Enable / Disable Mission Abort Feature
                 float MAX_Depth : Maximum Depth Limit in meters
-                float IG_WIFI_D : Ignore WIFI Days
                 float IG_WIFI_H : Ingnore WIFI Hours
                 float INIsamp_hours : Number Sampling Hours (Initial Mode)
                 float INIsamp_camera_rate : Camera Sample Rate (Initial Mode)
-                float INIsamp_tempPres_rate : Temperature/Pressure Sample Rate (Initial Mode)
+                float INIsamp_tempPres_period : Temperature/Pressure Sample Period in seconds (Initial Mode)
                 float INIsamp_oxygen_period : Oxygen Sample Period in seconds (Initial Mode)
                 float FINsamp_hours : Number Sampling Hours (Final Mode)
-                float FINsamp_camera_rate : Camera Sample Rate (Finall Mode)
-                float FINsamp_tempPres_rate : Temperature/Pressure Sample Rate (Final Mode)
+                float FINsamp_camera_rate : Camera Sample Rate (Final Mode)
+                float FINsamp_tempPres_period : Temperature/Pressure Sample Period in seconds (Final Mode)
                 float FINsamp_oxygen_period : Oxygen Sample Period in seconds (Final Mode)
                 float TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
                 float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
                 float TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
-                float TLPsamp_tempPress_rate : Temperature / Pressure Sample Rate (Time-Lapse Mode)
+                float TLPsamp_tempPres_period : Temperature / Pressure Sample Rate in seconds (Time-Lapse Mode)
                 float TLPsamp_oxygen_period : Oxygen Sample Period in seconds (Time-Lapse Mode)
                 float gps_transmission_window : Number of hours to transmit GPS positions before data transmission
                 float gps_transmission_interval : Number of minutes between GPS position transmissions
@@ -197,10 +196,10 @@ class MinionToolbox(object):
         """
 
         # list of keys
-        keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_D', 'IG_WIFI_H',
-                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_rate',
+        keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_H',
+                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_period',
                 'INIsamp_oxygen_period', 'FINsamp_hours', 'FINsamp_camera_rate',
-                'FINsamp_tempPres_rate', 'FINsamp_oxygen_period', 'TLPsamp_tempPress_rate',
+                'FINsamp_tempPres_period', 'FINsamp_oxygen_period', 'TLPsamp_tempPres_period',
                 'TLPsamp_oxygen_period', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'TLPsamp_interval_minutes',
                 'gps_transmission_window', 'gps_transmission_interval',
                 'iniImg', 'iniP30', 'iniP100', 'iniTmp', 'iniO2'
@@ -219,17 +218,16 @@ class MinionToolbox(object):
 
         mission_config['Abort'] = self.str2bool(config['Mission']['abort'])
         mission_config['MAX_Depth'] = float(config['Mission']['max_depth'])
-        mission_config['IG_WIFI_D'] = float(config['Mission']['ignore_wifi-days'])
         mission_config['IG_WIFI_H'] = float(config['Mission']['ignore_wifi-hours'])
 
         mission_config['INIsamp_hours'] = float(config['Initial_Samples']['hours'])
         mission_config['INIsamp_camera_rate'] = float(config['Initial_Samples']['camera_sample_rate'])
-        mission_config['INIsamp_tempPres_rate'] = float(config['Initial_Samples']['temppres_sample_rate'])
+        mission_config['INIsamp_tempPres_period'] = float(config['Initial_Samples']['temppres_sample_period'])
         mission_config['INIsamp_oxygen_period'] = float(config['Initial_Samples']['oxygen_sample_period'])
 
         mission_config['FINsamp_hours'] = float(config['Final_Samples']['hours'])
         mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['camera_sample_rate'])
-        mission_config['FINsamp_tempPres_rate'] = float(config['Final_Samples']['temppres_sample_rate'])
+        mission_config['FINsamp_tempPres_period'] = float(config['Final_Samples']['temppres_sample_period'])
         mission_config['FINsamp_oxygen_period'] = float(config['Final_Samples']['oxygen_sample_period'])
 
         mission_config['gps_transmission_window'] = float(config['GPS']['gps_transmission_window'])
@@ -247,7 +245,7 @@ class MinionToolbox(object):
             # Since tlp_samp_burst_minutes cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
             mission_config['TLPsamp_burst_minutes'] = float(.2)
-        mission_config['TLPsamp_tempPress_rate'] = float(config['Time_Lapse_Samples']['temppres_sample_rate'])
+        mission_config['TLPsamp_tempPres_period'] = float(config['Time_Lapse_Samples']['temppres_sample_period'])
         mission_config['TLPsamp_oxygen_period'] = float(config['Time_Lapse_Samples']['oxygen_sample_period'])
         mission_config['TLPsamp_interval_minutes'] = float(config['Time_Lapse_Samples']['sample_interval_minutes'])
 
@@ -571,18 +569,18 @@ class MinionToolbox(object):
         for script in scriptNames:
             os.system("sudo pkill -9 -f {}".format(script))
 
-    def write_data_file_header(self, data_type, file_path_name, file_name, samp_rate, iniP30, iniP100, iniTmp):
+    def write_data_file_header(self, data_type, file_path_name, file_name, samp_period, ini_p30, ini_p100, ini_tmp):
         """Write Header Record to Pressure & Temperature Data File
 
         Parameters
         ----------
-        data_type : Data Type - INI:$02, TML:$03, FIN:$04
+        data_type : Data Type - INI:$02, TLP:$03, FIN:$04
         file_path_name : Full path and name of the data file
         file_name : Name of data file
-        samp_rate : Sample Rate
-        iniP30 : Sensor Enabled - 30Bar Pressure Sensor
-        iniP100 : Sensor Enabled - 100Bar Pressure Sensor
-        iniTmp : Sensor Enabled - Temperature Sensor
+        samp_period : Sample period
+        ini_p30 : Sensor Enabled - 30Bar Pressure Sensor
+        ini_p100 : Sensor Enabled - 100Bar Pressure Sensor
+        ini_tmp : Sensor Enabled - Temperature Sensor
 
         Returns:
         --------
@@ -594,17 +592,17 @@ class MinionToolbox(object):
 
             file.write(data_type)  # Write Data Type Identifier
             file.write("," + file_name)  # Write the file name
-            file.write("," + str(samp_rate))  # Write the sample rate
+            file.write("," + str(samp_period))  # Write the sample rate
 
-            if iniP30 == True:
+            if ini_p30:
                 # file.write("Pressure(dbar),Temp(C)")
                 file.write(",Pressure(dbar*1000),Temp(C*100)")  # Meta-Record for fixed field Press and Temp
 
-            if iniP100 == True:
+            if ini_p100:
                 # file.write("Pressure(dbar),Temp(C)")
                 file.write(",Pressure(dbar*1000),Temp(C*100)")  # Meta-Record for fixed field Press and Temp
 
-            if iniTmp == True:
+            if ini_tmp:
                 # file.write(", TempTSYS01(C)")
                 file.write(",TempTSYS01(C*100)")
 

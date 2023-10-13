@@ -62,7 +62,7 @@ current_script_name = os.path.basename(__file__)
 scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "TempPres_IF.py", "OXYBASE_RS232_IF.py", "Iridium_gps.py", "Iridium_data.py"]
 
-print('Timestamp: {}'.format(samp_time))
+print('[ INI ] Timestamp: {}'.format(samp_time))
 
 if minion_mission_config['Abort']:
     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
@@ -74,9 +74,12 @@ samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zer
 file_name = "{}_TEMPPRES-INI.txt".format(samp_time)
 file_path_name = "{}/minion_data/INI/".format(data_config['Data_Dir']) + file_name
 
-Sf = 1 / minion_mission_config['INIsamp_tempPres_rate']
+# Sf = 1 / minion_mission_config['INIsamp_tempPres_rate']
+Sf = minion_mission_config['INIsamp_tempPres_period']
 
-TotalSamples = minion_mission_config['INIsamp_hours'] * 60 * 60 * minion_mission_config['INIsamp_tempPres_rate']
+# TotalSamples = minion_mission_config['INIsamp_hours'] * 60 * 60 * minion_mission_config['INIsamp_tempPres_rate']
+TotalSamples = (minion_mission_config['INIsamp_hours'] * 3600) / minion_mission_config['INIsamp_tempPres_period']
+print('[ INI ] Total Samples ' + str(TotalSamples))
 
 ######################
 
@@ -127,7 +130,7 @@ if minion_mission_config['iniTmp']:
 
 # Write a header to the data file
 minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
-                                    minion_mission_config['INIsamp_tempPres_rate'], minion_mission_config['iniP30'],
+                                    minion_mission_config['INIsamp_tempPres_period'], minion_mission_config['iniP30'],
                                     minion_mission_config['iniP100'], minion_mission_config['iniTmp'])
 
 if __name__ == '__main__':
@@ -140,10 +143,7 @@ if __name__ == '__main__':
     if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode INI &')
 
-    # if minion_mission_config['iniAcc']:
-    #     os.system('sudo python3 /home/pi/Documents/Minion_scripts/ACC_100Hz_IF.py &')
-
-    # Spew readings
+    # Perform and Display Measurements
     while NumSamples < TotalSamples:
 
         tic = time.perf_counter()

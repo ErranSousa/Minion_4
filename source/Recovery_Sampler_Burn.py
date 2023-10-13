@@ -131,13 +131,15 @@ samp_time = "{}-{}".format(samp_num_leading_zeros, samp_time)  # Add leading zer
 file_name = "{}_TEMPPRES-FIN.txt".format(samp_time)
 file_path_name = "{}/minion_data/FIN/".format(data_config['Data_Dir']) + file_name
 
-Sf = 1/minion_mission_config['FINsamp_tempPres_rate']
+# Sf = 1/minion_mission_config['FINsamp_tempPres_rate']
+Sf = minion_mission_config['FINsamp_tempPres_period']
 
-TotalSamples = minion_mission_config['FINsamp_hours']*60*60*minion_mission_config['FINsamp_tempPres_rate']
+# TotalSamples = minion_mission_config['FINsamp_hours']*60*60*minion_mission_config['FINsamp_tempPres_rate']
+TotalSamples = (minion_mission_config['FINsamp_hours'] * 3600) / minion_mission_config['FINsamp_tempPres_period']
 
 # print for testing only!
-print("B--> Final Samples Press/Temp rate: " + str(minion_mission_config['FINsamp_tempPres_rate']) + ", Final Sample Hours: " +
-      str(minion_mission_config['FINsamp_hours']) + ", TotalSamples: " + str(TotalSamples))
+print("B--> Final Samples Press/Temp period: " + str(minion_mission_config['FINsamp_tempPres_period']) +
+      ", Final Sample Hours: " + str(minion_mission_config['FINsamp_hours']) + ", TotalSamples: " + str(TotalSamples))
 
 ######################
 
@@ -206,7 +208,7 @@ if __name__ == '__main__':
         # Create the final samples' data file only if the final samples have not been performed
         # Write a header to the data file
         minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
-                                            minion_mission_config['FINsamp_tempPres_rate'],
+                                            minion_mission_config['FINsamp_tempPres_period'],
                                             minion_mission_config['iniP30'], minion_mission_config['iniP100'],
                                             minion_mission_config['iniTmp'])
 
