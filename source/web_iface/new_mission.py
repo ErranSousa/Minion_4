@@ -4,6 +4,14 @@ import sys  # for sys.path
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 from minion_hat import MinionHat
+sys.path.insert(0, '/home/pi/Documents/Minion_scripts/')
+from minsat import MinSat
+
+# MinSat Board Settings
+gps_port = "/dev/ttySC0"
+gps_baud = 9600
+modem_port = "/dev/ttySC1"
+modem_baud = 19200
 
 # Sets the Final Sample Status Flag to False
 #    False : Final Samples Not Performed
@@ -22,6 +30,9 @@ minion_tools = MinionToolbox()
 # Create an instance of MinionHat()
 minion_hat = MinionHat()
 
+# Create an instance of MinSat()
+minion_sat = MinSat(gps_port, gps_baud, modem_port, modem_baud)
+
 # Delete the Data Transmit Status Pickle prior to mission start
 minion_tools.delete_data_xmt_status_pickle()
 
@@ -38,6 +49,14 @@ print('[OK] Disabled the Burn Wire')
 # Reset the Recovery Strobe
 minion_hat.strobe(minion_hat.DISABLE)
 print('[OK] Disabled the Recovery Strobe')
+
+# Power Down the GPS Module
+minion_sat.gps_pwr(minion_sat.dev_off)
+print('[OK] Powered Down the GPS Module')
+
+# Power Down the Iridium Modem
+minion_sat.modem_pwr(minion_sat.dev_off)
+print('[OK] Powered Down the Iridium Modem')
 
 time = os.popen('ls /home/pi/Desktop/minion_data/INI/1-*.txt').read()
 

@@ -12,24 +12,47 @@ shutdown_delay_secs = 20  # The shutdown delay is programmable through the minio
 rpi_boot_time_secs = 38  # This needs to be refined, placeholder.  TODO: calculate rpi_boot_time on the fly
 
 
+# def check_wifi_and_scripts(script_list):
+#     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
+#     # tic_3 = 0
+#     # Check for WiFi while any of the scripts in script_list are executing
+#     while any(x in os.popen(ps_test).read() for x in script_list):
+#         ig_wifi_status = minion_tools.ignore_wifi_check()
+#         if minion_tools.check_wifi(ig_wifi_status) == "Connected":
+#             minion_tools.kill_sampling(script_list)
+#             minion_tools.flash(2, 250, 250)
+#             GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
+#             GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+#             exit(0)
+#         else:
+#             print('[ ' + '\33[92mSampling\33[0m' + ' ]')
+#             # Need to capture a tic here to account for the 5 sec when going into time-lapse
+#             # directly from Initial Mode
+#             # tic_3 = time.perf_counter()
+#             time.sleep(5)
+#     return time.perf_counter()
+
 def check_wifi_and_scripts(script_list):
     time.sleep(5)  # Wait for things to settle before checking for wifi & scripts
-    # tic_3 = 0
+    delta_secs = 0.1
+    tm_total_secs = 3
+    num_loops = tm_total_secs / delta_secs
+    loop_count = num_loops
     # Check for WiFi while any of the scripts in script_list are executing
     while any(x in os.popen(ps_test).read() for x in script_list):
-        ig_wifi_status = minion_tools.ignore_wifi_check()
-        if minion_tools.check_wifi(ig_wifi_status) == "Connected":
-            minion_tools.kill_sampling(script_list)
-            minion_tools.flash(2, 250, 250)
-            GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
-            GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
-            exit(0)
-        else:
-            print('[ ' + '\33[92mSampling\33[0m' + ' ]')
-            # Need to capture a tic here to account for the 5 sec when going into time-lapse
-            # directly from Initial Mode
-            # tic_3 = time.perf_counter()
-            time.sleep(5)
+        if not loop_count:
+            ig_wifi_status = minion_tools.ignore_wifi_check()
+            if minion_tools.check_wifi(ig_wifi_status) == "Connected":
+                minion_tools.kill_sampling(script_list)
+                minion_tools.flash(2, 250, 250)
+                GPIO.output(pin_defs_dict['LED_GRN'], GPIO.LOW)
+                GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+                exit(0)
+            else:
+                print('[ ' + '\33[92mSampling\33[0m' + ' ]')
+            loop_count = num_loops
+        time.sleep(delta_secs)
+        loop_count -= 1
     return time.perf_counter()
 
 
@@ -92,72 +115,99 @@ recovery_mode_flag = False
 
 if __name__ == '__main__':
 
-    # First, check for Wifi
-    ignore_wifi_status = minion_tools.ignore_wifi_check()
-    if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
-        minion_tools.kill_sampling(scriptNames)
-        minion_tools.flash(2, 250, 250)
-        GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
-        exit(0)
+    while True:
 
-    # Initial Sampling Mode
-    if samp_num == 1:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
-        start_time_lapse_scripts_flag = True
+        toc_1 = time.perf_counter()
 
-    # Recovery Sampling Mode
-    elif samp_num > TotalSamples + 1 or minion_mission_config['Abort']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-        recovery_mode_flag = True
+        # Get the current sample number
+        samp_num = minion_tools.read_samp_num()
 
-    # Time-Lapse Sampling Mode
-    else:
-        start_time_lapse_scripts()
+        # First, check for Wifi
+        ignore_wifi_status = minion_tools.ignore_wifi_check()
+        if minion_tools.check_wifi(ignore_wifi_status) == "Connected":
+            minion_tools.kill_sampling(scriptNames)
+            minion_tools.flash(2, 250, 250)
+            GPIO.output(pin_defs_dict['LED_RED'], GPIO.HIGH)
+            exit(0)
 
-    tic_2 = check_wifi_and_scripts(scriptNames)
+        # Initial Sampling Mode
+        if samp_num == 1:
+            os.system('sudo python3 /home/pi/Documents/Minion_scripts/Initial_Sampler.py &')
+            start_time_lapse_scripts_flag = True
 
-    # Increment the Sample Number after scripts have completed
-    minion_tools.increment_samp_num()
+        # Recovery Sampling Mode
+        elif samp_num > TotalSamples + 1 or minion_mission_config['Abort']:
+            os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
+            recovery_mode_flag = True
 
-    # Start the Time-Lapse Mode Samples immediately after the Initial Samples - no shutdown
-    if start_time_lapse_scripts_flag:
-        tic = tic_2  # Need to reset the tic for accurate timing
-        start_time_lapse_scripts()
+        # Time-Lapse Sampling Mode
+        else:
+            start_time_lapse_scripts()
 
-    check_wifi_and_scripts(scriptNames)
+        tic_2 = check_wifi_and_scripts(scriptNames)
 
-    # If the first Time-Lapse mode burst was performed, the sample number needs to be incremented
-    if start_time_lapse_scripts_flag:
+        # Increment the Sample Number after scripts have completed
         minion_tools.increment_samp_num()
 
-    # Once we get here, there are none of the scripts in scriptNames are running.
-    print('Goodbye')
+        # Start the Time-Lapse Mode Samples immediately after the Initial Samples - no shutdown
+        if start_time_lapse_scripts_flag:
+            tic = tic_2  # Need to reset the tic for accurate timing
+            toc_1 = tic_2
+            start_time_lapse_scripts()
+            check_wifi_and_scripts(scriptNames)
 
-    # Between Time Lapse Mode Blocks, the system should enter the lowest power mode (shutdown).
-    # Shutdown will disable the recovery strobe and burn wire to conserve power.
-    # Once recovery mode is reached, the power down between cycles should preserve the
-    # burn wire and recovery strobe (sleep).
-    if not recovery_mode_flag:
-        # This is the mode between Time-Lapse Mode bursts
-        # Calculate (roughly) Shutdown time for Time-Lapse Mode
-        toc = time.perf_counter()  # Capture the counter again
-        total_sample_burst_secs = toc - tic
-        shutdown_seconds = (minion_mission_config['TLPsamp_interval_minutes'] * 60 -
-                            total_sample_burst_secs -
-                            shutdown_delay_secs -
-                            rpi_boot_time_secs)
-        minion_hat.shutdown(int(shutdown_seconds))
-    else:
-        # This is the mode between Recovery sampler shutdowns where the burn wire and recovery strobe are preserved.
-        toc = time.perf_counter()  # Capture the counter again
-        total_final_mode_secs = toc - tic
-        sleep_seconds = (minion_mission_config['gps_transmission_interval'] * 60 -
-                         total_final_mode_secs -
-                         shutdown_delay_secs -
-                         rpi_boot_time_secs)
+        # check_wifi_and_scripts(scriptNames)  # Todo: consider moving this to inside the above if-statement
 
-        # The intent here is to ensure that we get the gps_transmission_interval sleep time after sending data
-        if sleep_seconds < 0:
-            sleep_seconds = minion_mission_config['gps_transmission_interval'] * 60
+        # If the first Time-Lapse mode burst was performed, the sample number needs to be incremented
+        if start_time_lapse_scripts_flag:
+            minion_tools.increment_samp_num()
+            start_time_lapse_scripts_flag = False
 
-        minion_hat.sleep(int(sleep_seconds))
+        # Once we get here, there are none of the scripts in scriptNames are running.
+        print('Goodbye')
+
+        # Between Time Lapse Mode Blocks, the system should enter the lowest power mode (shutdown).
+        # Shutdown will disable the recovery strobe and burn wire to conserve power.
+        # Once recovery mode is reached, the power down between cycles should preserve the
+        # burn wire and recovery strobe (sleep).
+        if not recovery_mode_flag:
+            # This is the mode between Time-Lapse Mode bursts
+            # Calculate (roughly) Shutdown time for Time-Lapse Mode
+            toc = time.perf_counter()  # Capture the counter again
+            total_sample_burst_secs = toc - tic
+            shutdown_seconds = (minion_mission_config['TLPsamp_interval_minutes'] * 60 -
+                                total_sample_burst_secs -
+                                shutdown_delay_secs -
+                                rpi_boot_time_secs)
+            # if shutdown_seconds >= 120:
+            tm_diff_secs = (minion_mission_config['TLPsamp_interval_minutes'] -
+                            minion_mission_config['TLPsamp_burst_minutes']) * 60
+            if tm_diff_secs >= 120:
+                minion_hat.shutdown(int(shutdown_seconds))
+            else:
+                total_sample_burst_secs = time.perf_counter() - toc_1
+                shutdown_seconds = (minion_mission_config['TLPsamp_interval_minutes'] * 60 - total_sample_burst_secs)
+                if shutdown_seconds < 0:
+                    shutdown_seconds = 0
+                print('Sleeping for ' + str(shutdown_seconds) + ' seconds')
+                time.sleep(shutdown_seconds)
+        else:
+            # This is the mode between Recovery sampler shutdowns where the burn wire and recovery strobe are preserved.
+            toc = time.perf_counter()  # Capture the counter again
+            total_final_mode_secs = toc - tic
+            sleep_seconds = (minion_mission_config['gps_transmission_interval'] * 60 -
+                             total_final_mode_secs -
+                             shutdown_delay_secs -
+                             rpi_boot_time_secs)
+
+            # The intent here is to ensure that we get the gps_transmission_interval sleep time after sending data
+            if sleep_seconds < 0:
+                sleep_seconds = minion_mission_config['gps_transmission_interval'] * 60
+
+            # Just system delay without shutting down if the sleep_seconds are within a defined range,
+            # otherwise power down and sleep
+            if 0 < sleep_seconds < 120:
+                sleep_seconds = (minion_mission_config['gps_transmission_interval'] * 60 - total_final_mode_secs)
+                time.sleep(sleep_seconds)
+            else:
+                minion_hat.sleep(int(sleep_seconds))

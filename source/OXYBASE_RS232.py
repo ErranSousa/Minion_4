@@ -24,6 +24,9 @@ def test_sensor():
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
 
 
+tic = time.perf_counter()
+samp_counter = 0
+
 # Create an instance of MinionToolbox()
 minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
 
@@ -59,8 +62,6 @@ args = parser.parse_args()
 
 # Initializations:
 reply = ''
-# sample_num = 0
-# samp_count = 1
 
 # Set up the serial port
 ser = serial.Serial(
@@ -80,12 +81,8 @@ if args.mode.upper() == 'TEST':
 elif args.mode.upper() == 'INI':
     print('[ OXY ] Initial Sampling Mode')
     DATA_TYPE = data_type_dict['INI_Oxy']  # Initial Sampling Type Data for Oxygen
-    total_samples = minion_mission_config['INIsamp_hours'] * minion_mission_config['INIsamp_oxygen_rate'] * 3600
-    sample_rate = minion_mission_config['INIsamp_oxygen_rate']
-
-    # for dataNum in os.listdir('{}/minion_data/INI/'.format(data_config['Data_Dir'])):
-    #     if dataNum.endswith('_OXY-INI.txt'):
-    #         samp_count = samp_count + 1
+    total_samples = (minion_mission_config['INIsamp_hours'] * 3600) / minion_mission_config['INIsamp_oxygen_period']
+    sample_period = minion_mission_config['INIsamp_oxygen_period']
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -98,12 +95,8 @@ elif args.mode.upper() == 'INI':
 elif args.mode.upper() == 'TLP':
     print('[ OXY ] Time Lapse Sampling Mode')
     DATA_TYPE = data_type_dict['TLP_Oxy']  # Time Lapse Sampling Type Data for Oxygen
-    total_samples = minion_mission_config['TLPsamp_burst_minutes'] * minion_mission_config['TLPsamp_oxygen_rate'] * 60
-    sample_rate = minion_mission_config['TLPsamp_oxygen_rate']
-
-    # for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
-    #     if dataNum.endswith('_OXY-TLP.txt'):
-    #         samp_count = samp_count + 1
+    total_samples = (minion_mission_config['TLPsamp_burst_minutes'] * 60) / minion_mission_config['TLPsamp_oxygen_period']
+    sample_period = minion_mission_config['TLPsamp_oxygen_period']
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -116,12 +109,8 @@ elif args.mode.upper() == 'TLP':
 elif args.mode.upper() == 'FIN':
     print('[ OXY ] Final Sampling Mode')
     DATA_TYPE = data_type_dict['FIN_Oxy']  # Final Sampling Type Data for Oxygen
-    total_samples = minion_mission_config['FINsamp_hours'] * minion_mission_config['FINsamp_oxygen_rate'] * 3600
-    sample_rate = minion_mission_config['FINsamp_oxygen_rate']
-
-    # for dataNum in os.listdir('{}/minion_data/FIN/'.format(data_config['Data_Dir'])):
-    #     if dataNum.endswith('_OXY-FIN.txt'):
-    #         samp_count = samp_count + 1
+    total_samples = (minion_mission_config['FINsamp_hours'] * 3600) / minion_mission_config['FINsamp_oxygen_period']
+    sample_period = minion_mission_config['FINsamp_oxygen_period']
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -134,21 +123,19 @@ elif args.mode.upper() == 'FIN':
 else:
     print('[ OXY ] Unknown Sample Mode.  Exiting.')
     total_samples = 0
-    sample_rate = 0
+    sample_period = 0
     file_path_name = ''
     exit(0)
 
-sample_period = 1/sample_rate
-
 # Compose the meta-record
-file_header = DATA_TYPE + ',' + file_name + ',' + str(sample_rate) + 'Hz'
+file_header = DATA_TYPE + ',' + file_name + ',' + str(sample_period) + 'sec'
 
-print('[ OXY ] Total Samples: ' + str(total_samples))
-print('[ OXY ] Sample Period: ' + str(sample_period) + ' seconds')
-print('[ OXY ] File Name: ' + file_name)
-print('[ OXY ] File Name Full Path: ' + file_path_name)
-print('[ OXY ] Data Type: ' + DATA_TYPE)
-print('[ OXY ] File Header: ' + file_header)
+# print('[ OXY ] Total Samples: ' + str(total_samples))
+# print('[ OXY ] Sample Period: ' + str(sample_period) + ' seconds')
+# print('[ OXY ] File Name: ' + file_name)
+# print('[ OXY ] File Name Full Path: ' + file_path_name)
+# print('[ OXY ] Data Type: ' + DATA_TYPE)
+# print('[ OXY ] File Header: ' + file_header)
 
 print("[ OXY ] Port Power ON")
 GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.HIGH)
@@ -171,35 +158,39 @@ time.sleep(1)
 ser.flushInput()
 ser.flushOutput()
 
+# Write the meta-record
 with open(file_path_name, "a+") as file:
     file.write(file_header)
+start = time.perf_counter()
+print('Total Setup time: ' + str(start-tic))
 
-    while sample_num < total_samples:
+while samp_counter < total_samples:
 
-        tic = time.perf_counter()
+    tic = time.perf_counter()
 
-        # Request Data
-        ser.write(b'data\r')
+    # Request Data
+    ser.write(b'data\r')
 
-        # Read the response
-        reply = ser.read_until('\r')
+    # Read the response
+    reply = ser.read_until('\r')
 
-        # Write the data to the file
+    # Write the data to the file
+    with open(file_path_name, "a+") as file:
         file.write('\r' + reply.decode('utf-8').strip())
 
-        print('[ OXY ] ' + reply.decode('utf-8').strip())
+    print('[ OXY ] ' + reply.decode('utf-8').strip())
 
-        # Increment the sample number
-        sample_num += 1
+    # Increment the sample number
+    samp_counter += 1
 
-        timeS = time.perf_counter() - tic
+    timeS = time.perf_counter() - tic
 
-        if timeS >= sample_period:
-            timeS = sample_period
+    if timeS >= sample_period:
+        timeS = sample_period
 
-        time.sleep(sample_period - timeS)
+    time.sleep(sample_period - timeS)
 
 ser.write(b'mode0000\r')
-
+# print('[ OXY ] Total Loop Time: ' + str(time.perf_counter() - start))
 print("[ OXY ] Port Power OFF")
 GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
