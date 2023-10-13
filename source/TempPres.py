@@ -40,13 +40,12 @@ current_script_name = os.path.basename(__file__)
 scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
                "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py"]
 
-Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
+# Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
+Sf = minion_mission_config['TLPsamp_tempPres_period']
 
-TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['TLPsamp_tempPress_rate']
-
-# for dataNum in os.listdir('{}/minion_data/'.format(data_config['Data_Dir'])):
-#     if dataNum.endswith('_TEMPPRES.txt'):
-#         samp_count = samp_count + 1
+# TotalSamples = minion_mission_config['TLPsamp_burst_minutes'] * 60 * minion_mission_config['TLPsamp_tempPress_rate']
+TotalSamples = (minion_mission_config['TLPsamp_burst_minutes'] * 60) / minion_mission_config['TLPsamp_tempPres_period']
+print('[ TLP ] Total Samples ' + str(TotalSamples))
 
 samp_num_leading_zeros = "%03d" % samp_num
 
@@ -100,7 +99,7 @@ if minion_mission_config['iniTmp']:
 
 
 minion_tools.write_data_file_header(DATA_TYPE, file_path_name, file_name,
-                                    minion_mission_config['TLPsamp_tempPress_rate'],
+                                    minion_mission_config['TLPsamp_tempPres_period'],
                                     minion_mission_config['iniP30'],
                                     minion_mission_config['iniP100'],
                                     minion_mission_config['iniTmp'])
