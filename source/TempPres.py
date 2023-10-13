@@ -111,7 +111,7 @@ while NumSamples < TotalSamples:
     tic = time.perf_counter()
 
     print("")
-    print("Time Lapse Sampling Mode")  # Indicate to the user in which mode the Minion is operating
+    print('Time Lapse Sampling Mode (' + str(samp_num) + ')')  # Indicate to the user in which mode the Minion is operating
 
     sensor_string = ''
 
