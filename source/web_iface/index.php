@@ -49,6 +49,10 @@
 <input type="submit" value="Test Minion Functions">
 </form>
 <br>
+<form action="/gps_iridium_test.php" method="post">
+<input type="submit" value="Test GPS & Iridium Functions">
+</form>
+<br>
 <form action="/scan_IPs.php" method='post'>
 <input type='submit' value='Check for MINIONs on network' />
 </form>
