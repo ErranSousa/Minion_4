@@ -113,16 +113,17 @@ os.system('sudo mkdir /home/pi/Documents/Minion_scripts /home/pi/Documents/Minio
 os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py source/Gelcam_DeploymentHandler.py \
         source/Minion_image.py source/Initial_Sampler.py source/Recovery_Sampler_Burn.py \
         source/OXYBASE_RS232.py source/TempPres.py source/Minion_image_IF.py \
-        source/OXYBASE_RS232_IF.py source/Minsat/minsat.py source/Minsat/SC16IS752GPIO.so \
-        source/Iridium_test.py source/Temperature_test.py source/Pressure_test.py \
+        source/Minsat/minsat.py source/Minsat/SC16IS752GPIO.so \
+        source/Temperature_test.py source/Pressure_test.py \
         source/sampcount.pkl source/xmt_minion_data.py \
         /home/pi/Documents/Minion_scripts')
 
 # Copy all required scripts to the Minion_tools directory
-os.system('sudo cp source/dhcp-configure.py source/dhcp-switch.py source/ds3231.py source/EXT_RTC_set_time.py \
-          source/minion_hat.py source/minion_toolbox.py source/pin_defs.ini \
-          source/RTC_finish.py source/RTC_sync_rpi.py source/sampcount_reset.py source/Shutdown.py \
-          /home/pi/Documents/Minion_tools/')
+os.system('sudo cp source/dhcp-configure.py source/dhcp-switch.py source/ds3231.py source/EXT_RTC_set_time.py '
+          'source/minion_hat.py source/minion_toolbox.py source/pin_defs.ini '
+          'source/RTC_finish.py source/RTC_sync_rpi.py source/sampcount_reset.py source/Shutdown.py '
+          'source/gps_test.py source/Iridium_test.py '
+          '/home/pi/Documents/Minion_tools/')
 
 # Setup data directory location and directory structure
 USBdata = yes_no('Do you wish to configure a USB storage device? (NTFS file system) [Y/N]: ')
