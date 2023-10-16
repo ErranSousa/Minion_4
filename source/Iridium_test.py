@@ -1,50 +1,42 @@
-import minsat
+# import minsat
+import sys
+sys.path.insert(0, '/home/pi/Documents/Minion_scripts/')
 from minsat import MinSat
-import sys, os
+# import sys, os
 import subprocess
+from minion_toolbox import MinionToolbox
 
-addrs = subprocess.Popen(['i2cdetect','-y','1'],stdout=subprocess.PIPE,)
-
-for i in range(0,9):
-    line = str(addrs.stdout.readline())
-
-    if "49" not in line:
-        print("Iridium Modem not connected!")
-        exit(1)
-
+# MinSat Board Settings
 gps_port = "/dev/ttySC0"
 gps_baud = 9600
 modem_port = "/dev/ttySC1"
 modem_baud = 19200
 
-m1 = MinSat(gps_port,gps_baud,modem_port,modem_baud)
+ex_msg = "Transmitting a Test Message via Iridium"
 
-def display_gps_resp_struct(ret_info):
-    print(
-        "Successful Fix: {}/{}/{} {:02}:{:02}:{:02} -- {:.6f},{:06f}".format(
-            ret_info.tm_mon,  # Grab parts of the time from the
-            ret_info.tm_mday,  # struct_time object that holds
-            ret_info.tm_year,  # the fix time.  Note you might
-            ret_info.tm_hour,  # not get all data like year, day,
-            ret_info.tm_min,  # month!
-            ret_info.tm_sec,
-            ret_info.latitude,
-            ret_info.longitude,
-        )
-    )
+print("-"*len(ex_msg))
+print(ex_msg)
+print("-"*len(ex_msg))
 
+sys.stdout.flush()
 
+# Create an istance of the MinionToolbox
+minion_tools = MinionToolbox()
+sys.stdout.flush()
 
-(okay,ret_data) = m1.sbd_send_position(verbose=False,maintain_gps_pwr=True,gps_timeout=120)
+# Load the Minion Configuration
+minion_mission_config = minion_tools.read_mission_config()
 
-if okay and ret_data.valid_position:
+# Create an instance of the MinSat Class
+m1 = MinSat(gps_port, gps_baud, modem_port, modem_baud)
+sys.stdout.flush()
 
-    display_gps_resp_struct(ret_data)
+message1 = 'This is Minion ' + minion_mission_config['Minion_ID']
 
-elif not okay and  not ret_data.valid_position:
-    print("Could not acquire a valid GPS Position.")
+print('Sending Message: ' + message1)
+sys.stdout.flush()
 
-elif not okay and ret_data.valid_position:
-    print("Valid GPS Position Acquired - Could Not Transmit the Position via Irdium.")
+resp = m1.sbd_send_message(message1)
 
-m1.gps_pwr(m1.dev_off)
+# Ensure that the modem is powered down
+m1.modem_pwr(m1.dev_off)
