@@ -21,3 +21,5 @@ alias preview_minion='sudo raspivid -t 0'
 alias set-ext-rtc='sudo python3 /home/pi/Documents/Minion_tools/EXT_RTC_set_time.py'
 
 alias new-mission='sudo python3 /var/www/html/new_mission.py'
+
+alias end-oxy='sudo python3 /home/pi/Documents/Minion_scripts/end_oxy.py'
