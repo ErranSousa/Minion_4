@@ -3,17 +3,25 @@ import time
 import serial
 import argparse
 import sys
+import pickle
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
+# OXYBase Continuous Loop
+run_oxy_pickle_name = '/home/pi/Documents/Minion_scripts/run_oxy_state.pickle'
 
-def test_sensor():
+
+def sensor_setup():
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.HIGH)  # Power ON
     time.sleep(4)  # 4 second warm-up
     ser.flushInput()  # Flush  I/O buffers
     ser.flushOutput()
     ser.write(b'mode0001\r')  # Send Mode Command
     time.sleep(1)
+
+
+def test_sensor():
+    sensor_setup()
     ser.flushInput()  # Flush  I/O buffers
     ser.flushOutput()
     ser.write(b'data\r')
@@ -22,6 +30,67 @@ def test_sensor():
     time.sleep(1)
     ser.write(b'mode0000\r')
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
+
+
+def continuous_mode():
+    print('Continuous Mode with {} second period.'.format(args.period))
+    continuous_mode_file_name = '000-{}_OXY_CONT.txt'.format(samp_time)
+    continuous_mode_file_path_name = "{}/minion_data/".format(data_config['Data_Dir']) + continuous_mode_file_name
+
+    # Compose the meta-record, column headers & write them to the file
+    meta_record = data_type_dict['CONT_Oxy'] + ',' + continuous_mode_file_name + ',' + str(args.period)
+    variable_names = 'epoch_secs;addr;amplitude;phase;temperature;oxygen;error'
+    with open(continuous_mode_file_path_name, "a+") as file:
+        file.write(meta_record)
+        file.write('\r' + variable_names)
+
+    # Create and update a pickle file.  This pickle file tracks if the loop should be running.
+    # To end the continuous mode sampling use the end_oxy.py or the alias end-oxy
+    run_oxy = True
+    with open(run_oxy_pickle_name, 'wb') as pickle_file_fid:
+        pickle.dump(run_oxy, pickle_file_fid)
+
+    print('Setting up sensor, please wait...')
+    sensor_setup()
+    ser.flushInput()  # Flush  I/O buffers
+    ser.flushOutput()
+
+    # Sampling Loop
+    print('OK. Sensor is set up. Starting sampling.')
+    while True:
+        tm_0 = time.perf_counter()
+
+        # Check if the loop should be running (ended with end_oxy.py)
+        with open(run_oxy_pickle_name, 'rb') as pickle_file_fid:
+            run_oxy_state = pickle.load(pickle_file_fid)
+        if not run_oxy_state:
+            break
+
+        # Request Data
+        ser.write(b'data\r')
+        data = ser.read_until('\r')
+
+        # UNIX Epoch seconds timestamp
+        tm_stamp = int(time.time())
+
+        # Compose the data string, prepending a UNIX Epoch seconds timestamp
+        data_string = str(tm_stamp) + ';' + data.decode('utf-8').strip()
+
+        # Write the data to the file
+        with open(continuous_mode_file_path_name, "a+") as file:
+            file.write('\r' + data_string)
+        print(data_string)
+
+        tm_sample = time.perf_counter() - tm_0
+        if tm_sample >= float(args.period):
+            tm_sample = float(args.period)
+
+        time.sleep(float(args.period) - tm_sample)
+
+    # Sensor shutdown
+    ser.write(b'mode0000\r')
+    GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
+    print('Sampling Complete.')
 
 
 tic = time.perf_counter()
@@ -55,7 +124,8 @@ data_type_dict = minion_tools.data_type_dict()
 parser = argparse.ArgumentParser()
 
 # Add Arguments:
-parser.add_argument('--mode', help='Sampling Mode: INI, TLP or FIN')
+parser.add_argument('--mode', help='Sampling Mode: TEST, CONT, INI, TLP or FIN')
+parser.add_argument('--period', help='Sampling Period in seconds')
 
 # Parse the arguments
 args = parser.parse_args()
@@ -77,6 +147,14 @@ ser = serial.Serial(
 if args.mode.upper() == 'TEST':
     test_sensor()
     exit(0)
+
+elif args.mode.upper() == 'CONT':
+    if args.period is not None:
+        continuous_mode()
+        exit(0)
+    else:
+        print('Sample period is required for continuous mode')
+        exit(0)
 
 elif args.mode.upper() == 'INI':
     print('[ OXY ] Initial Sampling Mode')
