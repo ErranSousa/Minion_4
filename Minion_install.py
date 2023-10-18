@@ -222,7 +222,7 @@ os.system('sudo raspi-config nonint do_camera 0')
 os.system('sudo raspi-config nonint do_ssh 0')
 os.system('sudo raspi-config nonint do_i2c 0')
 os.system('sudo raspi-config nonint do_rgpio 0')
-os.system('sudo raspi-config nonint do_serial 0')
+os.system('sudo raspi-config nonint do_serial 2')  # disable serial console, but enable serial hardware (/dev/serial0)
 # Add alias list to .bashrc
 os.system('sudo cat source/Minion_alias.txt >> /home/pi/.bashrc')  # should change this to bash-aliases instead
 #Create Driver Location
