@@ -298,13 +298,14 @@ class MinionToolbox(object):
         --------
         dict data_type_dict : Dictionary of data types
             keys:
-                str INI_TempPress : Initial Temperature & Pressure File Format
-                str TLP_TempPress : Time Lapse Temperature & Pressure File Format
-                str FIN_TempPress : Final Temperature & Pressure File Format
-                str GPS_Record : GPS Record File Format
-                str INI_Oxy : Initial Dissolved Oxygen File Format
-                str TLP_Oxy : Time Lapse Dissolved Oxygen File Format
-                str FIN_Oxy : FIN Dissolved Oxygen File Format
+                str INI_TempPress : $01, Initial Temperature & Pressure File Format
+                str TLP_TempPress : $02, Time Lapse Temperature & Pressure File Format
+                str FIN_TempPress : $03, Final Temperature & Pressure File Format
+                str GPS_Record : $04, GPS Record File Format
+                str INI_Oxy : $05, Initial Dissolved Oxygen File Format
+                str TLP_Oxy : $06, Time Lapse Dissolved Oxygen File Format
+                str FIN_Oxy : $07, FIN Dissolved Oxygen File Format
+                str CONT_Oxy : $08, Continuous Dissolved Oxygen File Format
         """
 
         keys = 'INI_TempPress', 'TLP_TempPress', 'FIN_TempPress', 'GPS_Record', 'INI_Oxy', 'TLP_Oxy', 'FIN_Oxy'
@@ -318,6 +319,7 @@ class MinionToolbox(object):
         data_type_dict['INI_Oxy'] = '$05'
         data_type_dict['TLP_Oxy'] = '$06'
         data_type_dict['FIN_Oxy'] = '$07'
+        data_type_dict['CONT_Oxy'] = '$08'
 
         return data_type_dict
 
