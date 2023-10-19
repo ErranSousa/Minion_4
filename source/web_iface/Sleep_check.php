@@ -15,7 +15,6 @@
 </style>
 </head>
 <body>
-
 <br>
 <h1>Minion XXX Launch Prep</h1>
 <br>
@@ -25,12 +24,17 @@
 <input type='submit' name='new_mission' value='Archive data and begin mission' />
 </form>
 <br>
-<h3>Step 2: Turn Minion off before deployment.</h3>
+<h3>Step 2: Download the Mission Configuration File</h3>
+<form method='post' action=''>
+<input type='submit' name='download' value='Download Minion Configuration' />
+</form>
+<br>
+<h3>Step 3: Turn Minion off before deployment.</h3>
 <form method='post' action=''>
 <input type='submit' name='shutdown' value='Set Minion XXX to Sleep' />
 </form>
 <br>
-<h3>Step 3: Once the Blue LED is no longer illuminated, attach the magnet to keep the Minion off.
+<h3>Step 4: Once the Blue LED is no longer illuminated, attach the magnet to keep the Minion off.
 If the magnet is not attached, the Minion will automatically restart after 60 seconds.</h3>
 <br>
 <form action="/index.php" method="post">
@@ -41,10 +45,9 @@ If the magnet is not attached, the Minion will automatically restart after 60 se
 </body>
 </html>
 
-
 <?php
 if(isset($_POST['new_mission'])){
-
+echo nl2br($output);
 $command = escapeshellcmd('sudo python /var/www/html/new_mission.py');
 $output = shell_exec($command);
 // echo $output;
@@ -60,5 +63,26 @@ $command = escapeshellcmd('sudo python3 /var/www/html/Minion_sleep.py');
 $output = shell_exec($command);
 echo "Minion returned to sleep cycle!\n";
 echo "Goodbye!";
+}
+?>
+
+<?php
+if(isset($_POST['download'])){
+
+$file_name = '/home/pi/Desktop/Minion_config.ini';
+
+header('Content-Description: File Transfer');
+header('Content-Type: application/octet-stream');
+header('Content-Disposition: attachment; filename='.basename($file_name));
+header('Content-Transfer-Encoding: binary');
+header('Expires: 0');
+header('Cache-Control: must-revalidate');
+header('Pragma: public');
+header('Content-Length: ' . filesize("/var/www/html/".$file_name));
+ob_end_clean();
+ob_clean();
+flush();
+readfile($file_name);
+
 }
 ?>
