@@ -7,7 +7,7 @@ import pickle
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
 from minion_toolbox import MinionToolbox
 
-# OXYBase Continuous Loop
+# Enables or disables the OxyBase continuous loop
 run_oxy_pickle_name = '/home/pi/Documents/Minion_scripts/run_oxy_state.pickle'
 
 
@@ -26,7 +26,7 @@ def test_sensor():
     ser.flushOutput()
     ser.write(b'data\r')
     data = ser.read_until('\r')
-    print(data.decode('utf-8'))
+    print(data.decode('utf-8').strip())
     time.sleep(1)
     ser.write(b'mode0000\r')
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
