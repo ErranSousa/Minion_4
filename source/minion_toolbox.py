@@ -171,16 +171,17 @@ class MinionToolbox(object):
                 float MAX_Depth : Maximum Depth Limit in meters
                 float IG_WIFI_H : Ingnore WIFI Hours
                 float INIsamp_hours : Number Sampling Hours (Initial Mode)
-                float INIsamp_camera_rate : Camera Sample Rate (Initial Mode)
+                float INIsamp_camera_period : Camera Sample Period in minutes (Initial Mode)
                 float INIsamp_tempPres_period : Temperature/Pressure Sample Period in seconds (Initial Mode)
                 float INIsamp_oxygen_period : Oxygen Sample Period in seconds (Initial Mode)
                 float FINsamp_hours : Number Sampling Hours (Final Mode)
-                float FINsamp_camera_rate : Camera Sample Rate (Final Mode)
+                float FINsamp_camera_period : Camera Sample Period in minutes (Final Mode)
                 float FINsamp_tempPres_period : Temperature/Pressure Sample Period in seconds (Final Mode)
                 float FINsamp_oxygen_period : Oxygen Sample Period in seconds (Final Mode)
                 float TLPsamp_hours : Duration of Time Lapse Mode Sampling in hours
                 float TLPsamp_burst_minutes : Duration of a sample burst in Time-Lapse Mode
                 float TLPsamp_interval_minutes : Time between sample bursts in Time-Lapse Mode
+                float TLPsamp_camera_period : Camera Sample Period in minutes (Time-Lapse Mode)
                 float TLPsamp_tempPres_period : Temperature / Pressure Sample Rate in seconds (Time-Lapse Mode)
                 float TLPsamp_oxygen_period : Oxygen Sample Period in seconds (Time-Lapse Mode)
                 float gps_transmission_window : Number of hours to transmit GPS positions before data transmission
@@ -197,8 +198,8 @@ class MinionToolbox(object):
 
         # list of keys
         keys = ['Minion_ID', 'Abort', 'MAX_Depth', 'IG_WIFI_H',
-                'INIsamp_hours', 'INIsamp_camera_rate', 'INIsamp_tempPres_period',
-                'INIsamp_oxygen_period', 'FINsamp_hours', 'FINsamp_camera_rate',
+                'INIsamp_hours', 'INIsamp_camera_period', 'INIsamp_tempPres_period',
+                'INIsamp_oxygen_period', 'FINsamp_hours', 'FINsamp_camera_period',
                 'FINsamp_tempPres_period', 'FINsamp_oxygen_period', 'TLPsamp_tempPres_period',
                 'TLPsamp_oxygen_period', 'TLPsamp_hours', 'TLPsamp_burst_minutes', 'TLPsamp_interval_minutes',
                 'gps_transmission_window', 'gps_transmission_interval',
@@ -221,12 +222,12 @@ class MinionToolbox(object):
         mission_config['IG_WIFI_H'] = float(config['Mission']['ignore_wifi-hours'])
 
         mission_config['INIsamp_hours'] = float(config['Initial_Samples']['hours'])
-        mission_config['INIsamp_camera_rate'] = float(config['Initial_Samples']['camera_sample_rate'])
+        mission_config['INIsamp_camera_period'] = float(config['Initial_Samples']['camera_sample_period'])
         mission_config['INIsamp_tempPres_period'] = float(config['Initial_Samples']['temppres_sample_period'])
         mission_config['INIsamp_oxygen_period'] = float(config['Initial_Samples']['oxygen_sample_period'])
 
         mission_config['FINsamp_hours'] = float(config['Final_Samples']['hours'])
-        mission_config['FINsamp_camera_rate'] = float(config['Final_Samples']['camera_sample_rate'])
+        mission_config['FINsamp_camera_period'] = float(config['Final_Samples']['camera_sample_period'])
         mission_config['FINsamp_tempPres_period'] = float(config['Final_Samples']['temppres_sample_period'])
         mission_config['FINsamp_oxygen_period'] = float(config['Final_Samples']['oxygen_sample_period'])
 
@@ -245,6 +246,7 @@ class MinionToolbox(object):
             # Since tlp_samp_burst_minutes cannot be cast as a float, there must be some text
             # in the field such as 'Camera'
             mission_config['TLPsamp_burst_minutes'] = float(.2)
+        mission_config['TLPsamp_camera_period'] = float(config['Time_Lapse_Samples']['camera_sample_period'])
         mission_config['TLPsamp_tempPres_period'] = float(config['Time_Lapse_Samples']['temppres_sample_period'])
         mission_config['TLPsamp_oxygen_period'] = float(config['Time_Lapse_Samples']['oxygen_sample_period'])
         mission_config['TLPsamp_interval_minutes'] = float(config['Time_Lapse_Samples']['sample_interval_minutes'])
