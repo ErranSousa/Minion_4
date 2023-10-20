@@ -56,6 +56,10 @@
 <form action="/scan_IPs.php" method='post'>
 <input type='submit' value='Check for MINIONs on network' />
 </form>
+<br>
+<form action="/documents.php" method='post'>
+<input type='submit' value='Document Downloads' />
+</form>
 
 </body>
 </html>
