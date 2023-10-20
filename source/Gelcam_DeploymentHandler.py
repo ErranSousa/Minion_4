@@ -76,7 +76,7 @@ if __name__ == '__main__':
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
 
     if minion_mission_config['iniImg']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py --mode tlp &')
 
     if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py &')

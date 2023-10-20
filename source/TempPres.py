@@ -37,8 +37,7 @@ configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 # The name of this script, used for abort_mission
 current_script_name = os.path.basename(__file__)
 
-scriptNames = ["Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-               "Recovery_Sampler_Burn.py", "OXYBASE_RS232_IF.py"]
+scriptNames = ["Minion_image.py", "OXYBASE_RS232.py", "Recovery_Sampler_Burn.py"]
 
 # Sf = 1/minion_mission_config['TLPsamp_tempPress_rate']
 Sf = minion_mission_config['TLPsamp_tempPres_period']
