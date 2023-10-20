@@ -39,6 +39,7 @@ Dissolved Oxygen Sample Period (seconds): <?php echo $_POST["IOXYFS"]; ?><br>
 Hours: <?php echo $_POST["THours"]; ?><br>
 Sample Burst Duration (min): <?php echo $_POST["DS_Time"]; ?><br>
 Sample Burst Interval (min): <?php echo $_POST["DS_Interval"]; ?><br>
+Camera Sample Rate (minutes): <?php echo $_POST["TCamFS"]; ?><br>
 Temperature and Pressure Sample Period (seconds): <?php echo $_POST["SensorFS"]; ?><br>
 Oxybase Sample Period (seconds): <?php echo $_POST["OxygenFS"]; ?><br>
 </fieldset>
@@ -76,7 +77,7 @@ fwrite($myfile, $Mission);
 
 $Initial_Samples = "[Initial_Samples]\n"
   ."hours = ".$_POST["IHours"]."\n"
-  ."camera_sample_rate = ".$_POST["ICamFS"]."\n"
+  ."camera_sample_period = ".$_POST["ICamFS"]."\n"
   ."temppres_sample_period = ".$_POST["ITPFS"]."\n"
   ."oxygen_sample_period = ".$_POST["IOXYFS"]."\n\n";
 
@@ -86,6 +87,7 @@ $Data_Sample = "[Time_Lapse_Samples]\n"
   ."hours = ".$_POST["THours"]."\n"
   ."sample_burst_duration = ".$_POST["DS_Time"]."\n"
   ."sample_interval_minutes = ".$_POST["DS_Interval"]."\n"
+  ."camera_sample_period = ".$_POST["TCamFS"]."\n"
   ."temppres_sample_period = ".$_POST["SensorFS"]."\n"
   ."oxygen_sample_period = ".$_POST["OxygenFS"]."\n\n";
 
@@ -93,7 +95,7 @@ fwrite($myfile, $Data_Sample);
 
 $Final_Samples = "[Final_Samples]\n"
   ."hours = ".$_POST["FHours"]."\n"
-  ."camera_sample_rate = ".$_POST["FCamFS"]."\n"
+  ."camera_sample_period = ".$_POST["FCamFS"]."\n"
   ."temppres_sample_period = ".$_POST["FTPFS"]."\n"
   ."oxygen_sample_period = ".$_POST["FOXYFS"]."\n\n";
 
