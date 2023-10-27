@@ -31,7 +31,7 @@ def test_sensor():
     ser.write(b'mode0000\r')
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
 
-
+# TODO: Remove Continuous Mode
 def continuous_mode():
     print('Continuous Mode with {} second period.'.format(args.period))
     continuous_mode_file_name = '000-{}_OXY_CONT.txt'.format(samp_time)
