@@ -51,6 +51,7 @@ def init_tsys01():
     try:
         sensor_temp.init()
         status = True
+        raise
     except:
         print('[ TSYS01 ] Failed to initialize the TSYS01 temperature sensor')
 
@@ -161,6 +162,9 @@ if __name__ == '__main__':
     psense_100bar_surface_offset = 0
     mbar_to_dbar = .01
     psense_30bar_surface_offset = 10
+    init_status_tsys01 = False
+    init_status_30bar = False
+    init_status_100bar = False
 
     # Enables or disables the OxyBase continuous loop
     run_oxy_pickle_name = '/home/pi/Documents/Minion_scripts/run_oxy_state.pickle'
@@ -202,7 +206,10 @@ if __name__ == '__main__':
     # Initialize the serial port
     ser = init_serial()
 
-    if args.mode.upper() == 'TEST':
+    if args.mode is None:
+        parser.print_help()
+
+    elif args.mode.upper() == 'TEST':
         init_oxybase()
         test_sensors()
         exit(0)
@@ -211,6 +218,13 @@ if __name__ == '__main__':
 
         if args.period is None:
             print('Sample period is required for continuous mode')
+            exit(0)
+
+        try:
+            if float(args.period) < 2:
+                raise ValueError
+        except ValueError:
+            print('The period must be 2 seconds or greater.')
             exit(0)
 
         print('Continuous Mode with {} second period.'.format(args.period))
