@@ -40,7 +40,10 @@ def get_oxybase():
     # Request Data
     ser.write(b'data\r')
     data = ser.read_until('\r')
-
+    data = data.decode('utf-8').strip()
+    if data == '' or 'Ref' in data:
+        print('[ OXY ] Failed to read the sensor')
+        data = 'Nan;' * 6
     return data
 
 
@@ -124,11 +127,11 @@ def get_psense_100bar(psense_100bar_obj):
 
 def test_sensors():
     # Test the OxyBase Sensor
+    init_oxybase()
     ser.flushInput()  # Flush  I/O buffers
     ser.flushOutput()
-    ser.write(b'data\r')
-    oxy_data = ser.read_until('\r')
-    print('[ OXY ] ' + oxy_data.decode('utf-8').strip())
+    test_oxy_data = get_oxybase()
+    print('[ OXY ] ' + test_oxy_data)
     time.sleep(1)
     ser.write(b'mode0000\r')
     GPIO.output(pin_defs_dict['OXYBASE_EN'], GPIO.LOW)
@@ -159,7 +162,7 @@ if __name__ == '__main__':
 
     # Initializations
     bar_to_dbar = 10
-    psense_100bar_surface_offset = 0
+    psense_100bar_surface_offset = 10
     mbar_to_dbar = .01
     psense_30bar_surface_offset = 10
     init_status_tsys01 = False
@@ -210,7 +213,6 @@ if __name__ == '__main__':
         parser.print_help()
 
     elif args.mode.upper() == 'TEST':
-        init_oxybase()
         test_sensors()
         exit(0)
 
@@ -277,7 +279,7 @@ if __name__ == '__main__':
             tm_stamp = int(time.time())
 
             # Compose the data string, prepending a UNIX Epoch seconds timestamp
-            data_string = str(tm_stamp) + ';' + oxy_data.decode('utf-8').strip()
+            data_string = str(tm_stamp) + ';' + oxy_data
 
             # Get TSYS01 Temperature
             if args.temperature:
