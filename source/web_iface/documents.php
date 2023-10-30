@@ -24,6 +24,12 @@
 
 <body>
 
+    <h1> MINION XXX </h1>
+
+    <form action="/index.php" method="post">
+    <input type="submit" value="Home">
+    </form>
+
     <h2>Documents Available for Download</h2>
 
     <table>
