@@ -33,7 +33,7 @@
         <th>Download</th>
       </tr>
       <tr>
-        <td>Special OxyBase_RS232 Continuous Mode Documentation </td>
+        <td>Special OxyBase Continuous Mode Documentation </td>
         <td>Oxybase_Continuous_mode.pdf</td>
         <td>
             <a href="/documents/Oxybase_Continuous_mode.pdf" download>Download</a>
