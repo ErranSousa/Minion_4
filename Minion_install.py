@@ -272,6 +272,8 @@ os.system('sudo /etc/init.d/nginx reload')
 
 os.system('sudo cp source/web_iface/*.py source/web_iface/*.php source/web_iface/*.png source/web_iface/*.js /var/www/html/')
 
+os.system('sudo cp -r source/web_iface/documents /var/www/html/')
+
 os.system('sudo rm -r /var/www/html/index.nginx-debian.html')
 
 webdir = '/var/www/html/'
