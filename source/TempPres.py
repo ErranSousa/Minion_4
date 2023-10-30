@@ -79,7 +79,7 @@ if minion_mission_config['iniP100']:
         exit(1)
 
     depth_factor = 10
-    surface_offset = 0
+    surface_offset = 10
 
     # We have to read values from sensor to update pressure and temperature
     if Psensor.read():

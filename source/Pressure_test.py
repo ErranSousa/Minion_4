@@ -56,7 +56,7 @@ if iniP100 == True:
         exit(1)
 
     depth_factor = 10
-    surface_offset = 0
+    surface_offset = 10
 
     # We have to read values from sensor to update pressure and temperature
     if Psensor.read():
