@@ -72,7 +72,7 @@ parser.add_argument('--mode', help='Sampling Mode: TEST, INI, TLP or FIN')
 args = parser.parse_args()
 
 # Set up sampling and data logging based on sampling mode
-if args.mode.upper() == 'TEST':
+if args.mode.upper() == 'TEST':  # TODO: Implement Test Mode
     # test_sensor()
     print('Test Mode')
     exit(0)
