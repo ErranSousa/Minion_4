@@ -54,7 +54,6 @@ def init_tsys01():
     try:
         sensor_temp.init()
         status = True
-        raise
     except:
         print('[ TSYS01 ] Failed to initialize the TSYS01 temperature sensor')
 
