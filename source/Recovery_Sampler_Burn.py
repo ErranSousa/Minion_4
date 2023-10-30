@@ -115,8 +115,7 @@ def read_final_samp_status_pickle(fname_final_status_pickle):
 # True = Final Samples Performed, False = Final Samples Not Performed
 final_samp_status_flag = read_final_samp_status_pickle(fname_final_status_pickle)
 
-scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-               "Initial_Sampler.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py",
+scriptNames = ["TempPres.py", "Minion_image.py", "OXYBASE_RS232.py", "Initial_Sampler.py",
                "Iridium_gps.py", "Iridium_data.py", "xmt_minion_data.py"]
 
 if any(x in os.popen(ps_test).read() for x in scriptNames):
@@ -212,10 +211,10 @@ if __name__ == '__main__':
                                             minion_mission_config['iniP30'], minion_mission_config['iniP100'],
                                             minion_mission_config['iniTmp'])
 
-        scriptNames2 = ["Minion_image_IF.py", "OXYBASE_RS232_IF.py"]
+        scriptNames2 = ["Minion_image.py", "OXYBASE_RS232.py"]
 
         if minion_mission_config['iniImg']:
-            os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
+            os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py --mode fin &')
 
         if minion_mission_config['iniO2']:
             os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode FIN &')

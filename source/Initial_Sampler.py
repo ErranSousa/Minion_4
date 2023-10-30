@@ -16,25 +16,6 @@ DATA_TYPE = '$01'  # Initial Sampling Type Data
 samp_count = 1
 NumSamples = 0
 
-# def abortMission(configLoc):
-#     minion_tools.kill_sampling(scriptNames)
-#
-#     print("Max Depth Exceeded!")
-#
-#     abortConfig = configparser.ConfigParser()
-#     abortConfig.read(configLoc)
-#     abortConfig.set('Mission', 'Abort', '1')
-#     with open(configLoc, 'wb') as abortFile:
-#         abortConfig.write(abortFile)
-#
-#     GPIO.setup(29, GPIO.OUT)
-#     GPIO.output(29, 0)
-#     os.system('sudo python3 /home/pi/Documents/Minion_scripts/Recovery_Sampler_Burn.py &')
-#
-#     time.sleep(60)
-#     exit(0)
-
-
 # Create an instance of MinionToolbox()
 minion_tools = MinionToolbox()  # create an instance of MinionToolbox() called minion_tools
 
@@ -59,8 +40,7 @@ configLoc = '{}/Minion_config.ini'.format(data_config['Data_Dir'])
 # The name of this script, used for abort_mission
 current_script_name = os.path.basename(__file__)
 
-scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py",
-               "TempPres_IF.py", "OXYBASE_RS232_IF.py", "Iridium_gps.py", "Iridium_data.py"]
+scriptNames = ["TempPres.py", "Minion_image.py", "OXYBASE_RS232.py", "Iridium_gps.py", "Iridium_data.py"]
 
 print('[ INI ] Timestamp: {}'.format(samp_time))
 
@@ -138,7 +118,7 @@ if __name__ == '__main__':
     GPIO.output(pin_defs_dict['LED_GRN'], GPIO.HIGH)
 
     if minion_mission_config['iniImg']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image_IF.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py --mode ini &')
 
     if minion_mission_config['iniO2']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/OXYBASE_RS232.py --mode INI &')

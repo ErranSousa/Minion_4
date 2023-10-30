@@ -1,5 +1,3 @@
-# !!! Minion 4 IS IN DEVELOPMENT !!!
-##     See https://github.com/melissaomand/Minion_3 for the latest stable version
 
 # Minion 4 Install Instructions
 
@@ -9,6 +7,8 @@
 
 &emsp; It is highly recommended to use the Raspberry Pi Imager
 
+&emsp; Currently, only the Raspian Buster OS is supported by Minion 4
+
 ### Power Pi via micro-USB
 
 &emsp;At this stage you should have:
@@ -17,30 +17,30 @@
 - Wired LAN
 - Keyboard/Mouse
 - Monitor
-- No HAT
+- No Minion 4 HAT
 
 ### Follow on screen instructions
 
-&emsp;Install raspbian as normal
+&emsp;Install raspbian Buster as normal
 
 &emsp;Choose any password for the device
 
 &emsp;Skip wireless setup
 
-&emsp;When prompted, update the computer
+&emsp;When prompted, update the computer - this may take a while
 
-&emsp;Allow it to reboot
+&emsp;Allow the Raspberry Pi to reboot
 
 ### Clone Repo and Install
 
 &emsp;Once the Pi reboots, open a terminal and type this command to download the repo:
 
 
-  `~$ sudo git clone https://github.com/melissaomand/Minion_4.git`
+  `~$ sudo git clone https://github.com/ErranSousa/Minion_4.git`
   
 &emsp;Now navigate into the folder and begin the install process:
   
-  `~$ cd Minion_3/`
+  `~$ cd Minion_4/`
   
   `~/Minion/$ sudo python Minion_install.py`
   
@@ -56,7 +56,7 @@
   
   &emsp;Finally power on the Minion_Hub and Master_Hub
   
-  ### Attach HAT and power 12V via the 4 pin JST
+  ### Attach HAT and power with 9-12V through the power connector  
   
   &emsp;The Pi will boot up and complete it's installation (setting the clock)
   

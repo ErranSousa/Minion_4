@@ -52,7 +52,7 @@ echo '<form action="/action_page.php" method="post">
   <input type="text" id="IHours" name="IHours" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['hours'].'"> hours<br>
   <br>
   <label for="ICamFS">Image Capture Period:</label><br>
-  <input type="text" id="ICamFS" name="ICamFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['camera_sample_rate'].'"> minutes<br>
+  <input type="text" id="ICamFS" name="ICamFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['camera_sample_period'].'"> minutes<br>
   <br>
   <label for="ITPFS">Temperature and Pressure Sample Period:</label><br>
   <input type="text" id="ITPFS" name="ITPFS" size="6" style="text-align:right" value="'.$cfg_file['Initial_Samples']['temppres_sample_period'].'"> seconds<br>
@@ -74,6 +74,9 @@ echo '<form action="/action_page.php" method="post">
   <label for="DS_Interval">Sample Burst Interval:</label><br>
   <input type="text" id="DS_Interval" name="DS_Interval" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['sample_interval_minutes'].'"> minutes<br>
   <br>
+  <label for="TCamFS">Image Capture Period:</label><br>
+  <input type="text" id="TCamFS" name="TCamFS" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['camera_sample_period'].'"> minutes<br>
+  <br>
   <label for="SensorFS">Temperature and Pressure Sample Period:</label><br>
   <input type="text" id="SensorFS" name="SensorFS" size="6" style="text-align:right" value="'.$cfg_file['Time_Lapse_Samples']['temppres_sample_period'].'"> seconds<br>
   <br>
@@ -89,7 +92,7 @@ echo '<form action="/action_page.php" method="post">
   <input type="text" id="FHours" name="FHours" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['hours'].'"> hours<br>
   <br>
   <label for="FCamFS">Image Capture Period:</label><br>
-  <input type="text" id="FCamFS" name="FCamFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['camera_sample_rate'].'"> minutes<br>
+  <input type="text" id="FCamFS" name="FCamFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['camera_sample_period'].'"> minutes<br>
   <br>
   <label for="FTPFS">Temperature and Pressure Sample Period:</label><br>
   <input type="text" id="FTPFS" name="FTPFS" size="6" style="text-align:right" value="'.$cfg_file['Final_Samples']['temppres_sample_period'].'"> seconds<br>

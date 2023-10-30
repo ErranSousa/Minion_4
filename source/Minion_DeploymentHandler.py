@@ -58,7 +58,7 @@ def check_wifi_and_scripts(script_list):
 
 def start_time_lapse_scripts():
     if minion_mission_config['iniImg']:
-        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py &')
+        os.system('sudo python3 /home/pi/Documents/Minion_scripts/Minion_image.py --mode tlp &')
 
     if minion_mission_config['iniP30'] or minion_mission_config['iniP100'] or minion_mission_config['iniTmp']:
         os.system('sudo python3 /home/pi/Documents/Minion_scripts/TempPres.py &')
@@ -106,8 +106,8 @@ print("="*50)
 ps_test = "pgrep -a python"
 
 # TODO: Review for dead script names
-scriptNames = ["TempPres.py", "Minion_image.py", "Minion_image_IF.py", "OXYBASE_RS232.py", "Initial_Sampler.py",
-               "Recovery_Sampler_Burn.py", "TempPres_IF.py", "OXYBASE_RS232_IF.py", "xmt_minion_data.py"]
+scriptNames = ["TempPres.py", "Minion_image.py", "OXYBASE_RS232.py", "Initial_Sampler.py",
+               "Recovery_Sampler_Burn.py", "xmt_minion_data.py"]
 
 # Flag to indicate that the time-lapse mode should start immediately after the Initial Sampler completes
 start_time_lapse_scripts_flag = False
