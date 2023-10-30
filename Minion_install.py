@@ -112,7 +112,7 @@ os.system('sudo mkdir /home/pi/Documents/Minion_scripts /home/pi/Documents/Minio
 # Copy all required files to the Minion_scripts directory
 os.system('sudo cp source/Data_config.ini source/Minion_DeploymentHandler.py source/Gelcam_DeploymentHandler.py \
         source/Minion_image.py source/Initial_Sampler.py source/Recovery_Sampler_Burn.py \
-        source/OXYBASE_RS232.py source/TempPres.py \
+        source/OXYBASE_RS232.py source/oxybase_cont.py source/end_oxy.py source/TempPres.py \
         source/Minsat/minsat.py source/Minsat/SC16IS752GPIO.so \
         source/Temperature_test.py source/Pressure_test.py \
         source/sampcount.pkl source/xmt_minion_data.py \
