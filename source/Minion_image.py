@@ -126,7 +126,7 @@ if __name__ == '__main__':
 
     camera = PiCamera()
 
-    while samp_counter < total_samples:
+    while True:
 
         tic = time.perf_counter()
 
@@ -135,13 +135,10 @@ if __name__ == '__main__':
 
         picture(samp_num_leading_zeros, samp_counter, mode_str, directory)
 
-        timeS = time.perf_counter() - tic
-
-        if timeS >= sample_period_secs:
-            timeS = sample_period_secs
-
-        # Don't sleep if this was the last image
         if samp_counter < total_samples:
+            timeS = time.perf_counter() - tic
+            if timeS >= sample_period_secs:
+                timeS = sample_period_secs
             time.sleep(sample_period_secs - timeS)
-
-
+        else:
+            break
