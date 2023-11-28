@@ -39,7 +39,7 @@ def picture(sample_number, sample_idx, sample_mode, data_directory):
 
 
 # Initializations
-samp_counter = 0
+samp_counter = 1
 
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
