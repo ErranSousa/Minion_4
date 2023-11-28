@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from picamera import PiCamera
 import time
-import os
+import math
 import sys
 import argparse
 sys.path.insert(0, '/home/pi/Documents/Minion_tools/')
@@ -39,7 +39,7 @@ def picture(sample_number, sample_idx, sample_mode, data_directory):
 
 
 # Initializations
-samp_counter = 1
+samp_counter = 0
 
 # create an instance of MinionToolbox()
 minion_tools = MinionToolbox()
@@ -81,7 +81,7 @@ elif args.mode.upper() == 'INI':
     print('[ IMG ] Initial Sampling Mode')
 
     sample_period = minion_mission_config['INIsamp_camera_period']
-    total_samples = (minion_mission_config['INIsamp_hours'] * 60) / sample_period
+    total_samples = math.floor((minion_mission_config['INIsamp_hours'] * 60) / sample_period)
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -93,7 +93,7 @@ elif args.mode.upper() == 'TLP':
     print('[ IMG ] Time Lapse Sampling Mode')
 
     sample_period = minion_mission_config['TLPsamp_camera_period']
-    total_samples = minion_mission_config['TLPsamp_burst_minutes'] / sample_period
+    total_samples = math.floor(minion_mission_config['TLPsamp_burst_minutes'] / sample_period)
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -105,7 +105,7 @@ elif args.mode.upper() == 'FIN':
     print('[ IMG ] Final Sampling Mode')
 
     sample_period = minion_mission_config['FINsamp_camera_period']
-    total_samples = (minion_mission_config['FINsamp_hours'] * 60) / sample_period
+    total_samples = math.floor((minion_mission_config['FINsamp_hours'] * 60) / sample_period)
 
     samp_num_leading_zeros = "%03d" % samp_num
 
@@ -140,6 +140,8 @@ if __name__ == '__main__':
         if timeS >= sample_period_secs:
             timeS = sample_period_secs
 
-        time.sleep(sample_period_secs - timeS)
+        # Don't sleep if this was the last image
+        if samp_counter < total_samples:
+            time.sleep(sample_period_secs - timeS)
 
 
