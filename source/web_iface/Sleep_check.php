@@ -29,13 +29,13 @@
 <input type='submit' name='download' value='Download Minion Configuration' />
 </form>
 <br>
-<h3>Step 3: Turn Minion off before deployment.</h3>
+<h3>Step 3: Shutdown the Minion before deployment.</h3>
 <form method='post' action=''>
-<input type='submit' name='shutdown' value='Set Minion XXX to Sleep' />
+<input type='submit' name='shutdown' value='Shutdown' />
 </form>
 <br>
-<h3>Step 4: Once the Blue LED is no longer illuminated, attach the magnet to keep the Minion off.
-If the magnet is not attached, the Minion will automatically restart after 60 seconds.</h3>
+<h3>Step 4: Once the Blue LED is no longer illuminated, the Minion is in permanent shutdown mode.
+To activate the Minion, wave a magnet over the reed switch.</h3>
 <br>
 <form action="/index.php" method="post">
 <input type="submit" value="Return">
@@ -58,11 +58,10 @@ echo '<br>Ready to begin Mission!<br>';
 
 <?php
 if(isset($_POST['shutdown'])){
-
+echo "Permanent shutdown mode.\n";
+echo "To wake the device, press the reset button or restart with the magnet.";
 $command = escapeshellcmd('sudo python3 /var/www/html/Minion_sleep.py');
 $output = shell_exec($command);
-echo "Minion returned to sleep cycle!\n";
-echo "Goodbye!";
 }
 ?>
 
