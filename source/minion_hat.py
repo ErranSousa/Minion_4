@@ -24,6 +24,8 @@ class MinionHat(object):
     _STRBOFFL = 0x0C    # Least Significant Byte of the 16-bit Strobe Off Register
     _STRBEN = 0x0D      # Recovery Strobe On/Off Register
     _BRNWIRE = 0x0E     # Burn Wire activation Register
+    _BRPWR = 0x0F       # Blue Robotics Connectors Power Control Register
+    _PUEN = 0x10        # External Pull-Up Resistor Enable, 0:Disable 1:Enable
 
     # Definitions
     ENABLE = [0x01]
